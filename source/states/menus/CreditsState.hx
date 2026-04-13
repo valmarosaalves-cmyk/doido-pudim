@@ -1,5 +1,6 @@
 package states.menus;
 
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import doido.objects.Alphabet;
@@ -155,7 +156,7 @@ class CreditsState extends MusicBeatState
                     if (char.curChar == "diogotv")
                     {
                         if (selected)
-                            char.angle = Math.cos(char.selectedScaleElapsed * 2) * 8;
+                            char.angle = Math.sin(char.selectedScaleElapsed * 2) * 8;
                         else
                             char.angle = FlxMath.lerp(char.angle, 0, elapsed * 6);
                     }
@@ -173,27 +174,36 @@ class CreditsState extends MusicBeatState
             {
                 case "nikoo":
                     var floorOffset:Float = char.offset.y;
-                    
-                    char.nikooJumpVsp += elapsed * (char.nikooJumpVsp < 0 ? 6 : 10);
-                    char.nikooJumpOffset += char.nikooJumpVsp;
 
-                    char.offset.y -= char.nikooJumpOffset;
-                    if (char.offset.y < floorOffset)
+                    if (selected && char.nikooCanJump)
                     {
-                        char.offset.y = floorOffset;
-                        if (selected)
-                            char.nikooJumpVsp = -FlxG.random.float(1, 4);
-                        else
-                            char.nikooJumpVsp = 0;
+                        char.nikooCanJump = false;
+                        var jumpTime:Float = FlxG.random.float(0.3, 0.8);
+                        FlxTween.tween(char, {
+                            nikooJumpOffset: -jumpTime*300,
+                            angle: 360 * FlxG.random.int(-1, 1),
+                        }, jumpTime, {
+                            ease: FlxEase.cubeOut,
+                            onComplete: (twn) -> {
+                                FlxTween.tween(char, {
+                                    nikooJumpOffset: 0,
+                                }, jumpTime * 0.7, {
+                                    ease: FlxEase.cubeIn,
+                                    onComplete: (twn) -> {
+                                        char.nikooCanJump = true;
+                                        char.angle = 0;
+                                    }
+                                });
+                            }
+                        });
                     }
-                    
-                    char.shadowScale = 1.0 - (char.offset.y - floorOffset) / 200;
-                    if (char.shadowScale < 0.0)
-                        char.shadowScale = 0.0;
+
+                    char.offset.y -= char.nikooJumpOffset * rawScale;
+                    char.shadowScale = Math.max(0.0, 1.0 - (char.offset.y - floorOffset) / 350);
                         
                 case "yoisabo":
-                    char.offset.y += (80 + Math.sin(elapsedTime * 3) * 20) * rawScale;
-                    char.shadowScale = 0.7 + Math.sin(elapsedTime * 3) * -0.1;
+                    char.offset.y += (80 + Math.sin(elapsedTime) * 20) * rawScale;
+                    char.shadowScale = 0.7 + Math.sin(elapsedTime) * -0.1;
                 case "heart":
                     char.offset.y += 60 * rawScale;
                     char.angle = Math.sin(elapsedTime * 4) * 8;
@@ -230,7 +240,7 @@ class CreditChar extends FlxSprite
     public var curChar:String = "";
 
     public var nikooJumpOffset:Float = 0.0;
-    public var nikooJumpVsp:Float = 0.0;
+    public var nikooCanJump:Bool = true;
 
     public var selectedScaleElapsed:Float = 0.0;
     public var selectedScaleX:Float = 0.0;
