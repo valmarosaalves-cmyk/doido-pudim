@@ -58,6 +58,7 @@ class QuickButton extends FlxSprite
 	}
 
 	var hovering:Bool = false;
+	var prevPressed:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -66,7 +67,7 @@ class QuickButton extends FlxSprite
 
 		if (!disabled)
 		{
-			if (FlxG.mouse.overlaps(this, FlxG.cameras.list[FlxG.cameras.list.length - 1]))
+			if (FlxG.mouse.overlaps(this, FlxG.cameras.list[FlxG.cameras.list.length - 1]) && !prevPressed)
 			{
 				if (maxScale != 1 || minScale != 1)
 				{
@@ -85,10 +86,19 @@ class QuickButton extends FlxSprite
 					hovering = true;
 				}
 			}
-			else if (hovering)
+			else
 			{
-				onOut.dispatch(this);
-				hovering = false;
+				if(FlxG.mouse.justPressed)
+					prevPressed = true;
+				else if(FlxG.mouse.released && prevPressed)
+					prevPressed = false;
+
+				if (hovering)
+				{
+					onOut.dispatch(this);
+					hovering = false;
+					prevPressed = true;
+				}
 			}
 		}
 
