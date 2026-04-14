@@ -19,7 +19,10 @@ class FPSCounter extends Sprite
 
 	// Use this if you want to add a watermark to the counter!
 	var watermark:String = "";
-	var taskMem:Bool = false;
+	var debug:Bool = #if debug true #else false #end;
+
+	public var bgWidth:Float = 80;
+	public var bgHeight:Float = 50;
 
 	public function new(x:Float = 0, y:Float = 0)
 	{
@@ -29,7 +32,7 @@ class FPSCounter extends Sprite
 
 		bg = new Sprite();
 		bg.graphics.beginFill(0x000000, 0.5);
-		bg.graphics.drawRoundRect(x, y, 80, 50, 6, 6);
+		bg.graphics.drawRoundRect(x, y, bgWidth, bgHeight, 6, 6);
 		bg.graphics.endFill();
 		addChild(bg);
 
@@ -74,14 +77,14 @@ class FPSCounter extends Sprite
 
 		memField.text = FlxStringUtil.formatBytes(System.totalMemoryNumber);
 
-		#if windows
-		if (taskMem)
-			memField.text == '\n${FlxStringUtil.formatBytes(doido.system.Windows.getMem())}';
-		#end
+		if (debug)
+		{
+			#if windows
+			memField.text += ' / ${FlxStringUtil.formatBytes(doido.system.Windows.getMem())}';
+			#end
 
-		#if debug
-		memField.text += '\n${Type.getClassName(Type.getClass(FlxG.state))}';
-		#end
+			memField.text += '\n${Type.getClassName(Type.getClass(FlxG.state))}';
+		}
 
 		memField.text += '\n${watermark}';
 
@@ -92,8 +95,11 @@ class FPSCounter extends Sprite
 
 		graphics.clear();
 
-		bg.width = Math.max(labelField.x + labelField.getLineMetrics(0).width, memField.x + memField.getLineMetrics(0).width) + 12;
-		bg.height = memField.y + memField.getLineMetrics(0).height + 12;
+		bgWidth = Math.max(labelField.x + labelField.textWidth, memField.x + memField.textWidth) + 12;
+		bgHeight = memField.y + memField.textHeight + 12;
+
+		bg.width = bgWidth;
+		bg.height = bgHeight;
 	}
 }
 
