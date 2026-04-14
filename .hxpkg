@@ -1,0 +1,46 @@
+[
+	{
+		"profile": "default",
+		"pkgs": [
+			{
+				"name": "lime",
+				"version": "8.3.0"
+			},
+			{
+				"name": "openfl",
+				"version": "9.5.0"
+			},
+			{
+				"name": "flixel",
+				"version": "6.1.2"
+			},
+			{
+				"name": "flixel-addons",
+				"version": "4.0.1"
+			},
+			{
+				"name": "flixel-ui",
+				"version": "2.6.4"
+			},
+			{
+				"name": "flixel-animate",
+				"version": "1.4.0"
+			},
+			{
+				"name": "hscript-iris",
+				"link": "https://github.com/DoidoTeam/hscript-iris",
+				"branch": "master"
+			},
+			{
+				"name": "hxdiscord_rpc",
+				"link": "https://github.com/MAJigsaw77/hxdiscord_rpc",
+				"branch": "19518713cbd59fc5705f899144fffdbf9ae6695c"
+			},
+			{
+				"name": "hxcpp",
+				"link": "https://github.com/FunkinCrew/hxcpp",
+				"branch": "1a468335a0016aa87439c1878b5b845f88a4bae0"
+			}
+		]
+	}
+]
