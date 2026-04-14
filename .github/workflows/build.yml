@@ -5,6 +5,7 @@ on:
     paths-ignore:
       - '.vscode/**'
       - 'art/**'
+      - 'docs/**'
       - '.gitattributes'
       - '.gitignore'
       - 'README.md'
