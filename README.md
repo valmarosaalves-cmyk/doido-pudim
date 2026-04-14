@@ -29,11 +29,11 @@ Mostly for fun. Also because Doido Engine v3.x.x was starting to feel a little b
 
 ## Contributing
 
-Over the coming days we are looking into writting a full contributing guide including what we need help with, but if you find anything major missing, please create a pull request!
+[We have a contributing guide now!](docs/CONTRIBUTING.md)
 
-### Libraries
+## Compiling
 
-To install the correct libraries, you can run your platform's respective script in `art/setup/`. You can also install manually by checking the `.hmm` file. Please note we only support Windows, Android and HTML5 right now.
+To compile the engine, please run the script found at docs/setup/ corresponding to your platform from a CMD prompt / terminal and follow the instructions given.
 
 ## Licenses
 
