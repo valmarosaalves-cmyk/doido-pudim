@@ -32,7 +32,7 @@ class MusicBeat
 			if (target != null)
 				FlxG.switchState(() -> target);
 			else
-				FlxG.resetState();
+				FlxG.switchState(() -> Type.createInstance(Type.getClass(activeState), []));
 		};
 
 		if (skipTrans)
@@ -136,11 +136,12 @@ class MusicBeatState extends FlxUIState
 	{
 		super.update(elapsed);
 		updateStep();
-		// stopped working for some reason??
-		/*if(FlxG.keys.justPressed.F5) {
+
+		if (FlxG.keys.justPressed.F5)
+		{
 			MusicBeat.skip = (!FlxG.keys.pressed.SHIFT);
 			MusicBeat.resetState();
-		}*/
+		}
 	}
 
 	private function updateStep()
