@@ -1,0 +1,9 @@
+{
+    "songs": [
+        {"song": "tutorial", "icon":"gf"}
+    ],
+    "weekFile": "tutorial",
+    "weekName": "teaching time",
+    "chars": ["", "bf", "gf"],
+    "diffs": ["easy", "normal", "hard"]
+}

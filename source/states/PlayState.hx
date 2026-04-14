@@ -21,6 +21,7 @@ import objects.ui.notes.*;
 import states.editors.ChartingState;
 import substates.GameOverSubState;
 import substates.PauseSubState;
+import doido.song.Week.WeekData;
 #if TOUCH_CONTROLS
 import doido.objects.DoidoHitbox;
 #end
@@ -30,6 +31,12 @@ class PlayState extends MusicBeatState implements Playable
 	public static var SONG:DoidoSong;
 	public static var skip:Bool = false;
 	public static var songDiff:String = "normal";
+
+	// story mode
+	public static var playList:Array<String> = [];
+	public static var curWeek:String = '';
+	public static var isStoryMode:Bool = false;
+	public static var weekScore:Int = 0;
 
 	public var playField:PlayField;
 	public var hudClass:ClassHud;
@@ -83,14 +90,34 @@ class PlayState extends MusicBeatState implements Playable
 
 	public var loadedScripts:Array<Iris> = [];
 
-	public static function loadSong(input:String, ?diff:String = "normal")
+	public static function loadSong(input:String, diff:String = "normal", story:Bool = false)
 	{
 		SONG = SongHandler.loadSong(input, diff);
+		songDiff = diff;
+		isStoryMode = story;
+	}
+
+	public static function loadWeek(week:WeekData, diff:String = "normal")
+	{
+		playList = [];
+		for (song in week.songs)
+			playList.push(song.song);
+
+		curWeek = week.weekFile ?? "default";
+		weekScore = 0;
+		loadSong(playList[0], diff, true);
 	}
 
 	public function resetStatics()
 	{
 		Timings.init();
+
+		if (!isStoryMode)
+		{
+			weekScore = 0;
+			curWeek = '';
+			playList = [];
+		}
 	}
 
 	override function create()
@@ -454,7 +481,8 @@ class PlayState extends MusicBeatState implements Playable
 			MusicBeat.switchState(new ChartingState(SONG));
 
 		if (FlxG.keys.justPressed.ONE)
-			changeStage(stageBuild.curStage == "stage" ? "school" : "stage");
+			endSong();
+		//	changeStage(stageBuild.curStage == "stage" ? "school" : "stage");
 
 		if (FlxG.keys.justPressed.NINE)
 			camZoom = 0.2;
@@ -651,12 +679,35 @@ class PlayState extends MusicBeatState implements Playable
 			});
 		}
 
-		goToMenu();
+		weekScore += Timings.score;
+		playList.remove(playList[0]);
+
+		if (playList.length <= 0)
+		{
+			if (isStoryMode && validScore)
+			{
+				Highscore.addScore('week-$curWeek-$songDiff', {
+					score: weekScore,
+					accuracy: 0,
+					misses: 0,
+				});
+			}
+
+			goToMenu();
+		}
+		else
+		{
+			loadSong(playList[0], songDiff, true);
+			MusicBeat.switchState(new LoadingState());
+		}
 	}
 
 	public function goToMenu()
 	{
-		MusicBeat.switchState(new states.DebugMenu());
+		if (isStoryMode)
+			MusicBeat.switchState(new states.DebugMenu());
+		else
+			MusicBeat.switchState(new states.DebugMenu.Freeplay());
 	}
 
 	override function stepHit()

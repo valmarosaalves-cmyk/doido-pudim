@@ -216,7 +216,6 @@ class ChartingState extends MusicBeatState
 				try
 				{
 					PlayState.loadSong(newSong, newDiff);
-					PlayState.songDiff = newDiff;
 					MusicBeat.switchState(new ChartingState(PlayState.SONG));
 				}
 				catch (e)

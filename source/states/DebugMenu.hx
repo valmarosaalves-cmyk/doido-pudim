@@ -23,7 +23,8 @@ using doido.utils.TextUtil;
 class DebugMenu extends MusicBeatState
 {
 	var options:Array<String> = [
-		"Play",
+		"Story Mode",
+		"Freeplay",
 		"Controls",
 		"Options",
 		"Credits",
@@ -125,6 +126,12 @@ class DebugMenu extends MusicBeatState
 					MusicBeat.switchState(new states.menus.CreditsState());
 				case "character editor":
 					MusicBeat.switchState(new CharacterEditor("face", FlxG.keys.pressed.SHIFT));
+				case "story mode":
+					/*var week:WeekData = {
+						songs: [{song: "bopeebo"}, {song: "fresh"}, {song: "dadbattle"}]
+					};
+					PlayState.loadWeek(week, "hard");*/
+					MusicBeat.switchState(new states.menus.StoryMenuState());
 				default:
 					MusicBeat.switchState(new Freeplay());
 			}
@@ -340,7 +347,6 @@ class Freeplay extends MusicBeatState
 			try
 			{
 				PlayState.loadSong(options[curSong].name, options[curSong].diffs[curDiff]);
-				PlayState.songDiff = options[curSong].diffs[curDiff];
 
 				if (FlxG.keys.justPressed.SEVEN)
 				{
