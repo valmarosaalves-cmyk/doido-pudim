@@ -35,6 +35,8 @@ class CreditsState extends MusicBeatState
     public var holdTimer:Float = 0.0;
     public var holdMax:Float = 0.55;
 
+    var astraEasterEgg:Bool = false;
+
     function addCredit(name:String, icon:String = "", color:FlxColor, info:String = "", ?link:String)
 	{
 		creditList.push({
@@ -119,15 +121,42 @@ class CreditsState extends MusicBeatState
             {
                 changeSelection(change);
                 if (holdTimer >= holdMax)
-				    holdTimer = holdMax - 0.2;
+				    holdTimer = holdMax - 0.12;
             }
             if (Controls.justPressed(ACCEPT))
             {
-                persistentUpdate = false;
-                var url = creditList[curSelected].link;
-                if (url != null && url.length > 0) {
-                    MusicBeat.activateTimers(false);
-                    MusicBeat.openURL(url);
+                if (!astraEasterEgg)
+                {
+                    persistentUpdate = false;
+                    var url = creditList[curSelected].link;
+                    if (url != null && url.length > 0) {
+                        MusicBeat.activateTimers(false);
+                        MusicBeat.openURL(url);
+                    }
+                }
+                else
+                {
+                    astraEasterEgg = false;
+                    var chosenOne = FlxG.random.getObject(["lilith", "pearto", "two"]);
+                    var jumpscare = new FlxSprite().loadImage('credits/astra-eastereggs/$chosenOne');
+                    jumpscare.setGraphicSize(500, 500);
+                    jumpscare.updateHitbox();
+                    jumpscare.screenCenter();
+                    add(jumpscare);
+
+                    FlxG.sound.play(Assets.sound("options/ahh"), 0.7);
+                    var daScale = jumpscare.scale.x;
+                    jumpscare.scale.set(0, 0);
+                    FlxTween.tween(jumpscare.scale, {x: daScale, y: daScale}, 0.2).then(
+                        FlxTween.tween(jumpscare.scale, {x: daScale * 1.2, y: daScale * 1.2}, 1.0)
+                    );
+                    FlxTween.tween(jumpscare, {alpha: 0.0}, 0.2, {
+                        startDelay: 1.0,
+                        onComplete: (twn) -> {
+                            FlxTween.completeTweensOf(jumpscare);
+                            jumpscare.destroy();
+                        }
+                    });
                 }
             }
             if (Controls.justPressed(BACK))
@@ -182,7 +211,7 @@ class CreditsState extends MusicBeatState
             char.color = FlxColor.interpolate(
                 FlxColor.BLACK,
                 FlxColor.WHITE,
-                FlxMath.bound(0.5 + Math.cos(daAngle) * 0.5, 0.5, 1.0)
+                FlxMath.bound(0.5 + Math.cos(daAngle) * 0.5, 0.4, 1.0)
             );
             char.scale.set(scaleX, scaleY);
             char.updateHitbox();
@@ -220,7 +249,7 @@ class CreditsState extends MusicBeatState
                         
                 case "yoisabo":
                     char.offset.y += (80 + Math.sin(elapsedTime) * 20) * rawScale;
-                    char.shadowScale = 0.7 + Math.sin(elapsedTime) * -0.1;
+                    char.shadowScale = 0.8 + Math.sin(elapsedTime) * -0.1;
                 case "heart":
                     char.offset.y += 60 * rawScale;
                     char.angle = Math.sin(elapsedTime * 4) * 8;
@@ -247,6 +276,8 @@ class CreditsState extends MusicBeatState
         descTxt.text = curCredit.info;
         FlxTween.cancelTweensOf(bg);
         FlxTween.color(bg, 0.4, bg.color, curCredit.color);
+        
+        astraEasterEgg = (curCredit.icon == "astra");
     }
 }
 class CreditChar extends FlxSprite
