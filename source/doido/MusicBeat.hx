@@ -77,6 +77,11 @@ class MusicBeat
 		});
 	}
 
+	public static function openURL(url:String)
+	{
+		activeState.openSubState(new doido.objects.WebsiteWarning(url));
+	}
+
 	public static function getTopCamera():FlxCamera
 		return FlxG.cameras.list[FlxG.cameras.list.length - 1];
 }

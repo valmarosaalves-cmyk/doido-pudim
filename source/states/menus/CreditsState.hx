@@ -95,11 +95,18 @@ class CreditsState extends MusicBeatState
         }
         changeSelection();
     }
+
+    override function closeSubState()
+    {
+        super.closeSubState();
+        MusicBeat.activateTimers(true);
+    }
     
     var elapsedTime:Float = 0.0;
     override function update(elapsed:Float)
     {
         super.update(elapsed);
+        persistentUpdate = true;
         if (!leaving)
         {
             var change:Int = (Controls.pressed(UI_RIGHT) ? 1 : 0) - (Controls.pressed(UI_LEFT) ? 1 : 0);
@@ -113,6 +120,15 @@ class CreditsState extends MusicBeatState
                 changeSelection(change);
                 if (holdTimer >= holdMax)
 				    holdTimer = holdMax - 0.2;
+            }
+            if (Controls.justPressed(ACCEPT))
+            {
+                persistentUpdate = false;
+                var url = creditList[curSelected].link;
+                if (url != null && url.length > 0) {
+                    MusicBeat.activateTimers(false);
+                    MusicBeat.openURL(url);
+                }
             }
             if (Controls.justPressed(BACK))
             {
@@ -128,6 +144,7 @@ class CreditsState extends MusicBeatState
             var daAngle = FlxAngle.asRadians((char.ID - lerpSelected) * angleStep);
 
             var rawScale:Float = 0.8 + Math.cos(daAngle) * 0.2;
+            char.shadowBaseY = rawScale;
             var scaleX:Float = rawScale;
             var scaleY:Float = rawScale;
 
@@ -236,6 +253,7 @@ class CreditChar extends FlxSprite
 {
     public var shadow:FlxSprite;
     public var shadowScale:Float = 1.0;
+    public var shadowBaseY:Float = 1.0;
 
     public var curChar:String = "";
 
@@ -267,7 +285,7 @@ class CreditChar extends FlxSprite
         shadow.alpha = 0.4 * Math.min(shadowScale, 1.0);
         shadow.scale.set(
             width / shadow.frameWidth * shadowScale,
-            scale.y * shadowScale
+            shadowBaseY * shadowScale
         );
         shadow.updateHitbox();
         shadow.setPosition(
