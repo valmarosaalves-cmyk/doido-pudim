@@ -90,6 +90,9 @@ class Cache
 
 	public static function clearRawGraphic(graphic:FlxGraphic)
 	{
+		if(graphic == null)
+			return;
+		
 		if (graphic.bitmap != null && graphic.bitmap.__texture != null)
 			graphic.bitmap.__texture.dispose();
 		graphic.persist = false;
