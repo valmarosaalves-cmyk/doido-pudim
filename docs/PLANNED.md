@@ -2,7 +2,7 @@
 
 This is a list of features we are working on adding to Doido Engine. Please feel free to create PRs to help us with these. Keep in mind not all of these would have pull requests accepted, as the more important features would require a higher level of quality.
 
-If you're unsure about this, or would like to suggest a feature, please create an issue or reach out to us on our [Discord Server](https://discord.gg/KVXf9Ygzu5).
+If you're unsure about this, or would like to suggest a feature, please [create an issue](https://github.com/DoidoTeam/FNF-Doido-Engine/issues) or reach out to us on our [Discord Server](https://discord.gg/KVXf9Ygzu5).
 
 ## High priority
 - Chart Editor
