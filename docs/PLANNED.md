@@ -11,10 +11,10 @@ If you're unsure about this, or would like to suggest a feature, please [create 
 - Controls Menu
 
 ## Medium priority
-- Story Mode
 - Menus (Main, Freeplay, Title)
 - Cutscene support
 - Dialogue support
+- Score Resetting
 - Better UI framework
 - [Current Issues](https://github.com/DoidoTeam/FNF-Doido-Engine/issues)
 
