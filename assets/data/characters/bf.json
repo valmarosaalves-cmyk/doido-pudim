@@ -9,74 +9,101 @@
 	},
 	"anims": [
 		{
-            "name": "idle",
-            "prefix": "BF idle dance",
-            "offset": {"x": 0, "y": 0}
-        },
-        {
-            "name": "singLEFT",
-            "prefix": "BF NOTE LEFT0",
-            "offset": {"x": 12, "y": -6}
-        },
-        {
-            "name": "singDOWN",
-            "prefix": "BF NOTE DOWN0",
-            "offset": {"x": -12, "y": -50}
-        },
-        {
-            "name": "singUP",
-            "prefix": "BF NOTE UP0",
-            "offset": {"x": -41, "y": 32}
-        },
-        {
-            "name": "singRIGHT",
-            "prefix": "BF NOTE RIGHT0",
-            "offset": {"x": -46, "y": -6}
-        },
-        {
-            "name": "singLEFTmiss",
-            "prefix": "BF NOTE LEFT MISS",
-            "offset": {"x": 10, "y": 18}
-        },
-        {
-            "name": "singDOWNmiss",
-            "prefix": "BF NOTE DOWN MISS",
-            "offset": {"x": -11, "y": -22}
-        },
-        {
-            "name": "singUPmiss",
-            "prefix": "BF NOTE UP MISS",
-            "offset": {"x": -36, "y": 28}
-        },
-        {
-            "name": "singRIGHTmiss",
-            "prefix": "BF NOTE RIGHT MISS",
-            "offset": {"x": -45, "y": 21}
-        },
-		{
-			"prefix": "BF idle shaking",
+			"prefix": "BF idle dance",
 			"offset": {
 				"x": 0,
 				"y": 0
 			},
+			"name": "idle"
+		},
+		{
+			"prefix": "BF NOTE LEFT0",
+			"offset": {
+				"x": 12,
+				"y": -6
+			},
+			"name": "singLEFT"
+		},
+		{
+			"prefix": "BF NOTE DOWN0",
+			"offset": {
+				"x": -12,
+				"y": -50
+			},
+			"name": "singDOWN"
+		},
+		{
+			"prefix": "BF NOTE UP0",
+			"offset": {
+				"x": -41,
+				"y": 32
+			},
+			"name": "singUP"
+		},
+		{
+			"prefix": "BF NOTE RIGHT0",
+			"offset": {
+				"x": -46,
+				"y": -6
+			},
+			"name": "singRIGHT"
+		},
+		{
+			"prefix": "BF NOTE LEFT MISS",
+			"offset": {
+				"x": 10,
+				"y": 18
+			},
+			"name": "singLEFTmiss"
+		},
+		{
+			"prefix": "BF NOTE DOWN MISS",
+			"offset": {
+				"x": -11,
+				"y": -22
+			},
+			"name": "singDOWNmiss"
+		},
+		{
+			"prefix": "BF NOTE UP MISS",
+			"offset": {
+				"x": -36,
+				"y": 28
+			},
+			"name": "singUPmiss"
+		},
+		{
+			"prefix": "BF NOTE RIGHT MISS",
+			"offset": {
+				"x": -45,
+				"y": 21
+			},
+			"name": "singRIGHTmiss"
+		},
+		{
+			"loop": true,
+			"prefix": "BF idle shaking",
 			"name": "scared",
-			"loop": true
+			"offset": {
+				"x": 0,
+				"y": 0
+			}
 		},
 		{
 			"prefix": "BF HEY!!",
+			"name": "hey",
 			"offset": {
-				"x": 0,
-				"y": 0
-			},
-			"name": "hey"
+				"x": 2,
+				"y": 5
+			}
 		},
 		{
 			"prefix": "Boyfriend YEAH cheer",
+			"name": "cheer",
 			"offset": {
-				"x": 0,
-				"y": 0
-			},
-			"name": "cheer"
+				"x": -17,
+				"y": 39
+			}
 		}
 	],
 	"spritesheet": "bf/BOYFRIEND",

@@ -771,9 +771,9 @@ class CharacterEditor extends MusicBeatState
 	public function updatePos(char:Character)
 	{
 		char.updateHitbox();
-		char.scaleOffset = {x: char.offset.x, y: char.offset.y};
+		//char.scaleOffset = {x: char.offset.x, y: char.offset.y};
 		char.setPosition(middlePoint.x - (char.width - middlePoint.width) / 2, middlePoint.y + (middlePoint.height / 2) - char.height);
-		char.updateOffset();
+		//char.updateOffset();
 	}
 
 	public function updateAnim(updateData:Bool = false)

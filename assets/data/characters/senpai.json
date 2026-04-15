@@ -5,8 +5,8 @@
 		"y": 6
 	},
 	"angleOrigin": {
-		"x": 0.5,
-		"y": 1
+		"x": 0.0,
+		"y": 0.0
 	},
 	"idleAnims": [],
 	"spriteType": "SPARROW",

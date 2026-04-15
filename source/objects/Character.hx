@@ -114,6 +114,8 @@ class Character extends DoidoSprite
 		cameraOffset = data.cameraOffset ?? cameraOffset;
 
 		angle = data.angle ?? 0.0;
+		data.angleOrigin ??= {x: 0.5, y: 1.0};
+
 		alpha = data.alpha ?? 1.0;
 		data.scale ??= {x: 1, y: 1};
 		scale.set(data.scale.x, data.scale.y);
@@ -124,12 +126,7 @@ class Character extends DoidoSprite
 		if (isPlayer)
 			flipX = !flipX;
 
-		playAnim(idleAnims[0]);
-
 		updateHitbox();
-		data.angleOrigin ??= {x: 0.5, y: 1.0};
-		origin.set(data.angleOrigin.x * width, data.angleOrigin.y * height);
-		scaleOffset = {x: offset.x, y: offset.y};
 
 		playAnim(idleAnims[0], true, idleFrames);
 	}
@@ -152,6 +149,26 @@ class Character extends DoidoSprite
 		curDance++;
 		if (curDance >= idleAnims.length)
 			curDance = 0;
+	}
+
+	override function updateHitbox()
+	{
+		var prevAnim = {name: "", frame: 0};
+		if (animation?.curAnim == null)
+			prevAnim = null;
+		else
+			prevAnim = {
+				name: animation.curAnim.name,
+				frame: animation.curAnim.curFrame
+			};
+		
+		if (idleAnims.length > 0) playAnim(idleAnims[0]);
+		super.updateHitbox();
+		scaleOffset = {x: offset.x, y: offset.y};
+		origin.set(data.angleOrigin.x * frameWidth, data.angleOrigin.y * frameHeight);
+		
+		if (prevAnim != null)
+			playAnim(prevAnim.name, true, prevAnim.frame);
 	}
 
 	override public function update(elapsed:Float)
