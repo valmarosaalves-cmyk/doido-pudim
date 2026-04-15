@@ -187,6 +187,7 @@ class CharacterEditor extends MusicBeatState
 			char.loadCharacter(true);
 			ghost.syncGhost();
 			updatePos(char);
+			updatePos(ghost);
 		});
 		tab.add(reload);
 
@@ -771,9 +772,9 @@ class CharacterEditor extends MusicBeatState
 	public function updatePos(char:Character)
 	{
 		char.updateHitbox();
-		//char.scaleOffset = {x: char.offset.x, y: char.offset.y};
+		// char.scaleOffset = {x: char.offset.x, y: char.offset.y};
 		char.setPosition(middlePoint.x - (char.width - middlePoint.width) / 2, middlePoint.y + (middlePoint.height / 2) - char.height);
-		//char.updateOffset();
+		// char.updateOffset();
 	}
 
 	public function updateAnim(updateData:Bool = false)
@@ -783,6 +784,7 @@ class CharacterEditor extends MusicBeatState
 		if (updateData)
 		{
 			ghost.syncGhost();
+			updatePos(ghost);
 			for (anim in char.data.anims)
 			{
 				if (anim.name == char.curAnimName)
@@ -851,7 +853,8 @@ class AnimWindow extends BaseWindow
 	public var ghostTxt:FlxBitmapText;
 
 	var charSlider:DoidoSlider;
-	//var ghostSlider:DoidoSlider;
+
+	// var ghostSlider:DoidoSlider;
 
 	public function new(characterEditor:CharacterEditor)
 	{
@@ -904,18 +907,18 @@ class AnimWindow extends BaseWindow
 		add(ghostTxt);
 
 		/*ghostSlider = new DoidoSlider(charSlider.x, ghostTxt.y + 7, 320, 6, -1, -1, 3, 3);
-		ghostSlider.onScrub.add((sld) ->
-		{
-			var isOff:Bool = (ghostSlider.value < 0.0);
-			if (isOff)
-				characterEditor.ghost.playAnim(characterEditor.ghost.curAnimName, true);
-			else
+			ghostSlider.onScrub.add((sld) ->
 			{
-				characterEditor.ghost.playAnim(characterEditor.ghost.curAnimName, true, Math.floor(ghostSlider.value));
-				characterEditor.ghost.anim.pause();
-			}
-		});
-		add(ghostSlider);*/
+				var isOff:Bool = (ghostSlider.value < 0.0);
+				if (isOff)
+					characterEditor.ghost.playAnim(characterEditor.ghost.curAnimName, true);
+				else
+				{
+					characterEditor.ghost.playAnim(characterEditor.ghost.curAnimName, true, Math.floor(ghostSlider.value));
+					characterEditor.ghost.anim.pause();
+				}
+			});
+			add(ghostSlider); */
 
 		updateAnim();
 	}
@@ -941,10 +944,10 @@ class AnimWindow extends BaseWindow
 		}
 
 		/*
-		ghostSlider.rangeMax = ghost.animation.curAnim.frames.length - 1;
-		ghostSlider.steps = ghost.animation.curAnim.frames.length - 1;
-		ghostSlider.snappingStrength = Math.POSITIVE_INFINITY;
-		*/
+			ghostSlider.rangeMax = ghost.animation.curAnim.frames.length - 1;
+			ghostSlider.steps = ghost.animation.curAnim.frames.length - 1;
+			ghostSlider.snappingStrength = Math.POSITIVE_INFINITY;
+		 */
 	}
 }
 
