@@ -92,6 +92,13 @@ class ChartingState extends MusicBeatState
 	public var menuBox:DoidoBox;
 	public var menuMain:DoidoBox;
 
+	// border
+	public var borderLeft:FlxSprite;
+	public var borderRight:FlxSprite;
+	public var cameraIcon:FlxSprite;
+	public var iconBf:HealthIcon;
+	public var iconDad:HealthIcon;
+
 	var characters:Array<String> = [];
 
 	public function new(SONG:DoidoSong)
@@ -116,7 +123,7 @@ class ChartingState extends MusicBeatState
 		if (NoteUtil.directions.length == 0)
 			NoteUtil.setUpDirections(4);
 
-		var bg = new FlxSprite().loadGraphic(Assets.image('menuChartEditor'));
+		var bg = new FlxSprite().loadGraphic(Assets.image('editors/charting/bg/light'));
 		bg.screenCenter();
 		add(bg);
 
@@ -168,6 +175,47 @@ class ChartingState extends MusicBeatState
 			icon.setIcon(char, false);
 			icon.destroy();
 		}
+
+		borderLeft = new FlxSprite().loadGraphic(Assets.image('editors/charting/border_left'));
+		borderLeft.x -= 2;
+		add(borderLeft);
+
+		borderRight = new FlxSprite().loadGraphic(Assets.image('editors/charting/border_right'));
+		borderRight.x = FlxG.width - borderRight.width + 2;
+		add(borderRight);
+
+		cameraIcon = new FlxSprite().loadGraphic(Assets.image('editors/charting/camera'));
+		cameraIcon.scale.set(0.38, 0.38);
+		cameraIcon.updateHitbox();
+		cameraIcon.x = 518 - (cameraIcon.width / 2);
+		cameraIcon.y = 1;
+		add(cameraIcon);
+
+		iconBf = new HealthIcon();
+		iconDad = new HealthIcon();
+		add(iconBf);
+		add(iconDad);
+		reloadIcons();
+	}
+
+	function reloadIcons()
+	{
+		iconBf.setIcon(META.player1, true);
+		iconDad.setIcon(META.player2, false);
+
+		borderLeft.color = iconDad.barColor;
+		borderRight.color = iconBf.barColor;
+
+		for (icon in [iconBf, iconDad])
+		{
+			icon.setGraphicSize(82, 82);
+			icon.updateHitbox();
+			icon.scrollFactor.set();
+			icon.y = 35 - (icon.height / 2);
+		}
+
+		iconDad.x = 518 - iconDad.width - 15;
+		iconBf.x = 518 + 15;
 	}
 
 	function addMenu()
@@ -616,6 +664,7 @@ class ChartingState extends MusicBeatState
 					bfIcon.setIcon(name, false);
 					bfButton.button.setColorTransform(bfIcon.barColor.redFloat, bfIcon.barColor.greenFloat, bfIcon.barColor.blueFloat);
 					META.player1 = name;
+					reloadIcons();
 					test.buttonId = "";
 				};
 			}
@@ -655,6 +704,7 @@ class ChartingState extends MusicBeatState
 					oppIcon.setIcon(name, false);
 					oppButton.button.setColorTransform(oppIcon.barColor.redFloat, oppIcon.barColor.greenFloat, oppIcon.barColor.blueFloat);
 					META.player2 = name;
+					reloadIcons();
 					test.buttonId = "";
 				};
 			}
