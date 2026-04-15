@@ -68,25 +68,35 @@ class SpriteUtil
 	}
 
 	public static function clipToSprite(spr:FlxSprite, objects:Array<FlxSprite>):FlxSprite
-    {
+	{
 		var clipRect = (spr.clipRect ?? new flixel.math.FlxRect());
 		clipRect.set(0, 0, spr.frameWidth, spr.frameHeight);
-		
-        for(object in objects)
-        {
+
+		for (object in objects)
+		{
 			var sprX:Float = spr.x;
 			var sprY:Float = spr.y;
-			
-            if(sprX < object.x)
-                clipRect.x += object.x - sprX;
-            if(sprX + spr.width > object.x + object.width)
-                clipRect.width -= (sprX + spr.width) - (object.x + object.width);
-            if(sprY < object.y)
-                clipRect.y += (object.y - sprY) / spr.scale.y;
-            if(sprY + spr.height > object.y + object.height)
-                clipRect.height -= ((sprY + spr.height) - (object.y + object.height)) / spr.scale.y;
-        }
-        spr.clipRect = clipRect;
+
+			if (sprX < object.x)
+				clipRect.x += object.x - sprX;
+			if (sprX + spr.width > object.x + object.width)
+				clipRect.width -= (sprX + spr.width) - (object.x + object.width);
+			if (sprY < object.y)
+				clipRect.y += (object.y - sprY) / spr.scale.y;
+			if (sprY + spr.height > object.y + object.height)
+				clipRect.height -= ((sprY + spr.height) - (object.y + object.height)) / spr.scale.y;
+		}
+		spr.clipRect = clipRect;
 		return spr;
-    }
+	}
+
+	public static function getColor(clr:Dynamic):FlxColor
+	{
+		if (Std.isOfType(clr, String))
+			return FlxColor.fromString(clr);
+		else if (Std.isOfType(clr, Array))
+			return FlxColor.fromRGB(clr[0], clr[1], clr[2]);
+		else
+			return 0xFFA1A1A1;
+	}
 }

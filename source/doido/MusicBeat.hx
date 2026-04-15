@@ -189,7 +189,7 @@ class MusicBeatState extends FlxUIState
 		curBeat = Math.floor(curStep / 4);
 	}
 
-	private function setFpsPos(x:Int = 5, y:Int = 5)
+	private function setFpsPos(x:Float = 5, y:Float = 5)
 	{
 		if (Main.fpsX != x || Main.fpsY != y)
 			Main.setFpsPos(x, y);

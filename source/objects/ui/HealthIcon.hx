@@ -64,12 +64,7 @@ class HealthIcon extends FlxSprite
 		if (data.scale == null) data.scale = DEFAULT.scale;
 		set_globalScale(globalScale);
 
-		var clr:Dynamic = data.color ?? DEFAULT.color;
-		if (Std.isOfType(clr, String))
-			barColor = FlxColor.fromString(clr);
-		else if (Std.isOfType(clr, Array))
-			barColor = FlxColor.fromRGB(clr[0], clr[1], clr[2]);
-
+		barColor = SpriteUtil.getColor(data.color ?? DEFAULT.color);
 		flipX = data.flipX ?? DEFAULT.flipX;
 		flipY = data.flipY ?? DEFAULT.flipY;
 		antialiasing = ((data.pixel == true) ? false : flixel.FlxSprite.defaultAntialiasing);

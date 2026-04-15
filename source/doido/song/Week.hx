@@ -8,6 +8,7 @@ typedef WeekData =
 	var ?chars:Array<String>;
 	var ?diffs:Array<String>;
 	var ?storyDiffs:Array<String>;
+	var ?storyColor:Dynamic;
 	var ?freeplayOnly:Bool;
 	var ?storyModeOnly:Bool;
 }
@@ -36,6 +37,7 @@ class Week
 			storyModeOnly: false,
 			diffs: ['easy', 'normal', 'hard'],
 			storyDiffs: ['easy', 'normal', 'hard'],
+			storyColor: "0xFFF9CF51"
 		};
 	}
 
@@ -84,6 +86,7 @@ class Week
 		newWeek.chars = newWeek.chars ?? DEFAULT.chars;
 		newWeek.diffs = newWeek.diffs ?? DEFAULT.diffs;
 		newWeek.storyDiffs = newWeek.storyDiffs ?? newWeek.diffs;
+		newWeek.storyColor = newWeek.storyColor ?? DEFAULT.storyColor;
 
 		newWeek.freeplayOnly = newWeek.freeplayOnly ?? DEFAULT.freeplayOnly;
 		newWeek.storyModeOnly = newWeek.storyModeOnly ?? DEFAULT.storyModeOnly;

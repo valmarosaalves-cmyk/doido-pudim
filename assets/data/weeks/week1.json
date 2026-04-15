@@ -8,5 +8,6 @@
     "weekName": "daddy dearest",
     "chars": ["dad", "bf", "gf"],
     "diffs": ["easy", "normal", "hard", "erect", "nightmare"],
-    "storyDiffs": ["easy", "normal", "hard"]
+    "storyDiffs": ["easy", "normal", "hard"],
+    "storyColor": "0xFFAF66CE"
 }

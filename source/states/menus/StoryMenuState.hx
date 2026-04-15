@@ -9,6 +9,7 @@ import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
 
 class StoryMenuState extends MusicBeatState
 {
@@ -20,8 +21,8 @@ class StoryMenuState extends MusicBeatState
 	var realScore:Float = 0;
 	var lerpedScore:Float = 0;
 
-	var blackRect:FlxSprite;
-	var yellowRect:FlxSprite;
+	var topBar:FlxSprite;
+	var charBg:FlxSprite;
 
 	var grpChars:FlxTypedGroup<StoryChar>;
 	var grpWeeks:FlxTypedGroup<WeekTitle>;
@@ -37,6 +38,7 @@ class StoryMenuState extends MusicBeatState
 	override function create()
 	{
 		super.create();
+		setFpsPos(Main.fpsX, 55);
 		DiscordIO.changePresence("In the Story Menu");
 		weekList = Week.weekList(true, false);
 
@@ -46,13 +48,14 @@ class StoryMenuState extends MusicBeatState
 		for (i in 0...weekList.length)
 			grpWeeks.add(new WeekTitle(weekList[i].weekFile, i, curWeek));
 
-		blackRect = new FlxSprite(0, 0).makeGraphic(FlxG.width * 2, 60, 0xFF000000);
-		blackRect.screenCenter(X);
-		add(blackRect);
+		topBar = new FlxSprite(0, 0).makeGraphic(FlxG.width * 2, 60, 0xFF000000);
+		topBar.screenCenter(X);
+		add(topBar);
 
-		yellowRect = new FlxSprite(0, 50).makeGraphic(FlxG.width * 2, 392, 0xFFF9CF51);
-		yellowRect.screenCenter(X);
-		add(yellowRect);
+		charBg = new FlxSprite(0, 50).makeGraphic(FlxG.width * 2, 392, 0xFFFFFFFF);
+		charBg.color = 0xFFF9CF51;
+		charBg.screenCenter(X);
+		add(charBg);
 
 		weekScoreTxt = new FlxText(8, 8, 0, "WEEK SCORE: 0");
 		weekScoreTxt.setFormat(Main.globalFont, 36, 0xFFFFFFFF, LEFT);
@@ -65,7 +68,7 @@ class StoryMenuState extends MusicBeatState
 
 		trackTitle = new FlxText(0, 0, 0, "TRACKS");
 		trackTitle.setFormat(Main.globalFont, 48, 0xFFE55777, CENTER);
-		trackTitle.setPosition(200 - trackTitle.width / 2, yellowRect.y + yellowRect.height + 20);
+		trackTitle.setPosition(200 - trackTitle.width / 2, charBg.y + charBg.height + 20);
 		add(trackTitle);
 
 		trackTxt = new FlxText(0, 0, 0, "what the hell");
@@ -74,7 +77,7 @@ class StoryMenuState extends MusicBeatState
 		add(trackTxt);
 
 		diffSelector = new DiffSelector();
-		diffSelector.diffPos.y = yellowRect.y + yellowRect.height + 30; // 20
+		diffSelector.diffPos.y = charBg.y + charBg.height + 30; // 20
 		diffSelector.diffPos.x = (FlxG.width - 215);
 		diffSelector.updateHitbox();
 		diffSelector.arrowL.x = diffSelector.leftX;
@@ -152,10 +155,8 @@ class StoryMenuState extends MusicBeatState
 				MusicBeat.switchState(new states.DebugMenu());
 			}
 
-			if (Controls.justPressed(ACCEPT))
-			{
+			if (Controls.justPressed(ACCEPT) && canSelect)
 				startWeek();
-			}
 		}
 
 		for (week in grpWeeks.members)
@@ -229,6 +230,13 @@ class StoryMenuState extends MusicBeatState
 
 		weekNameTxt.text = week.weekName.toUpperCase();
 		weekNameTxt.x = FlxG.width - weekNameTxt.width - 8;
+
+		var newColor = SpriteUtil.getColor(week.storyColor);
+		if (newColor != charBg.color)
+		{
+			FlxTween.cancelTweensOf(charBg);
+			FlxTween.color(charBg, 0.4, charBg.color, newColor);
+		}
 
 		if (prevDiffs != week.storyDiffs.length)
 			curDiff = centerDiff;
