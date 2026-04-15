@@ -43,7 +43,7 @@ class Init extends MusicBeatState
 	 */
 	public static function flagState()
 	{
-		MusicBeat.switchState(new DebugMenu());
+		MusicBeat.switchState(new TitleState());
 		// MusicBeat.switchState(new DebugMenu.TouchTest());
 	}
 }

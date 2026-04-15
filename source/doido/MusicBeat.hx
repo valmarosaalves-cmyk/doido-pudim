@@ -82,6 +82,58 @@ class MusicBeat
 		activeState.openSubState(new doido.objects.WebsiteWarning(url));
 	}
 
+	// Only active in menu states
+	// PlayState doesn't use this
+	public static function updateConductor()
+	{
+		if(FlxG.sound?.music?.playing)
+			Conductor.songPos = FlxG.sound.music.time;
+	}
+
+	public static var curMusic:String = "none";
+	public static function playMusic(?key:String, ?forceRestart:Bool = false, ?vol:Float = 0.5):Void
+	{
+		/*if (Paths.dumpExclusions.contains('music/' + curMusic + '.ogg'))
+			Paths.dumpExclusions.remove  ('music/' + curMusic + '.ogg');*/
+		
+		if(key == null)
+		{
+			curMusic = "none";
+			FlxG.sound.music.stop();
+		}
+		else
+		{
+			//Paths.dumpExclusions.push('music/' + key + '.ogg');
+
+			if(curMusic != key || forceRestart)
+			{
+				curMusic = key;
+				FlxG.sound.playMusic(Assets.music(key), vol);
+				FlxG.sound.music.play(true);
+			}
+		}
+	}
+	public static function stopMusic() {
+		return playMusic();
+	}
+
+	// Flash function to handle the Flashing Lights option
+	// Do not use forced unless you REALLY have to
+	public static function flash(?camera:FlxCamera, ?duration:Float = 0.5, ?color:flixel.util.FlxColor, ?forced:Bool = false)
+	{
+		if(camera == null) camera = FlxG.camera;
+		if(color == null) color = 0xFFFFFFFF;
+		
+		if(!forced)
+		{
+			switch(Save.data.flashingLights.toLowerCase()) {
+				case "off": return;
+				case "reduced": color.alphaFloat = 0.4;
+			}
+		}
+		camera.flash(color, duration, null, true);
+	}
+
 	public static function getTopCamera():FlxCamera
 		return FlxG.cameras.list[FlxG.cameras.list.length - 1];
 }
@@ -135,6 +187,7 @@ class MusicBeatState extends FlxUIState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		MusicBeat.updateConductor();
 		updateStep();
 
 		if (FlxG.keys.justPressed.F5)
@@ -236,6 +289,7 @@ class MusicBeatSubState extends FlxSubState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		MusicBeat.updateConductor();
 		updateStep();
 	}
 

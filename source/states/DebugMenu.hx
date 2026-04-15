@@ -38,6 +38,7 @@ class DebugMenu extends MusicBeatState
 	override function create()
 	{
 		super.create();
+		MusicBeat.playMusic("freakyMenu");
 		DiscordIO.changePresence("In the Main Menu");
 
 		var bg = new FlxSprite().loadGraphic(Assets.image('menuInvert'));
@@ -48,22 +49,6 @@ class DebugMenu extends MusicBeatState
 		doidoText += "\n<rainbow speed=6 offset=8><wave intensity=15 speed=20>PUDIM</wave></rainbow>";
 
 		var alphabet = new Alphabet(FlxG.width / 2, 50, doidoText, true, CENTER);
-		add(alphabet);
-
-		var titleTexts = Assets.txtToArray("data/title-texts");
-		var chosenText = FlxG.random.getObject(titleTexts).toUpperCase().split("--");
-
-		for (i in 0...chosenText.length)
-			if (chosenText[i].contains("<DISCORD>"))
-				chosenText[i] = chosenText[i].replace("<DISCORD>", DiscordIO.nickname);
-
-		/*var doidoText = "Here's a test for bitmap fonts in the alphabet...\n";
-			doidoText += "It can even have the same <rainbow speed=3><wave intensity=5 speed=3>WACKY</wave></rainbow> <shake intensity=2 speed=10>effects</shake>!\n"; */
-		var doidoText = '<shake intensity=2 speed=10>${chosenText[0]}</shake>\n<rainbow speed=3><wave intensity=5 speed=3>${chosenText[1]}</wave></rainbow>';
-		var alphabet = new Alphabet(FlxG.width / 2, alphabet.y + alphabet.height + 20, doidoText, false, CENTER, "vcr");
-		alphabet.scale.set(2, 2);
-		alphabet.updateHitbox();
-		alphabet.pixel = true;
 		add(alphabet);
 
 		text = new FlxText(10, 0, 0, '');
@@ -149,100 +134,6 @@ class DebugMenu extends MusicBeatState
 	}
 }
 
-typedef CreditData =
-{
-	var name:String;
-	var ?icon:String;
-	var ?info:String;
-	var ?link:Null<String>;
-}
-
-class Credits extends MusicBeatState
-{
-	var creditList:Array<CreditData> = [];
-	var text:FlxText;
-	var title:FlxText;
-	var cur:Int = 0;
-
-	function addCredit(name:String, icon:String = "", color:Dynamic, info:String = "", ?link:Null<String>)
-	{
-		creditList.push({
-			name: name,
-			icon: icon,
-			// color: color, // unused
-			info: info,
-			link: link,
-		});
-	}
-
-	override function create()
-	{
-		super.create();
-		DiscordIO.changePresence("In the Main Menu");
-
-		var bg = new FlxSprite().loadGraphic(Assets.image('menuInvert'));
-		bg.screenCenter();
-		add(bg);
-
-		final nikoo:Bool = (FlxG.random.bool(1));
-		addCredit('DiogoTV', 'diogotv', 0xFFC385FF, "Doido Engine's Owner and Main Coder", 'https://bsky.app/profile/diogotv.bsky.social');
-		addCredit('teles', 'teles', 0xFFFF95AC, "Doido Engine's Additional Coder", 'https://youtube.com/@telesfnf');
-		addCredit('GoldenFoxy', 'anna', 0xFFFFE100, "Main designer of Doido Engine's chart editor", 'https://bsky.app/profile/goldenfoxy.bsky.social');
-		addCredit('JulianoBeta', 'juyko', 0xFF0BA5FF, "Composed Doido Engine's offset menu music", 'https://www.youtube.com/@prodjuyko');
-		addCredit('crowplexus', 'crowplexus', 0xFF313538, "Creator of HScript Iris", 'https://github.com/crowplexus/hscript-iris');
-		addCredit('yoisabo', 'yoisabo', 0xFF56EF19, "Chart Editor's Event Icons Artist", 'https://bsky.app/profile/yoisabo.bsky.social');
-		addCredit('mochoco', 'coco', 0xFF56EF19, "Mobile Button Artist", 'https://x.com/mochocofrappe');
-		if (nikoo)
-			addCredit('doubleonikoo', 'nikoo', 0xFF60458A, "Hey! What are you doing here?!", 'https://bsky.app/profile/doubleonikoo.bsky.social');
-
-		text = new FlxText(10, 0, 0, '');
-		text.setFormat(Main.globalFont, 48, 0xFFFFFFFF, LEFT);
-		text.setOutline(0xFF000000, 3);
-		add(text);
-		drawText();
-		text.y = FlxG.height - text.height - 10;
-
-		title = new FlxText(10, 0, 0, 'Credits');
-		title.setFormat(Main.globalFont, 100, 0xFFFFFFFF, LEFT);
-		title.setOutline(0xFF000000, 5);
-		title.y = text.y - title.height;
-		add(title);
-	}
-
-	function drawText()
-	{
-		text.text = "";
-		for (i in 0...creditList.length)
-			text.text += (i == cur ? "> " : "") + creditList[i].name + "\n";
-	}
-
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
-
-		if (Controls.justPressed(UI_UP))
-			changeSelection(-1);
-		if (Controls.justPressed(UI_DOWN))
-			changeSelection(1);
-
-		if (Controls.justPressed(BACK))
-			MusicBeat.switchState(new states.DebugMenu());
-
-		if (Controls.justPressed(ACCEPT))
-			FlxG.openURL(creditList[cur].link);
-	}
-
-	public function changeSelection(change:Int = 0)
-	{
-		if (change != 0)
-			FlxG.sound.play(Assets.sound('scroll'));
-
-		cur += change;
-		cur = FlxMath.wrap(cur, 0, creditList.length - 1);
-		drawText();
-	}
-}
-
 typedef FreeplaySong =
 {
 	var name:String;
@@ -262,6 +153,7 @@ class Freeplay extends MusicBeatState
 	override function create()
 	{
 		super.create();
+		MusicBeat.playMusic("freakyMenu");
 		DiscordIO.changePresence("In the Freeplay Menu");
 
 		for (week in Week.weekList(false, true))
@@ -359,6 +251,7 @@ class Freeplay extends MusicBeatState
 					else
 						PlayState.skip = false;
 
+					MusicBeat.stopMusic();
 					MusicBeat.switchState(new states.LoadingState());
 				}
 			}
@@ -412,6 +305,7 @@ class DebugControls extends MusicBeatState
 	override function create()
 	{
 		super.create();
+		MusicBeat.playMusic("freakyMenu");
 		DiscordIO.changePresence("In the Controls Menu");
 		var bg = new FlxSprite().loadGraphic(Assets.image('menuInvert'));
 		bg.screenCenter();

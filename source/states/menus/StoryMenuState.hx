@@ -194,6 +194,7 @@ class StoryMenuState extends MusicBeatState
 
 		new FlxTimer().start(1.2, function(tmr:FlxTimer)
 		{
+			MusicBeat.stopMusic();
 			MusicBeat.switchState(new states.LoadingState());
 		});
 	}
