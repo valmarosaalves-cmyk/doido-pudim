@@ -74,11 +74,11 @@ class TitleState extends MusicBeatState
 		textGroup = new FlxTypedGroup<Alphabet>();
 		add(textGroup);
 		
-        var ngPostFix:String = FlxG.random.getObject(["", "_classic", "_animated"]);
+        var ngPostFix:String = FlxG.random.getObject(["", "_classic", "_animated"], [1, 0.2, 0.1]);
 		ngSpr = new FlxSprite().loadImage('menu/title/newgrounds_logo$ngPostFix', (ngPostFix == "_animated"), 1200 / 2, 591);
         if (ngPostFix == "_animated")
         {
-            ngSpr.scale.set(0.5, 0.5);
+            ngSpr.scale.set(0.6, 0.6);
             ngSpr.updateHitbox();
             ngSpr.animation.add("loop", [0, 1], 12, true);
             ngSpr.animation.play("loop");
