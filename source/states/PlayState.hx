@@ -705,7 +705,7 @@ class PlayState extends MusicBeatState implements Playable
 	public function goToMenu()
 	{
 		if (isStoryMode)
-			MusicBeat.switchState(new states.DebugMenu());
+			MusicBeat.switchState(new states.menus.StoryMenuState());
 		else
 			MusicBeat.switchState(new states.DebugMenu.Freeplay());
 	}

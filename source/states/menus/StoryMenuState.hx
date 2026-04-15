@@ -2,28 +2,32 @@ package states.menus;
 
 import objects.Character;
 import doido.song.Highscore;
-import doido.song.Highscore.ScoreData;
 import doido.song.Week;
-import doido.objects.DoidoSprite;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.math.FlxPoint;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimer;
 
 class StoryMenuState extends MusicBeatState
 {
+	static var curWeek:Int = 0;
+	static var curDiff:Int = -1;
+
 	var weekList:Array<WeekData> = [];
-	var curWeek:Int = 0;
-	var curDiff:Int = 0;
+
+	var realScore:Float = 0;
+	var lerpedScore:Float = 0;
+
+	var blackRect:FlxSprite;
+	var yellowRect:FlxSprite;
 
 	var grpChars:FlxTypedGroup<StoryChar>;
-	var grpWeeks:FlxTypedGroup<FlxSprite>;
+	var grpWeeks:FlxTypedGroup<WeekTitle>;
 	var diffSelector:DiffSelector;
 
+	var trackTitle:FlxText;
 	var trackTxt:FlxText;
 	var weekNameTxt:FlxText;
 	var weekScoreTxt:FlxText;
@@ -34,31 +38,23 @@ class StoryMenuState extends MusicBeatState
 	{
 		super.create();
 		DiscordIO.changePresence("In the Story Menu");
-
 		weekList = Week.weekList(true, false);
-		trace(weekList);
 
-		grpWeeks = new FlxTypedGroup<FlxSprite>();
+		grpWeeks = new FlxTypedGroup<WeekTitle>();
 		add(grpWeeks);
 
 		for (i in 0...weekList.length)
-		{
-			var weekSpr = new FlxSprite().loadImage('menu/story/week/${weekList[i].weekFile}');
-			weekSpr.ID = i;
-			weekSpr.screenCenter(X);
-			grpWeeks.add(weekSpr);
-		}
-		updateWeekPos(1);
+			grpWeeks.add(new WeekTitle(weekList[i].weekFile, i, curWeek));
 
-		var blackMf = new FlxSprite(0, 0).makeGraphic(FlxG.width * 2, 60, 0xFF000000);
-		blackMf.screenCenter(X);
-		add(blackMf);
+		blackRect = new FlxSprite(0, 0).makeGraphic(FlxG.width * 2, 60, 0xFF000000);
+		blackRect.screenCenter(X);
+		add(blackRect);
 
-		var yellowMf = new FlxSprite(0, 50).makeGraphic(FlxG.width * 2, 392, 0xFFF9CF51);
-		yellowMf.screenCenter(X);
-		add(yellowMf);
+		yellowRect = new FlxSprite(0, 50).makeGraphic(FlxG.width * 2, 392, 0xFFF9CF51);
+		yellowRect.screenCenter(X);
+		add(yellowRect);
 
-		weekScoreTxt = new FlxText(8, 8, 0, "");
+		weekScoreTxt = new FlxText(8, 8, 0, "WEEK SCORE: 0");
 		weekScoreTxt.setFormat(Main.globalFont, 36, 0xFFFFFFFF, LEFT);
 		add(weekScoreTxt);
 
@@ -67,9 +63,9 @@ class StoryMenuState extends MusicBeatState
 		weekNameTxt.alpha = 0.8;
 		add(weekNameTxt);
 
-		var trackTitle = new FlxText(0, 0, 0, "TRACKS");
+		trackTitle = new FlxText(0, 0, 0, "TRACKS");
 		trackTitle.setFormat(Main.globalFont, 48, 0xFFE55777, CENTER);
-		trackTitle.setPosition(200 - trackTitle.width / 2, yellowMf.y + yellowMf.height + 20);
+		trackTitle.setPosition(200 - trackTitle.width / 2, yellowRect.y + yellowRect.height + 20);
 		add(trackTitle);
 
 		trackTxt = new FlxText(0, 0, 0, "what the hell");
@@ -78,9 +74,11 @@ class StoryMenuState extends MusicBeatState
 		add(trackTxt);
 
 		diffSelector = new DiffSelector();
-		diffSelector.diffPos.y = yellowMf.y + yellowMf.height + 30; // 20
-		diffSelector.diffPos.x = (FlxG.width - 200);
+		diffSelector.diffPos.y = yellowRect.y + yellowRect.height + 30; // 20
+		diffSelector.diffPos.x = (FlxG.width - 215);
 		diffSelector.updateHitbox();
+		diffSelector.arrowL.x = diffSelector.leftX;
+		diffSelector.arrowR.x = diffSelector.rightX;
 		add(diffSelector);
 
 		grpChars = new FlxTypedGroup<StoryChar>();
@@ -94,57 +92,109 @@ class StoryMenuState extends MusicBeatState
 			grpChars.add(char);
 		}
 
+		if (curDiff == -1)
+			curDiff = centerDiff;
+
+		preload();
 		changeWeek();
 	}
 
-	public function updateWeekPos(lerp:Float = 0)
+	function preload()
 	{
-		for (week in grpWeeks.members)
-			week.y = FlxMath.lerp(week.y, 402 + 60 + (week.ID - curWeek) * 120, lerp);
+		var diffs:Array<String> = [];
+		var chars:Array<String> = [];
+		for (week in weekList)
+		{
+			for (diff in week.storyDiffs)
+			{
+				if (!diffs.contains(diff))
+				{
+					diffSelector.changeDiff(diff);
+					diffs.push(diff);
+				}
+			}
+
+			for (char in week.chars)
+			{
+				if (!chars.contains(char) && char != "")
+				{
+					grpChars.members[0].reloadChar(char);
+					chars.push(char);
+				}
+			}
+		}
 	}
+
+	var canSelect = true;
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		updateWeekPos(elapsed * 12);
-
-		if (Controls.justPressed(UI_UP))
-			changeWeek(-1);
-		if (Controls.justPressed(UI_DOWN))
-			changeWeek(1);
-		if (Controls.justPressed(UI_LEFT))
-			changeDiff(-1);
-		if (Controls.justPressed(UI_RIGHT))
-			changeDiff(1);
-
-		if (Controls.justPressed(BACK))
-			MusicBeat.switchState(new states.DebugMenu());
-
-		var animL:String = "idle";
-		if (Controls.pressed(UI_LEFT))
-			animL = "push";
-
-		var animR:String = "idle";
-		if (Controls.pressed(UI_RIGHT))
-			animR = "push";
-
-		diffSelector.arrowL.animation.play(animL);
-		diffSelector.arrowR.animation.play(animR);
-
-		if (Controls.justPressed(ACCEPT))
+		if (canSelect)
 		{
-			try
+			if (Controls.justPressed(UI_UP))
+				changeWeek(-1);
+			if (Controls.justPressed(UI_DOWN))
+				changeWeek(1);
+			if (Controls.justPressed(UI_LEFT))
+				changeDiff(-1);
+			if (Controls.justPressed(UI_RIGHT))
+				changeDiff(1);
+
+			diffSelector.arrowL.animation.play(Controls.pressed(UI_LEFT) ? "push" : "idle");
+			diffSelector.arrowR.animation.play(Controls.pressed(UI_RIGHT) ? "push" : "idle");
+
+			if (Controls.justPressed(BACK))
 			{
-				PlayState.loadWeek(week, diff);
-				MusicBeat.switchState(new states.LoadingState());
+				canSelect = false;
+				FlxG.sound.play(Assets.sound('cancel'));
+				MusicBeat.switchState(new states.DebugMenu());
 			}
-			catch (e)
+
+			if (Controls.justPressed(ACCEPT))
 			{
-				FlxG.sound.play(Assets.sound('beep'));
-				Logs.print(e);
+				startWeek();
 			}
 		}
+
+		for (week in grpWeeks.members)
+		{
+			var weekPos = 402 + 60 + (week.ID - curWeek) * 120;
+
+			if (week.y != weekPos)
+				week.y = FlxMath.lerp(week.y, weekPos, elapsed * 12);
+		}
+
+		if (lerpedScore != realScore)
+		{
+			lerpedScore = FlxMath.lerp(lerpedScore, realScore, elapsed * 8);
+			weekScoreTxt.text = "WEEK SCORE: " + FlxStringUtil.formatMoney(Math.floor(lerpedScore), false, true);
+		}
+	}
+
+	public function startWeek()
+	{
+		try
+		{
+			PlayState.loadWeek(week, diff);
+		}
+		catch (e)
+		{
+			FlxG.sound.play(Assets.sound('beep'));
+			Logs.print(e);
+			return;
+		}
+
+		canSelect = false;
+		FlxG.sound.play(Assets.sound('confirm'));
+		grpChars.members[1].playAnim("select");
+		grpWeeks.members[curWeek].flashing = true;
+
+		new FlxTimer().start(1.2, function(tmr:FlxTimer)
+		{
+			MusicBeat.switchState(new states.LoadingState());
+		});
 	}
 
 	public function changeWeek(change:Int = 0)
@@ -152,6 +202,7 @@ class StoryMenuState extends MusicBeatState
 		if (change != 0)
 			FlxG.sound.play(Assets.sound('scroll'));
 
+		var prevDiffs = week.storyDiffs.length;
 		curWeek += change;
 		curWeek = FlxMath.wrap(curWeek, 0, weekList.length - 1);
 
@@ -179,6 +230,9 @@ class StoryMenuState extends MusicBeatState
 		weekNameTxt.text = week.weekName.toUpperCase();
 		weekNameTxt.x = FlxG.width - weekNameTxt.width - 8;
 
+		if (prevDiffs != week.storyDiffs.length)
+			curDiff = centerDiff;
+
 		changeDiff();
 	}
 
@@ -189,20 +243,23 @@ class StoryMenuState extends MusicBeatState
 
 		curDiff += change;
 		curDiff = FlxMath.wrap(curDiff, 0, week.storyDiffs.length - 1);
-		diffSelector.changeDiff(diff);
 
-		var score:Float = Highscore.getScore('week-${week.weekFile}-$diff').score;
-		weekScoreTxt.text = "WEEK SCORE: " + FlxStringUtil.formatMoney(Math.floor(score), false, true);
+		diffSelector.changeDiff(diff, change);
+		realScore = Highscore.getScore('week-${week.weekFile}-$diff').score;
 	}
 
 	var week(get, never):WeekData;
 	var diff(get, never):String;
+	var centerDiff(get, never):Int;
 
 	function get_week():WeekData
 		return weekList[curWeek] ?? Week.defaultWeek();
 
 	function get_diff():String
 		return week.storyDiffs[curDiff] ?? 'normal';
+
+	function get_centerDiff()
+		return Std.int((week.storyDiffs.length - 1) / 2);
 }
 
 enum StoryCharPos
@@ -269,7 +326,10 @@ class DiffSelector extends FlxGroup
 	public var diffSpr:FlxSprite;
 	public var arrowR:FlxSprite;
 
-	public var diffPos:FlxPoint = new FlxPoint();
+	public var curDiff:String = "";
+	public var diffPos:DoidoPoint = {x: 0, y: 0};
+	public var leftX:Float = 0;
+	public var rightX:Float = 0;
 
 	public function new()
 	{
@@ -299,41 +359,83 @@ class DiffSelector extends FlxGroup
 		changeDiff();
 	}
 
-	public var curDiff:String = "";
-
-	var tweenShit:FlxTween;
-
-	public function changeDiff(diff:String = "")
+	public function changeDiff(diff:String = "", change:Int = 0)
 	{
 		if (curDiff == diff)
 			return;
 		curDiff = diff;
 
-		remove(diffSpr);
+		diffSpr.loadImage("menu/story/diff/" + diff.toLowerCase());
+		diffSpr.scale.set(0.9, 0.9);
+		diffSpr.updateHitbox();
 
-		diffSpr.loadGraphic(Assets.image("menu/story/diff/" + diff.toLowerCase()));
-
-		add(diffSpr);
 		updateHitbox();
-
-		if (tweenShit != null)
-			tweenShit.cancel();
-
-		// lol
 		diffSpr.y -= 20;
 		diffSpr.alpha = 0;
-		tweenShit = FlxTween.tween(diffSpr, {y: diffSpr.y + 20, alpha: 1}, 0.25, {ease: FlxEase.cubeOut});
+
+		if (change > 0)
+			arrowR.x += 15;
+		else if (change < 0)
+			arrowL.x -= 15;
 	}
 
 	public function updateHitbox()
 	{
-		diffSpr.y = diffPos.y;
 		diffSpr.x = (diffPos.x - (diffSpr.width / 2));
-		arrowL.x = diffSpr.x - arrowL.width - 2;
-		arrowR.x = diffSpr.x + diffSpr.width + 2;
+		diffSpr.y = diffPos.y;
 
-		// align it
+		leftX = diffSpr.x - arrowL.width - 15;
+		rightX = diffSpr.x + diffSpr.width + 15;
+
 		arrowL.y = (diffSpr.y + diffSpr.height / 2 - arrowL.height / 2);
 		arrowR.y = arrowL.y;
+	}
+
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		diffSpr.y = FlxMath.lerp(diffSpr.y, diffPos.y, elapsed * 12);
+		diffSpr.alpha = FlxMath.lerp(diffSpr.alpha, 1, elapsed * 8);
+
+		arrowL.x = FlxMath.lerp(arrowL.x, leftX, elapsed * 8);
+		arrowR.x = FlxMath.lerp(arrowR.x, rightX, elapsed * 8);
+	}
+}
+
+class WeekTitle extends FlxSprite
+{
+	public var flashing:Bool = false;
+	public var weekFile:String;
+
+	var colorCount:Float = 0;
+
+	public function new(weekFile:String, index:Int, curWeek:Int)
+	{
+		super(0, 0);
+		this.weekFile = weekFile;
+		this.ID = index;
+		this.loadImage('menu/story/week/$weekFile');
+
+		screenCenter(X);
+		y = 402 + 60 + (index - curWeek) * 120;
+	}
+
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (flashing)
+		{
+			colorCount += elapsed;
+			if (colorCount >= 0.05)
+			{
+				colorCount = 0;
+				if (color == 0xFF00FFFF)
+					color = 0xFFFFFFFF;
+				else
+					color = 0xFF00FFFF;
+			}
+		}
 	}
 }
