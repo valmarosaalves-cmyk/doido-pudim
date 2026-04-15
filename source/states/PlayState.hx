@@ -648,7 +648,7 @@ class PlayState extends MusicBeatState implements Playable
 				audio.play();
 
 			FlxTween.cancelTweensOf(audio);
-			FlxTween.tween(audio, {speed: defaultSongSpeed}, Conductor.crochet / 1000, {ease: FlxEase.sineIn});
+			FlxTween.tween(audio, {speed: defaultSongSpeed}, 0.6, {ease: FlxEase.sineIn});
 		}
 		else
 			audio.speed = defaultSongSpeed;
