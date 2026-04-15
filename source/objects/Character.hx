@@ -22,7 +22,6 @@ typedef DoidoCharacter =
 
 	var ?alpha:Float;
 	var ?angle:Float;
-	var ?angleOrigin:DoidoPoint;
 	var ?scale:DoidoPoint;
 	var ?pixel:Bool;
 	var ?flipX:Bool;
@@ -41,6 +40,9 @@ class Character extends DoidoSprite
 	public var curChar:String = "bf";
 	public var isPlayer:Bool = false;
 
+	public var dataPath:String = "data/characters/";
+	public var spritePath:String = "characters/";
+
 	public var data:DoidoCharacter;
 
 	public function new(curChar:String = "bf", isPlayer:Bool = false)
@@ -54,9 +56,7 @@ class Character extends DoidoSprite
 	public var debugMode:Bool = false;
 
 	public var idleAnims(default, set):Array<String> = ["idle"];
-
 	public var quickDancer:Bool = false;
-
 	public var deathChar:String = "bf-dead";
 
 	public var singType:SingType = LAST;
@@ -74,7 +74,7 @@ class Character extends DoidoSprite
 		{
 			try
 			{
-				data = cast(Assets.json('data/characters/$curChar'));
+				data = cast(Assets.json('$dataPath$curChar'));
 			}
 			catch (e)
 			{
@@ -90,10 +90,10 @@ class Character extends DoidoSprite
 		if ((data.extrasheets ?? []).length > 0)
 		{
 			for (sheet in (data.extrasheets ?? []))
-				extrasheets.push('images/characters/$sheet');
+				extrasheets.push('images/$spritePath$sheet');
 		}
 
-		frames = cast Assets.framesCollection('characters/${data.spritesheet}', extrasheets, spriteType);
+		frames = cast Assets.framesCollection('$spritePath${data.spritesheet}', extrasheets, spriteType);
 		for (animData in data.anims)
 			addAnim(animData);
 
@@ -114,8 +114,6 @@ class Character extends DoidoSprite
 		cameraOffset = data.cameraOffset ?? cameraOffset;
 
 		angle = data.angle ?? 0.0;
-		data.angleOrigin ??= {x: 0.5, y: 1.0};
-
 		alpha = data.alpha ?? 1.0;
 		data.scale ??= {x: 1, y: 1};
 		scale.set(data.scale.x, data.scale.y);
@@ -161,12 +159,12 @@ class Character extends DoidoSprite
 				name: animation.curAnim.name,
 				frame: animation.curAnim.curFrame
 			};
-		
-		if (idleAnims.length > 0) playAnim(idleAnims[0]);
+
+		if (idleAnims.length > 0)
+			playAnim(idleAnims[0]);
 		super.updateHitbox();
 		scaleOffset = {x: offset.x, y: offset.y};
-		origin.set(data.angleOrigin.x * frameWidth, data.angleOrigin.y * frameHeight);
-		
+
 		if (prevAnim != null)
 			playAnim(prevAnim.name, true, prevAnim.frame);
 	}
@@ -245,7 +243,7 @@ class Character extends DoidoSprite
 
 	public function set_idleAnims(a:Array<String>)
 	{
-		if(a.length >= 1)
+		if (a.length >= 1)
 			idleAnims = a;
 		else
 			idleAnims = ["idle"];

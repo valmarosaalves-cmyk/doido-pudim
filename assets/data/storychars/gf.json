@@ -1,0 +1,22 @@
+{
+    "spritesheet": "gf",
+    "scale": {
+        "x": 0.48,
+        "y": 0.48
+    },
+    "globalOffset": {
+        "x": 20,
+        "y": 0
+    },
+    "anims": [
+        {
+            "name": "idle",
+            "prefix": "dance",
+            "loop": true,
+            "offset": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ]
+}

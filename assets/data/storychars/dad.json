@@ -1,0 +1,22 @@
+{
+    "spritesheet": "dad",
+    "scale": {
+        "x": 0.45,
+        "y": 0.45
+    },
+    "globalOffset": {
+        "x": 40,
+        "y": 0
+    },
+    "anims": [
+        {
+            "name": "idle",
+            "prefix": "idle",
+            "loop": true,
+            "offset": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ]
+}

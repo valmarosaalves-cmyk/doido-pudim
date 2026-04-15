@@ -1,8 +1,10 @@
 package states.menus;
 
+import objects.Character;
 import doido.song.Highscore;
 import doido.song.Highscore.ScoreData;
 import doido.song.Week;
+import doido.objects.DoidoSprite;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup;
 import flixel.FlxSprite;
@@ -84,9 +86,10 @@ class StoryMenuState extends MusicBeatState
 		grpChars = new FlxTypedGroup<StoryChar>();
 		add(grpChars);
 
-		for (i in 0...3)
+		var posits:Array<StoryCharPos> = [DAD, BF, GF];
+		for (i in 0...posits.length)
 		{
-			var char = new StoryChar();
+			var char = new StoryChar(posits[i]);
 			char.ID = i;
 			grpChars.add(char);
 		}
@@ -114,6 +117,9 @@ class StoryMenuState extends MusicBeatState
 			changeDiff(-1);
 		if (Controls.justPressed(UI_RIGHT))
 			changeDiff(1);
+
+		if (Controls.justPressed(BACK))
+			MusicBeat.switchState(new states.DebugMenu());
 
 		var animL:String = "idle";
 		if (Controls.pressed(UI_LEFT))
@@ -162,7 +168,7 @@ class StoryMenuState extends MusicBeatState
 			if (week.chars[char.ID] == "")
 				char.visible = false;
 			else if (week.chars[char.ID] != char.curChar)
-				char.reloadChar(week.chars[char.ID], ["dad", "bf", "gf"][char.ID]);
+				char.reloadChar(week.chars[char.ID]);
 		}
 
 		trackTxt.text = "";
@@ -190,114 +196,70 @@ class StoryMenuState extends MusicBeatState
 	}
 
 	var week(get, never):WeekData;
-    var diff(get, never):String;
+	var diff(get, never):String;
 
 	function get_week():WeekData
 		return weekList[curWeek] ?? Week.defaultWeek();
 
-    function get_diff():String
-        return week.storyDiffs[curDiff] ?? 'normal';
+	function get_diff():String
+		return week.storyDiffs[curDiff] ?? 'normal';
+}
+
+enum StoryCharPos
+{
+	DAD;
+	BF;
+	GF;
 }
 
 // PLACEHOLDERS!!!!
-class StoryChar extends FlxSprite
+class StoryChar extends Character
 {
-	public function new()
+	public var position:StoryCharPos = BF;
+	public var initialized:Bool = false;
+
+	public function new(position:StoryCharPos)
 	{
-		super();
+		super("", false);
+		this.position = position;
+		this.dataPath = "data/storychars/";
+		this.spritePath = "menu/story/chars/";
+		initialized = true;
 	}
 
-	public var curChar:String = "";
-
-	public var globalOffset:FlxPoint = new FlxPoint();
-
-	private var scaleOffset:FlxPoint = new FlxPoint();
-
-	public function reloadChar(char:String, pos:String):StoryChar
+	public function reloadChar(curChar:String = "bf")
 	{
-		curChar = char;
-		frames = Assets.sparrow("menu/story/chars/" + char);
+		if (curChar == this.curChar)
+			return;
 
-		globalOffset.set();
-		scaleOffset.set();
-		scale.set(1, 1);
-		flipX = false;
-		animOffsets = [];
-
-		switch (char)
-		{
-			case "senpai":
-				animation.addByPrefix("idle", "idle", 24, true);
-				globalOffset.x -= 35;
-
-			case "dad":
-				animation.addByPrefix("idle", "idle", 24, true);
-				scale.set(0.45, 0.45);
-				globalOffset.x += 45;
-
-			case "gf":
-				animation.addByPrefix("idle", "dance", 24, true);
-				scale.set(0.48, 0.48);
-				globalOffset.y -= 20;
-
-			case "bf":
-				animation.addByPrefix("idle", "idle", 24, true);
-				animation.addByPrefix("select", "hey", 24, false);
-				scale.set(0.8, 0.8);
-				flipX = true;
-
-				addOffset("select", 1, 5);
-
-			default:
-				return reloadChar("bf", pos);
-		}
+		this.curChar = curChar;
+		loadCharacter(false);
 		updateHitbox();
-		scaleOffset.set(offset.x, offset.y);
-		playAnim("idle");
+	}
 
-		y = 420 - height;
+	override public function loadCharacter(reload:Bool = false)
+	{
+		if (initialized)
+			super.loadCharacter(reload);
+	}
 
-		switch (pos.toLowerCase())
+	override function updateHitbox()
+	{
+		super.updateHitbox();
+
+		x = switch (position)
 		{
-			case "dad":
+			case DAD:
 				x = 100;
-			case "gf":
+			case GF:
 				x = FlxG.width - width - 100;
 			default:
 				x = FlxG.width / 2 - width / 2;
-		}
-
-		// 0.8 bf
-		// 0.48 others
-		if (pos == "bf")
-			flipX = !flipX;
+		};
+		y = 50 + (392 / 2) - (height / 2);
 
 		x += globalOffset.x;
 		y += globalOffset.y;
-
-		return this;
-	}
-
-	// animation handler
-	public var animOffsets:Map<String, Array<Float>> = [];
-
-	public function addOffset(animName:String, offX:Float = 0, offY:Float = 0):Void
-		return animOffsets.set(animName, [offX, offY]);
-
-	public function playAnim(animName:String)
-	{
-		animation.play(animName, true, false, 0);
-
-		try
-		{
-			var daOffset = animOffsets.get(animName);
-			offset.set(daOffset[0] * scale.x, daOffset[1] * scale.y);
-		}
-		catch (e)
-			offset.set(0, 0);
-
-		offset.x += scaleOffset.x;
-		offset.y += scaleOffset.y;
 	}
 }
 

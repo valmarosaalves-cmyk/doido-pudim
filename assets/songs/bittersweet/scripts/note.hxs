@@ -22,24 +22,6 @@ function update(elapsed:Float)
         }
         i++;
     }
-
-    playState.bf.angle += 180 * elapsed;
-    playState.dad.angle += 90 * elapsed;
-    playState.gf.angle += 10 * elapsed;
-}
-
-function gameOverCreate()
-{
-    playState.bf.angle %= 360;
-}
-
-function gameOverUpdate(elapsed:Float)
-{
-    playState.bf.angle = FlxMath.lerp(
-        playState.bf.angle,
-        0,
-        elapsed * 6
-    );
 }
 
 function onNoteHit(note, strumline)
