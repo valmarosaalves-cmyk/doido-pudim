@@ -93,10 +93,13 @@ class MusicBeat
 	public static var curMusic:String = "none";
 	public static function playMusic(?key:String, ?forceRestart:Bool = false, ?vol:Float = 0.5):Void
 	{
-		/*if (Paths.dumpExclusions.contains('music/' + curMusic + '.ogg'))
-			Paths.dumpExclusions.remove  ('music/' + curMusic + '.ogg');*/
+		if (curMusic != "none")
+		{
+			/*if (Paths.dumpExclusions.contains('music/' + curMusic + '.ogg'))
+				Paths.dumpExclusions.remove  ('music/' + curMusic + '.ogg');*/
+		}
 		
-		if(key == null)
+		if(key == null || key == "none")
 		{
 			curMusic = "none";
 			FlxG.sound.music.stop();

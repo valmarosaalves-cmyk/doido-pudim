@@ -35,8 +35,7 @@ class TitleState extends MusicBeatState
 			});
 			
 			var allTexts:Array<String> = Assets.txtToArray('data/introText');
-			//curWacky = FlxG.random.getObject(allTexts).split('--');
-			curWacky = allTexts[5].split('--');
+			curWacky = FlxG.random.getObject(allTexts).split('--');
 		}
 		
 		DiscordIO.changePresence("In Title Screen");
@@ -76,7 +75,6 @@ class TitleState extends MusicBeatState
 		add(textGroup);
 		
         var ngPostFix:String = FlxG.random.getObject(["", "_classic", "_animated"]);
-        //ngPostFix = "_animated";
 		ngSpr = new FlxSprite().loadImage('menu/title/newgrounds_logo$ngPostFix', (ngPostFix == "_animated"), 1200 / 2, 591);
         if (ngPostFix == "_animated")
         {
@@ -192,7 +190,7 @@ class TitleState extends MusicBeatState
 		for(i in newText)
 		{
             if (i.contains("<discord>"))
-				i = '<shake intensity=6 speed=5>' + i.replace("<discord>", DiscordIO.nickname) + '</shake>';
+				i = '<shake intensity=2 speed=10>' + i.replace("<discord>", DiscordIO.nickname) + '</shake>';
 
 			var item = new Alphabet(0, 0, i, true);
 			item.align = CENTER;
