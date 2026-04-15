@@ -105,7 +105,8 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 	public function set_pixel(b:Bool):Bool
 	{
 		pixel = b;
-		forEachAlive(function(char:AlphaCharacter) {
+		forEachAlive(function(char:AlphaCharacter)
+		{
 			updateAntialiasing(char);
 		});
 		return pixel;
@@ -152,13 +153,12 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 			dropShadow = null;
 			writeTxt();
 	}*/
-
 	// in any other engine we could cache the framescollection so it doesnt have to keep being loaded
 	// but we already have a cache to take care of that lol
 	public var fontFrames(get, never):FlxFramesCollection;
 
 	public function get_fontFrames():FlxFramesCollection
-		return Assets.framesCollection(font, "fonts", [], ((font == "alphabet") ? SPARROW : FONT));
+		return Assets.framesCollection(font, [], "fonts", ((font == "alphabet") ? SPARROW : FONT), false);
 
 	private var letters:String = "abcdefghijklmnopqrstuvwxyzç";
 	private var numbers:String = "0123456789";
@@ -170,7 +170,8 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 
 	public function writeTxt()
 	{
-		for (char in members) {
+		for (char in members)
+		{
 			char.setPosition(x, y);
 			char.kill();
 		}

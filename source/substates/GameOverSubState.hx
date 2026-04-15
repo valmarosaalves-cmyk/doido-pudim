@@ -148,7 +148,7 @@ class GameOverSubState extends MusicBeatSubState
     {
         stopMusic();
         for(file in preloadedMusic)
-            Cache.clearSound('assets/music/$file.ogg', Assets.music(file));
+            Assets.clearMusic(file);
         
         super.destroy();
     }

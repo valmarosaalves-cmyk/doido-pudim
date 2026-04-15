@@ -156,7 +156,7 @@ class Assets
 	inline public static function cleanPath(path:String):String
 		return Path.withoutExtension(Path.withoutDirectory(path));
 
-	public static function getAsset<T>(key:String, ?library:String = "", type:Asset, ext:Bool = true):T
+	public static function getAsset<T>(key:String, ?library:String = "", type:Asset, ext:Bool = true, persist:Bool = false):T
 	{
 		var path = resolvePath(key, library, (ext ? type : OTHER));
 		switch (type)
@@ -164,11 +164,11 @@ class Assets
 			case IMAGE:
 				if (path == null)
 					return null;
-				return cast Cache.getGraphic(path, false);
+				return cast Cache.getGraphic(path, persist);
 			case SOUND:
 				if (path == null)
 					path = resolvePath('sounds/beep', SOUND);
-				return cast Cache.getSound(path, false);
+				return cast Cache.getSound(path, persist);
 			case TEXT | JSON | XML | SCRIPT:
 				if (path == null)
 					return cast "";
@@ -178,6 +178,34 @@ class Assets
 			default:
 				return cast path;
 		};
+	}
+
+	public static function clearAsset(key:String, ?library:String = "", type:Asset, ext:Bool = true)
+	{
+		var path = resolvePath(key, library, (ext ? type : OTHER));
+		switch (type)
+		{
+			case IMAGE:
+				Cache.clearGraphic(path);
+			case SOUND:
+				Cache.clearSound(path);
+			default:
+				Logs.print("tried to clear non cacheable asset...");
+		}
+	}
+
+	public static function queueAssetClear(key:String, ?library:String = "", type:Asset, ext:Bool = true)
+	{
+		var path = resolvePath(key, library, (ext ? type : OTHER));
+		switch (type)
+		{
+			case IMAGE:
+				Cache.wipeQueue.get("graphics").push(path);
+			case SOUND:
+				Cache.wipeQueue.get("sounds").push(path);
+			default:
+				Logs.print("tried to queue non cacheable asset...");
+		}
 	}
 
 	public static function list(key:String, ?library:String = "", clean:Bool = false, ?exclude:Array<String>, type:Asset = OTHER):Array<String>
@@ -234,17 +262,29 @@ class Assets
 	/*
 	 *   AUDIO
 	 */
-	public static inline function sound(key:String, ?library:String = ""):Sound
-		return getAsset('sounds/$key', library, SOUND);
+	public static inline function sound(key:String, ?library:String = "", persist:Bool = false):Sound
+		return getAsset('sounds/$key', library, SOUND, true, persist);
 
-	public static inline function music(key:String, ?library:String = ""):Sound
-		return getAsset('music/$key', library, SOUND);
+	public static inline function music(key:String, ?library:String = "", persist:Bool = false):Sound
+		return getAsset('music/$key', library, SOUND, true, persist);
 
-	public static inline function inst(song:String, postfix:String = ""):Sound
-		return getAsset('songs/$song/audio/Inst$postfix', SOUND);
+	public static inline function clearSound(key:String, ?library:String = "")
+		clearAsset('sounds/$key', library, SOUND);
 
-	public static inline function voices(song:String, postfix:String = ""):Sound
-		return getAsset('songs/$song/audio/Voices$postfix', SOUND);
+	public static inline function clearMusic(key:String, ?library:String = "")
+		clearAsset('music/$key', library, SOUND);
+
+	public static inline function queueSoundClear(key:String, ?library:String = "")
+		queueAssetClear('sounds/$key', library, SOUND);
+
+	public static inline function queueMusicClear(key:String, ?library:String = "")
+		queueAssetClear('music/$key', library, SOUND);
+
+	public static inline function inst(song:String, postfix:String = "", persist:Bool = false):Sound
+		return getAsset('songs/$song/audio/Inst$postfix', SOUND, true, persist);
+
+	public static inline function voices(song:String, postfix:String = "", persist:Bool = false):Sound
+		return getAsset('songs/$song/audio/Voices$postfix', SOUND, true, persist);
 
 	/*
 	 *   DATA
@@ -266,27 +306,34 @@ class Assets
 		var rawList:Array<String> = text(key, library).split('\n');
 		var daList:Array<String> = [];
 
-		for(text in rawList)
+		for (text in rawList)
 		{
-			if (text == "") continue;
+			if (text == "")
+				continue;
 
 			daList.push(text.trim());
 		}
-		
+
 		return daList;
 	}
 
 	/*
 	 *   IMAGES
 	 */
-	public static inline function image(key:String, ?library:String = ""):FlxGraphic
-		return getAsset('images/$key', library, IMAGE);
+	public static inline function image(key:String, ?library:String = "", persist:Bool = false):FlxGraphic
+		return getAsset('images/$key', library, IMAGE, true, persist);
+
+	public static inline function clearImage(key:String, ?library:String = "")
+		clearAsset('images/$key', library, IMAGE);
+
+	public static inline function queueImageClear(key:String, ?library:String = "")
+		queueAssetClear('images/$key', library, IMAGE);
 
 	public static inline function sparrow(key:String, ?library:String = ""):FlxFramesCollection
 		return framesCollection(key, library, SPARROW);
 
 	public static inline function multiSparrow(key:String, ?library:String = "", extrasheets:Array<String>):FlxFramesCollection
-		return framesCollection(key, library, extrasheets, MULTISPARROW);
+		return framesCollection(key, extrasheets, library, MULTISPARROW);
 
 	public static inline function packer(key:String, ?library:String = ""):FlxFramesCollection
 		return framesCollection(key, library, PACKER);
@@ -300,7 +347,7 @@ class Assets
 	public static inline function bitmapFont(key:String, ?library:String = "fonts"):FlxBitmapFont
 		return cast framesCollection(key, library, FONT);
 
-	public static inline function framesCollection(key:String, ?library:String = "", ?extrasheets:Array<String>, type:SpriteType):FlxFramesCollection
+	public static inline function framesCollection(key:String, ?extrasheets:Array<String>, ?library:String = "", type:SpriteType, persist:Bool = false):FlxFramesCollection
 	{
 		var path = getPath(key, library);
 		var frames:FlxFramesCollection = null;
@@ -334,32 +381,41 @@ class Assets
 					}
 				}
 			}
-			Cache.setCachedFrames(path, frames);
+			Cache.setCachedFrames(path, frames, persist);
 		}
 
 		return frames;
 	}
 
+	public static inline function clearFrames(key:String, ?library:String = "")
+		Cache.clearFrames(getPath(key, library));
+
+	public static inline function queueFramesClear(key:String, ?library:String = "")
+		Cache.wipeQueue.get("frames").push(getPath(key, library));
+
 	public static function loadPaletteFromFile(key:String, ?library:String = ""):Array<Array<FlxColor>>
 	{
-		if(key.endsWith('.png'))
+		if (key.endsWith('.png'))
 			key = key.substring(0, key.lastIndexOf('.png'));
 		var path = getPath('images/$key.png', library);
 
 		var bitmap = BitmapData.fromFile(path);
 		var palettes:Array<Array<FlxColor>> = [];
 
-		for (paletteIndex in 0...bitmap.height) {
+		for (paletteIndex in 0...bitmap.height)
+		{
 			var palette = [];
-			for (colorIndex in 0...bitmap.width) {
+			for (colorIndex in 0...bitmap.width)
+			{
 				var color:FlxColor = bitmap.getPixel32(colorIndex, paletteIndex);
-				if (color.alpha != 0.0) {
+				if (color.alpha != 0.0)
+				{
 					palette.push(color);
 				}
 			}
 			palettes.push(palette);
 		}
-		
+
 		bitmap.dispose();
 		return palettes;
 	}

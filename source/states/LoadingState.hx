@@ -296,7 +296,7 @@ class LoadingState extends MusicBeatState
 
 	override function destroy()
 	{
-		Cache.clearGraphic('assets/images/$bgFile.png', bg.graphic);
+		Assets.clearImage(bgFile);
 		super.destroy();
 	}
 

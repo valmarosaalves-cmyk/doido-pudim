@@ -115,7 +115,7 @@ class Screenshot extends FlxBasic
 			return;
 		FlxTween.cancelTweensOf(lastScreenshot);
 		MusicBeat.activeState.remove(lastScreenshot);
-		Cache.clearRawGraphic(lastScreenshot.graphic);
+		Cache.killGraphic(lastScreenshot.graphic);
 		lastScreenshot = null;
 	}
 }

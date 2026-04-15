@@ -93,11 +93,8 @@ class MusicBeat
 	public static var curMusic:String = "none";
 	public static function playMusic(?key:String, ?forceRestart:Bool = false, ?vol:Float = 0.5):Void
 	{
-		if (curMusic != "none")
-		{
-			/*if (Paths.dumpExclusions.contains('music/' + curMusic + '.ogg'))
-				Paths.dumpExclusions.remove  ('music/' + curMusic + '.ogg');*/
-		}
+		if (curMusic != "none" && curMusic != key)
+			Assets.queueMusicClear(key);
 		
 		if(key == null || key == "none")
 		{
@@ -106,12 +103,10 @@ class MusicBeat
 		}
 		else
 		{
-			//Paths.dumpExclusions.push('music/' + key + '.ogg');
-
 			if(curMusic != key || forceRestart)
 			{
 				curMusic = key;
-				FlxG.sound.playMusic(Assets.music(key), vol);
+				FlxG.sound.playMusic(Assets.music(key, true), vol);
 				FlxG.sound.music.play(true);
 			}
 		}

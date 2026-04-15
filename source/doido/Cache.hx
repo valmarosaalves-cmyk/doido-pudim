@@ -21,6 +21,7 @@ class Cache
 	// maybe you shouldnt be able to access these?
 	public static var current:Cached;
 	public static var permanent:Cached;
+	public static var wipeQueue:Map<String, Array<String>> = ["graphics" => [], "frames" => [], "sounds" => []];
 
 	public static var initialized:Bool = false;
 	public static var loading:Bool = false;
@@ -48,7 +49,7 @@ class Cache
 		if (!initialized)
 			return;
 		clearGraphics();
-		clearFrames();
+		clearAllFrames();
 		clearSounds();
 		clearOther();
 	}
@@ -72,27 +73,36 @@ class Cache
 	public static function clearGraphics()
 	{
 		for (key => graphic in current.graphics)
-		{
-			// FlxG.bitmap.remove(graphic); maybe not?
-			clearGraphic(key, graphic);
-		}
+			clearGraphic(key);
+
+		for (key in wipeQueue.get("graphics"))
+			clearGraphic(key);
 	}
 
-	public static function clearGraphic(key:String, graphic:FlxGraphic)
+	public static function clearGraphic(key:String)
 	{
+		var graphic:FlxGraphic;
 		if (current.graphics.exists(key))
 		{
-			//trace('CLEARED: $key');
-			clearRawGraphic(graphic);
+			graphic = current.graphics.get(key);
 			current.graphics.remove(key);
 		}
+		else if (permanent.graphics.exists(key))
+		{
+			graphic = permanent.graphics.get(key);
+			permanent.graphics.remove(key);
+		}
+		else
+			return;
+
+		killGraphic(graphic);
 	}
 
-	public static function clearRawGraphic(graphic:FlxGraphic)
+	public static function killGraphic(graphic:FlxGraphic)
 	{
-		if(graphic == null)
+		if (graphic == null)
 			return;
-		
+
 		if (graphic.bitmap != null && graphic.bitmap.__texture != null)
 			graphic.bitmap.__texture.dispose();
 		graphic.persist = false;
@@ -175,14 +185,39 @@ class Cache
 	}
 
 	// FRAMES
-
-	public static function clearFrames()
+	// note: rename later
+	public static function clearAllFrames()
 	{
 		for (key => frames in current.frames)
+			clearFrames(key);
+
+		for (key in wipeQueue.get("frames"))
+			clearFrames(key);
+	}
+
+	public static function clearFrames(key:String)
+	{
+		var frames:FlxFramesCollection;
+		if (current.frames.exists(key))
 		{
-			frames = null;
+			frames = current.frames.get(key);
 			current.frames.remove(key);
 		}
+		else if (permanent.frames.exists(key))
+		{
+			frames = permanent.frames.get(key);
+			permanent.frames.remove(key);
+		}
+		else
+			return;
+
+		killFrames(frames);
+	}
+
+	public static function killFrames(frames:FlxFramesCollection)
+	{
+		frames.destroy();
+		frames = null;
 	}
 
 	public static function isFramesCached(key:String)
@@ -220,17 +255,35 @@ class Cache
 	public static function clearSounds()
 	{
 		for (key => sound in current.sounds)
-		{
-			clearSound(key, sound);
-		}
+			clearSound(key);
+
+		for (key in wipeQueue.get("sounds"))
+			clearSound(key);
 	}
 
-	public static function clearSound(key:String, sound:Sound) {
-		// ?!
-		// LimeAssets.cache.clear(key);
+	public static function clearSound(key:String)
+	{
+		var sound:Sound;
+		if (current.sounds.exists(key))
+		{
+			sound = current.sounds.get(key);
+			current.sounds.remove(key);
+		}
+		else if (permanent.sounds.exists(key))
+		{
+			sound = permanent.sounds.get(key);
+			permanent.sounds.remove(key);
+		}
+		else
+			return;
+
+		killSound(sound);
+	}
+
+	public static function killSound(sound:Sound)
+	{
 		sound.close();
 		sound = null;
-		current.sounds.remove(key);
 	}
 
 	public static function isSoundCached(key:String)
