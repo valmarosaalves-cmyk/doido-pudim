@@ -13,6 +13,7 @@ import states.PlayState;
 typedef OptionData =
 {
 	var name:String;
+    var ?desc:Dynamic->String;
 	var get:Void->Dynamic;
 	var set:Dynamic->Void;
 
@@ -52,6 +53,8 @@ class OptionsSubState extends MusicBeatSubState
     public var alphabetGrp:FlxTypedGroup<OptionAlphabet>;
     public var attachGrp:FlxTypedGroup<Attachment>;
 
+    public var descTxt:Alphabet;
+
     public var warningWidth:Float = 0.0;
     public var warningTxt:Alphabet;
 
@@ -82,12 +85,20 @@ class OptionsSubState extends MusicBeatSubState
                 {
                     name: "Ghost Tapping",
                     get: () -> Save.data.ghostTapping,
-                    set: (b:String) -> Save.data.ghostTapping = b,
+                    set: (s:String) -> Save.data.ghostTapping = s,
                     options: ["off", "idle", "on"],
-                    display: (i:String) -> {
-                        return switch(i) {
+                    /*display: (s:String) -> {
+                        return switch(s) {
                             case "idle": "IDLE";
-                            default: i.toUpperCase();
+                            default: s.toUpperCase();
+                        }
+                    },*/
+                    desc: (s:String) -> {
+                        return switch(s.toLowerCase())
+                        {
+                            case "on": "You can press inputs freely.";
+                            case "idle": "If you press a wrong input while notes are near\nyou will suffer a penalty.";
+                            default: "If you press a wrong input\nyou will suffer a penalty.";
                         }
                     },
                     playStateWarning: true,
@@ -96,6 +107,12 @@ class OptionsSubState extends MusicBeatSubState
                     name: "Downscroll",
                     get: () -> Save.data.downscroll,
                     set: (b:Bool) -> Save.data.downscroll = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Notes spawn at the top of the screen\nand fall down towards your strumline.";
+                        else
+                            return "Notes spawn at the bottom of the screen\nand fly up towards your strumline.";
+                    },
                     updatePlayState: (playState) -> {
                         playState.downscroll = Save.data.downscroll;
                         #if TOUCH_CONTROLS
@@ -137,7 +154,24 @@ class OptionsSubState extends MusicBeatSubState
                     name: "Note Quantization",
                     get: () -> Save.data.quantNotes,
                     set: (b:Bool) -> Save.data.quantNotes = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Notes are colored based on their timing.\nExample: (4th, 8th, 16th, 32th, etc...)";
+                        else
+                            return "Regular colored notes.";
+                    },
                     playStateWarning: true
+                },
+                {
+                    name: "Unpause Slowdown",
+                    get: () -> Save.data.slowdownUnpause,
+                    set: (b:Bool) -> Save.data.slowdownUnpause = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Unpausing the game will make the song\nslowly catch up to regular speed.";
+                        else
+                            return "Unpausing the game will make the song\nresume instantaneously.";
+                    },
                 },
             ],
             "Preferences" => [
@@ -162,13 +196,22 @@ class OptionsSubState extends MusicBeatSubState
                 {
                     name: "Discord Rich Presence",
                     get: () -> Save.data.discordRPC,
-                    set: (b:Bool) -> Save.data.discordRPC = b
+                    set: (b:Bool) -> Save.data.discordRPC = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Displays the game status on your Discord profile.";
+                        else
+                            return "If enabled, will display the game status on your Discord profile.";
+                    },
                 },
                 #end
                 {
                     name: "Hitsound SFX",
                     get: () -> Save.data.hitsound,
-                    set: (b:String) -> Save.data.hitsound = b,
+                    set: (s:String) -> Save.data.hitsound = s,
+                    desc: (s:String) -> {
+                        return "What sound to play when hitting notes.";
+                    },
                     options: NoteUtil.getHitsounds(),
                     canPlaySound: () -> return Save.data.hitsound == "OFF",
                     onChange: () -> NoteUtil.playHitsound()
@@ -176,11 +219,19 @@ class OptionsSubState extends MusicBeatSubState
                 {
                     name: "Hitsound Volume",
                     get: () -> Save.data.hitsoundVolume,
-                    set: (i:Float) -> Save.data.hitsoundVolume = i,
+                    set: (f:Float) -> Save.data.hitsoundVolume = f,
+                    desc: (f:Float) -> {
+                        if (Save.data.hitsound == "OFF")
+                            return "You must enable hitsounds\nfor this option to take effect!";
+                        else if (f <= 0.0)
+                            return "...really?";
+                        else
+                            return "";
+                    },
                     step: 0.05,
                     hold: 0.1,
                     limits: [0.0, 1.0],
-                    display: (i:Float) -> return '${Math.floor(i * 100)}%',
+                    display: (f:Float) -> return '${Math.floor(f * 100)}%',
                     canPlaySound: () -> return Save.data.hitsound == "OFF",
                     onChange: () -> {
                         if (holdTimerSfx) NoteUtil.playHitsound();
@@ -190,6 +241,14 @@ class OptionsSubState extends MusicBeatSubState
                     name: "Flashing Lights",
                     get: () -> Save.data.flashingLights,
                     set: (s:String) -> Save.data.flashingLights = s,
+                    desc: (s:String) -> {
+                        switch(s.toUpperCase())
+                        {
+                            case "ON": "All special effects are enabled.";
+                            case "REDUCED": "Some special effects will be softer.";
+                            default: "Some special effects will be disabled.";
+                        }
+                    },
                     options: ["ON", "REDUCED", "OFF"]
                 },
             ],
@@ -213,19 +272,37 @@ class OptionsSubState extends MusicBeatSubState
                 {
                     name: "GPU Caching",
                     get: () -> Save.data.gpuCaching,
-                    set: (b:Bool) -> Save.data.gpuCaching = b
+                    set: (b:Bool) -> Save.data.gpuCaching = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Every graphic will be stored on your GPU's VRAM\nDisable this if you have a shitty graphics card.";
+                        else
+                            return "Every graphic will be stored on your RAM.\nEnable this if you have a decent graphics card.";
+                    },
                 },
                 #end
                 {
                     name: "Antialiasing",
                     get: () -> Save.data.antialiasing,
                     set: (b:Bool) -> Save.data.antialiasing = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Graphics have a filter that blends colors together.\nLooks prettier, but may impact performance.";
+                        else
+                            return "Graphics may look pixelated\nbut the game will have better performance.";
+                    },
                     playStateWarning: true
                 },
                 {
                     name: "Low Quality",
                     get: () -> Save.data.lowQuality,
-                    set: (b:Bool) -> Save.data.lowQuality = b
+                    set: (b:Bool) -> Save.data.lowQuality = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Some background elements will be hidden\nin order to improve performance.";
+                        else
+                            return "";
+                    },
                 },
             ],
             #if TOUCH_CONTROLS
@@ -233,7 +310,13 @@ class OptionsSubState extends MusicBeatSubState
                 {
                     name: "Modern Controls",
                     get: () -> Save.data.modernControls,
-                    set: (b:Bool) -> Save.data.modernControls = b
+                    set: (b:Bool) -> Save.data.modernControls = b,
+                    desc: (b:Bool) -> {
+                        if (b)
+                            return "Official mobile FNF's note layout.";
+                        else
+                            return "Hitboxes that cover the whole screen.";
+                    },
                 },
                 {
                     name: "Invert Swipe X",
@@ -251,6 +334,11 @@ class OptionsSubState extends MusicBeatSubState
 
         add(alphabetGrp = new FlxTypedGroup<OptionAlphabet>());
         add(attachGrp = new FlxTypedGroup<Attachment>());
+
+        descTxt = new Alphabet(FlxG.width / 2, 0, '', false, CENTER);
+        descTxt.scale.set(0.4, 0.4);
+        descTxt.updateHitbox();
+        add(descTxt);
 
         warningTxt = new Alphabet(FlxG.width / 2, 0, '<color value=#FF0000>RESTART THE SONG TO APPLY SOME SETTINGS</color>', false, CENTER);
         warningWidth = warningTxt.width;
@@ -278,6 +366,7 @@ class OptionsSubState extends MusicBeatSubState
 
     public function changeCategory(?change:Int = 0)
     {
+        descTxt.y = FlxG.height;
         warningTxt.y = FlxG.height;
         //if (change != 0) FlxG.sound.play(Assets.sound("scroll"));
         var sfx = FlxG.sound.load(Assets.sound("options/options-open"));
@@ -379,6 +468,21 @@ class OptionsSubState extends MusicBeatSubState
         });
 
         curOption = optionList.get(curCategoryString)[curSelection - 1];
+        reloadDesc();
+    }
+
+    public function reloadDesc()
+    {
+        descTxt.visible = false;
+        if (curOption?.desc != null)
+        {
+            var daText = curOption.desc(curOption.get());
+            if (daText != "")
+            {
+                descTxt.visible = true;
+                descTxt.text = '<color value=#FFFFFF>${daText}</color>';
+            }
+        }
     }
     
     public function calcBGWidth()
@@ -414,6 +518,7 @@ class OptionsSubState extends MusicBeatSubState
     public function saveOptions()
     {
         Save.save();
+        reloadDesc();
         if (curOption.onChange != null) curOption.onChange();
         if (playState == null) return;
         if (curOption.updatePlayState != null) curOption.updatePlayState(playState);
@@ -424,6 +529,11 @@ class OptionsSubState extends MusicBeatSubState
     {
         if (warningTxt.visible)
             for(char in warningTxt.members) {
+                char.clipToSprite([bg]);
+            }
+        
+        if (descTxt.visible)
+            for(char in descTxt.members) {
                 char.clipToSprite([bg]);
             }
         
@@ -531,13 +641,45 @@ class OptionsSubState extends MusicBeatSubState
         if (Controls.justPressed(UI_UP)) changeSelection(-1);
         else if (Controls.justPressed(UI_DOWN)) changeSelection(1);
 
+        var formatBGWidth:Float = bgWidth + 140;
+        var formatBGHeight:Float = bgHeight + 80;
+        if (warningTxt.visible) formatBGHeight += warningTxt.height;
+        if (descTxt.visible)
+        {
+            formatBGHeight += descTxt.height + 20;
+            if (descTxt.width > bgWidth)
+                formatBGWidth = descTxt.width + 140;
+        }
+
         bg.scale.set(
-            FlxMath.lerp(bg.scale.x, bgWidth + 140, elapsed * 8),
-            FlxMath.lerp(bg.scale.y, bgHeight + 80 + (warningTxt.visible ? warningTxt.height : 0), elapsed * 8)
+            FlxMath.lerp(bg.scale.x, formatBGWidth, elapsed * 8),
+            FlxMath.lerp(bg.scale.y, formatBGHeight, elapsed * 8)
         );
         bg.updateHitbox();
         bg.screenCenter();
-        
+
+        var lastAlphabet:Float = 0.0;
+        alphabetGrp.forEachAlive((alphabet) -> {
+            alphabet.y = FlxMath.lerp(
+                alphabet.y,
+                bg.y + alphabet.startY,
+                elapsed * 8
+            );
+            if (alphabet.y + alphabet.height > lastAlphabet)
+                lastAlphabet = alphabet.y + alphabet.height;
+            if (alphabet.ID == 0) return;
+            alphabet.x = FlxMath.lerp(
+                alphabet.x,
+                bg.x + (bg.width - bgWidth) / 2,
+                elapsed * 8
+            );
+        });
+
+        descTxt.y = FlxMath.lerp(
+            descTxt.y,
+            lastAlphabet + 20,
+            elapsed * 8
+        );
         warningTxt.scale.x = FlxMath.lerp(
             warningTxt.scale.x,
             ((bg.width - 40) / warningWidth),
@@ -549,20 +691,6 @@ class OptionsSubState extends MusicBeatSubState
             bg.y + bg.height - warningTxt.height - 20,
             elapsed * 8
         );
-
-        alphabetGrp.forEachAlive((alphabet) -> {
-            alphabet.y = FlxMath.lerp(
-                alphabet.y,
-                bg.y + alphabet.startY,
-                elapsed * 8
-            );
-            if (alphabet.ID == 0) return;
-            alphabet.x = FlxMath.lerp(
-                alphabet.x,
-                bg.x + (bg.width - bgWidth) / 2,
-                elapsed * 8
-            );
-        });
 
         if (curAttachType != null)
         {

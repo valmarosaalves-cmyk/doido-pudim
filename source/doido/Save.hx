@@ -15,6 +15,7 @@ class SaveVariables
 	public var downscroll:Bool = false;
 	public var middlescroll:Bool = false;
 	public var quantNotes:Bool = false;
+	public var slowdownUnpause:Bool = true;
 
 	// preferences
 	public var darkMode:Bool = true;

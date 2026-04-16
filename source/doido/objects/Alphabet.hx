@@ -170,11 +170,9 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 
 	public function writeTxt()
 	{
-		for (char in members)
-		{
-			char.setPosition(x, y);
+		forEachAlive(function(char:AlphaCharacter) {
 			char.kill();
-		}
+		});
 
 		var lastWidth:Float = 0;
 		var daRow:Int = 0;
@@ -359,6 +357,64 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 			}
 		});
 	}
+
+	override function findMinXHelper()
+	{
+		var value = Math.POSITIVE_INFINITY;
+		forEachAlive(function(member:AlphaCharacter)
+		{
+			if (member != null)
+			{
+				var minX:Float = member.x;
+				if (minX < value)
+					value = minX;
+			}
+		});
+		return value;
+	}
+	override function findMaxXHelper()
+	{
+		var value = Math.NEGATIVE_INFINITY;
+		forEachAlive(function(member:AlphaCharacter)
+		{
+			if (member != null)
+			{
+				var maxX:Float = member.x + member.width;
+				if (maxX > value)
+					value = maxX;
+			}
+		});
+		return value;
+	}
+
+	override function findMinYHelper()
+	{
+		var value = Math.POSITIVE_INFINITY;
+		forEachAlive(function(member:AlphaCharacter)
+		{
+			if (member != null)
+			{
+				var minY:Float = member.y;
+				if (minY < value)
+					value = minY;
+			}
+		});
+		return value;
+	}
+	override function findMaxYHelper()
+	{
+		var value = Math.NEGATIVE_INFINITY;
+		forEachAlive(function(member:AlphaCharacter)
+		{
+			if (member != null)
+			{
+				var maxY:Float = member.y + member.height;
+				if (maxY > value)
+					value = maxY;
+			}
+		});
+		return value;
+	}
 }
 
 class AlphaCharacter extends FlxSprite
@@ -479,6 +535,8 @@ class AlphaCharacter extends FlxSprite
 
 		switch (key)
 		{
+			case ",":
+				charOffset.y = 10;
 			case "-":
 				charOffset.y = -20;
 			case '"' | "'" | "*":
