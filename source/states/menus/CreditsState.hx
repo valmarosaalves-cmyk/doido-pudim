@@ -168,7 +168,7 @@ class CreditsState extends MusicBeatState
 			if (Controls.justPressed(BACK))
 			{
 				leaving = true;
-				MusicBeat.switchState(new states.DebugMenu());
+				MusicBeat.switchState(new states.menus.MainMenuState());
 			}
 		}
 

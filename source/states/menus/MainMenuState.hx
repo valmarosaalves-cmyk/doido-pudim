@@ -1,0 +1,217 @@
+package states.menus;
+
+import flixel.FlxSprite;
+import flixel.group.FlxGroup;
+import doido.utils.LerpUtil;
+import flixel.math.FlxMath;
+import doido.objects.DoidoCamera;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import states.*;
+import states.DebugMenu;
+
+typedef MenuOption =
+{
+	var name:String;
+	var press:Void->Void;
+}
+
+class MainMenuState extends MusicBeatState
+{
+	var options:Array<MenuOption> = [];
+
+	static var curSelected:Int = 0;
+
+	var grpOptions:FlxTypedGroup<FlxSprite>;
+	var bg:FlxSprite;
+	var bgMag:FlxSprite;
+	var bgPosY:Float = 0;
+
+	override function create()
+	{
+		super.create();
+		MusicBeat.playMusic("freakyMenu");
+		DiscordIO.changePresence("In the Main Menu");
+
+		options = [
+			{
+				name: "story mode",
+				press: () -> switchState(new states.menus.StoryMenuState())
+			},
+			{
+				name: "freeplay",
+				press: () -> switchState(new Freeplay())
+			},
+			{
+				name: "donate",
+				press: () -> switchState(new DebugMenu())
+			},
+			{
+				name: "options",
+				press: () -> openSubState(new substates.menus.OptionsSubState())
+			},
+			{
+				name: "credits",
+				press: () -> switchState(new states.menus.CreditsState())
+			},
+		];
+
+		bg = new FlxSprite().loadGraphic(Assets.image('menuBG'));
+		bg.scale.set(1.2, 1.2);
+		bg.updateHitbox();
+		bg.screenCenter(X);
+		add(bg);
+
+		bgMag = new FlxSprite().loadGraphic(Assets.image('menuBGMagenta'));
+		bgMag.scale.set(bg.scale.x, bg.scale.y);
+		bgMag.updateHitbox();
+		bgMag.visible = false;
+		add(bgMag);
+
+		grpOptions = new FlxTypedGroup<FlxSprite>();
+		add(grpOptions);
+
+		var optionSize:Float = 1;
+		if (options.length > 4)
+		{
+			optionSize -= 0.1;
+			for (i in 0...(options.length - 4))
+				optionSize -= 0.04;
+		}
+
+		for (i in 0...options.length)
+		{
+			var item = new FlxSprite();
+			item.frames = Assets.sparrow('menu/mainmenu/' + options[i].name.replace(' ', '-'));
+			item.animation.addByPrefix('idle', options[i].name + ' basic', 24, true);
+			item.animation.addByPrefix('hover', options[i].name + ' white', 24, true);
+			item.animation.play('idle');
+			grpOptions.add(item);
+
+			item.scale.set(optionSize, optionSize);
+			item.updateHitbox();
+
+			var itemSize:Float = (90 * optionSize);
+
+			var minY:Float = 40 + itemSize;
+			var maxY:Float = FlxG.height - itemSize - 40;
+
+			if (options.length < 4)
+				for (i in 0...(4 - options.length))
+				{
+					minY += itemSize;
+					maxY -= itemSize;
+				}
+
+			item.x = FlxG.width / 2;
+			item.y = FlxMath.lerp(minY, // gets min Y
+				maxY, // gets max Y
+				i / (options.length - 1) // sorts it according to its ID
+			);
+
+			item.ID = i;
+		}
+
+		var doidoSplash:String = 'Doido Engine 4.0 ${Main.internalVer}';
+		var funkySplash:String = 'Friday Night Funkin\' Rewritten';
+
+		var splashTxt = new FlxText(4, 0, 0, '$doidoSplash\n$funkySplash');
+		splashTxt.setFormat(Main.globalFont, 18, 0xFFFFFFFF, LEFT);
+		splashTxt.setBorderStyle(OUTLINE, 0xFF000000, 1.5);
+		splashTxt.y = FlxG.height - splashTxt.height - 4;
+		add(splashTxt);
+
+		changeSelection(0);
+	}
+
+	var canSelect = true;
+	var flickMag:Float = 1;
+	var flickBtn:Float = 1;
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (canSelect)
+		{
+			if (Controls.justPressed(UI_UP))
+				changeSelection(-1);
+			if (Controls.justPressed(UI_DOWN))
+				changeSelection(1);
+
+			if (Controls.justPressed(BACK))
+				MusicBeat.switchState(new TitleState());
+
+			if (Controls.justPressed(ACCEPT))
+				options[curSelected].press();
+		}
+		else
+		{
+			if (Save.data.flashingLights != "OFF")
+			{
+				if (Save.data.flashingLights != "REDUCED")
+				{
+					flickMag += elapsed;
+					if (flickMag >= 0.15)
+					{
+						flickMag = 0;
+						bgMag.visible = !bgMag.visible;
+					}
+				}
+
+				flickBtn += elapsed;
+				if (flickBtn >= 0.15 / 2)
+				{
+					flickBtn = 0;
+					for (item in grpOptions.members)
+						if (item.ID == curSelected)
+							item.visible = !item.visible;
+				}
+			}
+		}
+
+		bg.y = FlxMath.lerp(bg.y, bgPosY, elapsed * 6);
+		bgMag.setPosition(bg.x, bg.y);
+	}
+
+	public function switchState(?target:MusicBeatState, tOut:String = 'funkin', ?tIn:String)
+	{
+		if (!canSelect)
+			return;
+
+		canSelect = false;
+		FlxG.sound.play(Assets.sound('confirm'));
+
+		for (item in grpOptions.members)
+		{
+			if (item.ID != curSelected)
+				FlxTween.tween(item, {alpha: 0}, 0.4, {ease: FlxEase.cubeOut});
+		}
+
+		new FlxTimer().start(1.2, (tmr) -> MusicBeat.switchState(target, tOut, tIn));
+	}
+
+	public function changeSelection(change:Int = 0)
+	{
+		if (change != 0)
+			FlxG.sound.play(Assets.sound('scroll'));
+
+		curSelected += change;
+		curSelected = FlxMath.wrap(curSelected, 0, options.length - 1);
+		bgPosY = FlxMath.lerp(0, -(bg.height - FlxG.height), curSelected / (options.length - 1));
+
+		for (item in grpOptions.members)
+		{
+			item.animation.play('idle');
+			if (curSelected == item.ID)
+				item.animation.play('hover');
+
+			item.updateHitbox();
+			// makes it offset to its middle point
+			item.offset.x += (item.frameWidth * item.scale.x) / 2;
+			item.offset.y += (item.frameHeight * item.scale.y) / 2;
+		}
+	}
+}

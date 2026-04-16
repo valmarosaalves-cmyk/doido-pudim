@@ -68,7 +68,7 @@ class CrashHandler extends MusicBeatState
 			if (FlxG.keys.justPressed.ESCAPE)
 			{
 				MusicBeat.skipTrans = true;
-				MusicBeat.switchState(new states.DebugMenu());
+				MusicBeat.switchState(new states.menus.MainMenuState());
 			}
 			if (FlxG.keys.justPressed.F1)
 			{

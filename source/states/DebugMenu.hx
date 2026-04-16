@@ -28,6 +28,7 @@ class DebugMenu extends MusicBeatState
 		"Controls",
 		"Options",
 		"Credits",
+		"Main Menu",
 		#if !mobile "Character Editor", "Crash Handler", "Popup" #end
 	];
 	var text:FlxText;
@@ -111,6 +112,8 @@ class DebugMenu extends MusicBeatState
 					MusicBeat.switchState(new states.menus.CreditsState());
 				case "character editor":
 					MusicBeat.switchState(new CharacterEditor("face", FlxG.keys.pressed.SHIFT));
+				case "main menu":
+					MusicBeat.switchState(new states.menus.MainMenuState());
 				case "story mode":
 					/*var week:WeekData = {
 						songs: [{song: "bopeebo"}, {song: "fresh"}, {song: "dadbattle"}]
