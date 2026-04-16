@@ -98,7 +98,7 @@ class OptionsSubState extends MusicBeatSubState
                         {
                             case "on": "You can press inputs freely.";
                             case "idle": "If you press a wrong input while notes are near\nyour strumline, you will suffer a penalty.";
-                            default: "If you press a wrong input\nyou will suffer a penalty.";
+                            default: "If you press a wrong input,\nyou will suffer a penalty.";
                         }
                     },
                     playStateWarning: true,
@@ -232,7 +232,7 @@ class OptionsSubState extends MusicBeatSubState
                     hold: 0.1,
                     limits: [0.0, 1.0],
                     display: (f:Float) -> return '${Math.floor(f * 100)}%',
-                    canPlaySound: () -> return Save.data.hitsound == "OFF",
+                    canPlaySound: () -> return (Save.data.hitsound == "OFF"),
                     onChange: () -> {
                         if (holdTimerSfx) NoteUtil.playHitsound();
                     }
@@ -275,7 +275,7 @@ class OptionsSubState extends MusicBeatSubState
                     set: (b:Bool) -> Save.data.gpuCaching = b,
                     desc: (b:Bool) -> {
                         if (b)
-                            return "Every graphic will be stored on your GPU's VRAM\nDisable this if you have a shitty graphics card.";
+                            return "Every graphic will be stored on your GPU's VRAM.\nDisable this if you have a shitty graphics card.";
                         else
                             return "Every graphic will be stored on your RAM.\nEnable this if you have a decent graphics card.";
                     },
