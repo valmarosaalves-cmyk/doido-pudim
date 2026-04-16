@@ -97,7 +97,7 @@ class OptionsSubState extends MusicBeatSubState
                         return switch(s.toLowerCase())
                         {
                             case "on": "You can press inputs freely.";
-                            case "idle": "If you press a wrong input while notes are near\nyou will suffer a penalty.";
+                            case "idle": "If you press a wrong input while notes are near\nyour strumline, you will suffer a penalty.";
                             default: "If you press a wrong input\nyou will suffer a penalty.";
                         }
                     },
