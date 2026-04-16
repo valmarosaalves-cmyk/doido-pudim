@@ -135,9 +135,9 @@ class OptionsSubState extends MusicBeatSubState
 					desc: (b:Bool) ->
 					{
 						if (b)
-							return "Your strumlines will be set to the center of the screen\nand your opponents' will be hidden.";
+							return "Your strumlines will be set to the center\nof the screen, and your opponents' will be hidden.";
 						else
-							return "Your strumlines will be set to one side of the screen,\nside by side with your opponents'.";
+							return "Your strumlines will be set to one side\nof the screen, side by side with your opponents'.";
 					},
 					updatePlayState: (playState) ->
 					{
