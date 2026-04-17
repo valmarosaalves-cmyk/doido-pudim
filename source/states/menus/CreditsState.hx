@@ -20,6 +20,9 @@ typedef CreditData =
 
 class CreditsState extends MusicBeatState
 {
+	// use this to toggle on icons instead of chars for the credits!
+	final classic:Bool = false;
+
 	public var creditList:Array<CreditData> = [];
 	public var curSelected:Int = 0;
 
@@ -95,7 +98,7 @@ class CreditsState extends MusicBeatState
 		angleStep = (360 / creditList.length);
 		for (i in 0...creditList.length)
 		{
-			var newChar = new CreditChar(creditList[i].icon);
+			var newChar = new CreditChar(creditList[i].icon, classic);
 			newChar.ID = i;
 			creditGuys.add(newChar);
 		}
@@ -184,10 +187,10 @@ class CreditsState extends MusicBeatState
 			var scaleY:Float = rawScale;
 
 			var selected:Bool = (curSelected == char.ID);
-
-			switch (char.curChar)
+			var whichChar = (classic ? "_classic" : char.curChar);
+			switch (whichChar)
 			{
-				case "nikoo": // nothing
+				case "nikoo" | "_classic": // nothing
 
 				default:
 					if (selected)
@@ -205,7 +208,7 @@ class CreditsState extends MusicBeatState
 					scaleX += char.selectedScaleX;
 					scaleY += char.selectedScaleY;
 
-					if (char.curChar == "diogotv")
+					if (whichChar == "diogotv")
 					{
 						if (selected)
 							char.angle = Math.sin(char.selectedScaleElapsed * 2) * 8;
@@ -218,7 +221,7 @@ class CreditsState extends MusicBeatState
 			char.scale.set(scaleX, scaleY);
 			char.updateHitbox();
 
-			switch (char.curChar)
+			switch (whichChar)
 			{
 				case "nikoo":
 					var floorOffset:Float = char.offset.y;
@@ -257,6 +260,9 @@ class CreditsState extends MusicBeatState
 				case "heart":
 					char.offset.y += 60 * rawScale;
 					char.angle = Math.sin(elapsedTime * 4) * 8;
+				case "_classic":
+					char.offset.y += (40 + Math.sin(elapsedTime) * 20) * rawScale;
+					char.shadowScale = 1 + Math.sin(elapsedTime) * -0.1;
 			}
 
 			char.x = ((FlxG.width - char.width) / 2) + Math.sin(daAngle) * 400;
@@ -303,19 +309,21 @@ class CreditChar extends FlxSprite
 	public var selectedScaleX:Float = 0.0;
 	public var selectedScaleY:Float = 0.0;
 
-	public function new(curChar:String)
+	public function new(curChar:String, classic:Bool = false)
 	{
 		super();
 		this.curChar = curChar;
 		shadow = new FlxSprite();
 		shadow.loadImage("credits/shadow");
+
+		var path:String = 'credits/' + (classic ? "icons" : "char");
 		switch (curChar)
 		{
 			default:
-				if (Assets.fileExists('images/credits/char/$curChar', IMAGE))
-					this.loadImage('credits/char/$curChar');
+				if (Assets.fileExists('images/$path/$curChar', IMAGE))
+					this.loadImage('$path/$curChar');
 				else
-					this.loadImage('credits/char/null');
+					this.loadImage('$path/null');
 		}
 	}
 
