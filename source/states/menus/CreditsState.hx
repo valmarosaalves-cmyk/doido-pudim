@@ -80,6 +80,7 @@ class CreditsState extends MusicBeatState
 		*/
 		persistentUpdate = true;
 		DiscordIO.changePresence("Credits - Thanks!!");
+		MusicBeat.playMusic("girlfriendsRingtone");
 
 		bg = new FlxSprite().loadGraphic(Assets.image('menuDesat'));
 		bg.alpha = 0.6;
@@ -99,8 +100,6 @@ class CreditsState extends MusicBeatState
 		descTxt.scale.set(0.5, 0.5);
 		descTxt.updateHitbox();
 		add(descTxt);
-
-		
 
 		angleStep = (360 / creditList.length);
 		for (i in 0...creditList.length)
@@ -299,7 +298,7 @@ class CreditsState extends MusicBeatState
 		descTxt.text = '<color value=#FFFFFF>${curCredit.info}</color>';
 		txtBG.setGraphicSize(
 			Math.max(nameTxt.width, descTxt.width) + 80,
-			(descTxt.y + descTxt.height) - nameTxt.y + 60
+			(descTxt.y + descTxt.height) - nameTxt.y + 48
 		);
 		txtBG.updateHitbox();
 		txtBG.y = nameTxt.y - 20;
@@ -377,7 +376,7 @@ class CreditChar extends FlxSprite
 		{
 			var segments:Int = 16;
 			var step:Float = (Math.PI * 2) / segments;
-			var thickness:Float = 7;
+			var thickness:Float = 6;
 
 			for (i in 0...segments)
 			{
