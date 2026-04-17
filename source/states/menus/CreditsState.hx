@@ -57,10 +57,6 @@ class CreditsState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		final specialPeople = 'Anakim, ArturYoshi, BeastlyChip, Bnyu, Pi3tr0, Raphalitos, ZieroSama';
-		final specialCoders = 'ShadzXD, pisayesiwsi, Lasystuff, Gazozoz, Joalor64GH, LeonGamerPS1';
-		// yes, this implies coders aren't people :D
-
 		// btw you dont need to credit everyone here on your mod
 		// just credit doido engine as a whole and we're good
 		addCredit('DiogoTV', 'diogotv', 0xFF624998, "Doido Engine's Owner and Main Coder", 'https://bsky.app/profile/diogotv.bsky.social');
@@ -72,9 +68,23 @@ class CreditsState extends MusicBeatState
 		addCredit('JulianoBeta', 'juyko', 0xFF0BA5FF, "Composed Doido Engine's offset menu music", 'https://www.youtube.com/@prodjuyko');
 		addCredit('crowplexus', 'crowplexus', 0xFF313538, "Creator of HScript Iris", 'https://github.com/crowplexus/hscript-iris');
 		addCredit('mochoco', 'mochoco', 0xFFFBFFA7, "Doido Engine's Mobile Button Artist", 'https://x.com/mochocofrappe');
-		addCredit('Github Contributors', 'github', 0xFFFFFFFF, 'THANKS TO:\n${specialCoders}\nfor helping out doido engine!!', 'https://github.com/DoidoTeam/FNF-Doido-Engine/graphs/contributors');
-		addCredit('Special Thanks', 'heart', 0xFFAE314A, 'THANK YOU:\n${specialPeople}!!\nfor being cool friends <33', "https://youtu.be/N0IkgKHdgIc");
+
+		// SPECIAL THANKS
+		final specialPeople = 'Anakim, ArturYoshi, BeastlyChip, Bnyu, Pi3tr0, Raphalitos and ZieroSama';
+		addCredit('Special Thanks', 'heart', 0xFFAE314A, 'THANK YOU:\n${specialPeople}\nfor being cool friends!!', "https://youtu.be/N0IkgKHdgIc");
 		
+		// GITHUB CONTRIBUTORS
+		getContributors((names) -> {
+			if (names.length > 0)
+			{
+				addCredit(
+					'Github Contributors', 'github', 0xFFFFFFFF,
+					'THANKS TO: ${names}\nfor helping out doido engine!!',
+					'https://github.com/DoidoTeam/FNF-Doido-Engine/graphs/contributors'
+				);
+			}
+		});
+
 		/*
 		*	Don't modify the rest of the code unless you know what you're doing!!
 		*/
@@ -319,6 +329,37 @@ class CreditsState extends MusicBeatState
 		FlxTween.color(bg, 0.4, bg.color, curCredit.color);
 
 		astraEasterEgg = (curCredit.icon == "astra");
+	}
+
+	function getContributors(callback:String->Void)
+	{
+		var names:String = "";
+
+		var blacklist:Array<String> = Assets.textToArray('data/credits/blacklist');
+		var json:Dynamic = Assets.json("data/credits/contributors");
+		if (json != null)
+		{
+			var i:Int = 0;
+			for (_i in 0...json.length)
+			{
+				var nickname = json[_i].login;
+				if (blacklist.contains(nickname))
+					continue;
+
+				if (_i == json.length - 1 && i > 0)
+					names += ' and $nickname';
+				else if (i == 0)
+					names += nickname;
+				else if (i == 5)
+					names += ',\n$nickname';
+				else
+					names += ', $nickname';
+
+				i++;
+			}
+		}
+
+		callback(names);
 	}
 }
 

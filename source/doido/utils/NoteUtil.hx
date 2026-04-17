@@ -70,7 +70,7 @@ class NoteUtil
 
 	inline public static function getHitsounds():Array<String>
 	{
-		var hits = Assets.txtToArray('sounds/hitsounds/hitsound-order');
+		var hits = Assets.textToArray('sounds/hitsounds/hitsound-order');
 		hits.push("OFF");
 		return hits;
 	}

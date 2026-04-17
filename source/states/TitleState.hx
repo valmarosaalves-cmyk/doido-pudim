@@ -35,7 +35,7 @@ class TitleState extends MusicBeatState
 				MusicBeat.playMusic("freakyMenu");
 			});
 
-			var allTexts:Array<String> = Assets.txtToArray('data/introText');
+			var allTexts:Array<String> = Assets.textToArray('data/introText');
 			curWacky = FlxG.random.getObject(allTexts).split('--');
 		}
 

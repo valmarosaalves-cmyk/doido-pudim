@@ -60,13 +60,12 @@ class LoadingState extends MusicBeatState
 
 		loadingPercent = 0.0;
 
-		loadingBar = new FlxSprite(-2, FlxG.height - 12).makeGraphic(FlxG.width + 4, 16, 0xFFFFFFFF);
-		loadingBar.scale.x = 0;
+		loadingBar = new FlxSprite(-2, FlxG.height - 12).makeColor(0, 16, 0xFFFFFFFF);
 		loadingBar.updateHitbox();
 		add(loadingBar);
 
 		#if !THREAD_LOADING
-		var overlay = new FlxSprite().makeGraphic(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
+		var overlay = new FlxSprite().makeColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
 		overlay.screenCenter();
 		add(overlay);
 		#end
@@ -325,7 +324,7 @@ class LoadingState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		loadingBar.scale.x = FlxMath.lerp(loadingBar.scale.x, loadingPercent, elapsed * 6);
+		loadingBar.scale.x = FlxMath.lerp(loadingBar.scale.x, loadingPercent * (FlxG.width + 4), elapsed * 6);
 		loadingBar.updateHitbox();
 
 		if (loadingTxt.text != doingWhat)

@@ -301,7 +301,7 @@ class Assets
 	public static inline function font(key:String, ?library:String = ""):String
 		return getAsset('fonts/$key', library, FONT);
 
-	public static inline function txtToArray(key:String, ?library:String = ""):Array<String>
+	public static inline function textToArray(key:String, ?library:String = ""):Array<String>
 	{
 		var rawList:Array<String> = text(key, library).split('\n');
 		var daList:Array<String> = [];
