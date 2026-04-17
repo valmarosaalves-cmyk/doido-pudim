@@ -11,7 +11,7 @@ If you're unsure about this, or would like to suggest a feature, please [create 
 - Controls Menu
 
 ## Medium priority
-- Menus (Main, Freeplay, Title)
+- Menus (Freeplay)
 - Cutscene support
 - Dialogue support
 - Score Resetting
