@@ -73,12 +73,9 @@ class Main extends Sprite
 		Logs.print('Crash dump saved in $normalPath', WARNING, true, true, false, false);
 
 		// byebye
-		#if (flixel < "6.0.0")
-		FlxG.bitmap.dumpCache();
-		#end
-
-		FlxG.bitmap.clearCache();
-		// CoolUtil.playMusic();
+		MusicBeat.stopMusic();
+		doido.Cache.clearCache();
+		
 
 		MusicBeat.skipTrans = true;
 		MusicBeat.switchState(new doido.system.CrashHandler('Crash log created at: "${normalPath}"\n\n' + stackTraceString));
