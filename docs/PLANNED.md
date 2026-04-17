@@ -20,7 +20,6 @@ If you're unsure about this, or would like to suggest a feature, please [create 
 
 ## Low priority
 - Week 6
-- Old style credits
 - Mobile Button Sprites
 
 ## In Discussion
