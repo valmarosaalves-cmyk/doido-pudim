@@ -7,8 +7,11 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import objects.CharGroup;
 import states.PlayState;
+
+#if THREAD_LOADING
 import sys.thread.Mutex;
 import sys.thread.Thread;
+#end
 
 class GameOverSubState extends MusicBeatSubState
 {
@@ -42,9 +45,11 @@ class GameOverSubState extends MusicBeatSubState
 
         FlxG.sound.play(Assets.music('gameover/$folderPath/deathSfx'), 0.7);
         
+        #if THREAD_LOADING
         var mutex = new Mutex();
         Thread.create(() -> {
             mutex.acquire();
+            #end
             while(!stopThread)
             {
                 trace('PRELOADING GAME OVER MUSIC, HURRY!!');
@@ -53,8 +58,10 @@ class GameOverSubState extends MusicBeatSubState
                 trace('finished preloading, phew...');
                 stopThread = true;
             }
+            #if THREAD_LOADING
             mutex.release();
         });
+        #end
 
         bf.setActive(bf.char.deathChar);
         bf.playAnim('firstDeath');

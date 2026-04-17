@@ -31,6 +31,14 @@ class AlphabetUtil
 {
 	public static function parse(text:String):ParsedText
 	{
+		if (text == null)
+		{
+			return {
+				chars: [],
+				tags: []
+			}
+		}
+
 		var chars:Array<String> = [];
 		var tags:Array<TagData> = [];
 		var openTags:Array<TagData> = [];

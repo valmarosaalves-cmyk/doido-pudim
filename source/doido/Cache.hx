@@ -282,7 +282,9 @@ class Cache
 
 	public static function killSound(sound:Sound)
 	{
+		#if !html5
 		sound.close();
+		#end
 		sound = null;
 	}
 

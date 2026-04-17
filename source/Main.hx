@@ -19,6 +19,7 @@ class Main extends Sprite
 
 	public static var gameWidth:Int = 1280;
 	public static var gameHeight:Int = 720;
+
 	var framerate:Int = 60;
 	var skipSplash:Bool = true;
 
@@ -31,7 +32,11 @@ class Main extends Sprite
 	{
 		super();
 		initGame();
+
+		#if desktop
 		addChild(fpsCounter = new FPSCounter());
+		#end
+
 		fixes();
 	}
 
@@ -75,7 +80,6 @@ class Main extends Sprite
 		// byebye
 		MusicBeat.stopMusic();
 		doido.Cache.clearCache();
-		
 
 		MusicBeat.skipTrans = true;
 		MusicBeat.switchState(new doido.system.CrashHandler('Crash log created at: "${normalPath}"\n\n' + stackTraceString));
@@ -193,12 +197,12 @@ class Main extends Sprite
 	{
 		var out:Array<String> = [];
 
-		for(s in windowScales)
-			out.push('${Math.ceil(gameWidth*s)}x${Math.ceil(gameHeight*s)}');
+		for (s in windowScales)
+			out.push('${Math.ceil(gameWidth * s)}x${Math.ceil(gameHeight * s)}');
 
-		return(out);
+		return (out);
 	}
-	
+
 	public static function setWindowSize(key:String):Void
 	{
 		#if desktop

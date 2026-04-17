@@ -116,9 +116,9 @@ class DebugMenu extends MusicBeatState
 					MusicBeat.switchState(new states.menus.MainMenuState());
 				case "story mode":
 					/*var week:WeekData = {
-						songs: [{song: "bopeebo"}, {song: "fresh"}, {song: "dadbattle"}]
-					};
-					PlayState.loadWeek(week, "hard");*/
+							songs: [{song: "bopeebo"}, {song: "fresh"}, {song: "dadbattle"}]
+						};
+						PlayState.loadWeek(week, "hard"); */
 					MusicBeat.switchState(new states.menus.StoryMenuState());
 				default:
 					MusicBeat.switchState(new Freeplay());
@@ -274,8 +274,8 @@ class Freeplay extends MusicBeatState
 		curSong += change;
 		curSong = FlxMath.wrap(curSong, 0, options.length - 1);
 		drawText();
-		drawScore();
 		changeDiff();
+		drawScore();
 	}
 
 	public function changeDiff(change:Int = 0)

@@ -63,10 +63,10 @@ class NoteUtil
 	}
 
 	public static function intToString(data:Int):String
-		return directions[data];
+		return directions[data] ?? "left";
 
 	public static function stringToInt(direction:String):Int
-		return directions.indexOf(direction);
+		return directions.indexOf(direction) ?? 0;
 
 	inline public static function getHitsounds():Array<String>
 	{

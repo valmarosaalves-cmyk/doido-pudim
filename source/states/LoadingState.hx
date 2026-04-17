@@ -17,10 +17,12 @@ import objects.Character;
 import objects.Stage;
 import objects.ui.HealthIcon;
 import objects.ui.HealthIcon.IconData;
-import sys.thread.Mutex;
-import sys.thread.Thread;
 import flixel.math.FlxMath;
 import doido.song.SongHandler;
+#if THREAD_LOADING
+import sys.thread.Mutex;
+import sys.thread.Thread;
+#end
 
 class LoadingState extends MusicBeatState
 {
@@ -58,19 +60,28 @@ class LoadingState extends MusicBeatState
 
 		loadingPercent = 0.0;
 
-		loadingBar = new FlxSprite(-2, FlxG.height - 12).makeGraphic(FlxG.width+4, 16, 0xFFFFFFFF);
+		loadingBar = new FlxSprite(-2, FlxG.height - 12).makeGraphic(FlxG.width + 4, 16, 0xFFFFFFFF);
 		loadingBar.scale.x = 0;
 		loadingBar.updateHitbox();
 		add(loadingBar);
 
+		#if !THREAD_LOADING
+		var overlay = new FlxSprite().makeGraphic(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
+		overlay.screenCenter();
+		add(overlay);
+		#end
+
 		doingWhat = "Starting...";
 
+		#if THREAD_LOADING
 		var mutex = new Mutex();
 		Thread.create(function()
 		{
 			mutex.acquire();
+		#end
 			Logs.print("Loading Started!");
 			Cache.loading = true;
+			NoteUtil.setUpDirections(4);
 
 			doingWhat = "Loading Sounds";
 			loadSounds();
@@ -98,8 +109,10 @@ class LoadingState extends MusicBeatState
 			Logs.print("Loading Ended!");
 			Cache.loading = false;
 			threadActive = false;
-			mutex.release();
+		#if THREAD_LOADING
+		mutex.release();
 		});
+		#end
 	}
 
 	function loadGame()
@@ -119,12 +132,12 @@ class LoadingState extends MusicBeatState
 			switch (event.name)
 			{
 				/*case 'Change Character':
-					charList.push(daEvent.value2);
-					switch (daEvent.value1)
-					{
-						case 'bf' | 'boyfriend': playerChars.push(daEvent.value2);
-					}
-				 */
+						charList.push(daEvent.value2);
+						switch (daEvent.value1)
+						{
+							case 'bf' | 'boyfriend': playerChars.push(daEvent.value2);
+						}
+					 */
 				case 'Change Stage':
 					stageBuild.reloadStage(event.data[0]);
 
@@ -146,13 +159,14 @@ class LoadingState extends MusicBeatState
 	}
 
 	var loadedChars:Array<String> = [];
+
 	function loadChar(char:String, type:String = "")
 	{
 		if (loadedChars.contains(char))
 			return;
 		else
 			loadedChars.push(char);
-		
+
 		var data:DoidoCharacter;
 		try
 		{
@@ -164,8 +178,9 @@ class LoadingState extends MusicBeatState
 			data = Character.defaultCharacter();
 		}
 
-		if (type == "player") {
-			//trace("PRELOADING DEATH CHAR");
+		if (type == "player")
+		{
+			// trace("PRELOADING DEATH CHAR");
 			loadChar(data.deathChar ?? "bf-dead");
 		}
 
@@ -203,7 +218,8 @@ class LoadingState extends MusicBeatState
 
 		Assets.music('gameover/${META.assets.gameOverPath}/deathSfx');
 		// temporary caching
-		for (i in 0...4) {
+		for (i in 0...4)
+		{
 			Assets.sound("countdown/base/intro" + ["3", "2", "1", "Go"][i]);
 		}
 	}
