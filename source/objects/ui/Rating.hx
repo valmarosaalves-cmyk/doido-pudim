@@ -15,6 +15,9 @@ class RatingSprite extends FlxSprite
 		super();
 		switch (assetPath)
 		{
+			case "pixel":
+				baseScale = 5;
+				antialiasing = false;
 			default:
 				baseScale = 0.7;
 		}
@@ -73,6 +76,10 @@ class ComboSprite extends FlxSprite
 		super();
 		switch (assetPath)
 		{
+			case "pixel":
+				baseScale = 5;
+				antialiasing = false;
+				badColor = 0xFF828282;
 			default:
 				baseScale = 0.5;
 				badColor = 0xFF828282;

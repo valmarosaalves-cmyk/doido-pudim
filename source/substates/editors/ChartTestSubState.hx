@@ -102,14 +102,14 @@ class ChartTestSubState extends MusicBeatSubState implements Playable
 			{
 				Timings.addScore(note, noteDiff);
 				rating = Timings.addAccuracyDiff(noteDiff);
-				hudClass.popUpCombo(Timings.combo);
+				hudClass.popUpCombo(Timings.combo, META.assets.ratings);
 
 				if (!note.missed)
 					Timings.notesHit++;
 			}
 
 			if (rating != "miss")
-				hudClass.popUpRating(rating);
+				hudClass.popUpRating(rating, META.assets.ratings);
 			hudClass.updateScoreTxt();
 		}
 

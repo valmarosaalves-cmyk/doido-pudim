@@ -65,9 +65,9 @@ class ClassHud extends FlxGroup
 
 	var ratingCount:Int = 0;
 
-	public function popUpRating(ratingName:String = ""):RatingSprite
+	public function popUpRating(ratingName:String = "", assetPath:String = "base"):RatingSprite
 	{
-		var rating:RatingSprite = cast ratingGrp.recycle(RatingSprite);
+		var rating:RatingSprite = cast ratingGrp.recycle(RatingSprite, () -> new RatingSprite(assetPath));
 		rating.setUp(ratingName);
 
 		if (!ratingGrp.members.contains(rating))
@@ -81,7 +81,7 @@ class ClassHud extends FlxGroup
 
 	var comboCount:Int = 0;
 
-	public function popUpCombo(comboNum:Int):Array<ComboSprite>
+	public function popUpCombo(comboNum:Int, assetPath:String = "base"):Array<ComboSprite>
 	{
 		var comboStr:String = '${Math.abs(comboNum)}'.lpad("0", 3);
 		if (comboNum < 0)
@@ -91,7 +91,7 @@ class ClassHud extends FlxGroup
 		var numberArray:Array<ComboSprite> = [];
 		for (i in 0...stringArr.length)
 		{
-			var number:ComboSprite = cast numberGrp.recycle(ComboSprite);
+			var number:ComboSprite = cast numberGrp.recycle(ComboSprite, () -> new ComboSprite(assetPath));
 			number.setUp(stringArr[i]);
 
 			if (comboNum <= 0)
