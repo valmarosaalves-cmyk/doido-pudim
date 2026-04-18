@@ -1,6 +1,7 @@
 package objects.ui.hud;
 
 import flixel.math.FlxMath;
+import flixel.FlxSprite;
 
 enum IconChange
 {
@@ -16,6 +17,24 @@ class ClassHud extends FlxGroup
 	public var health:Float = 1;
 	public var numberGrp:FlxGroup;
 	public var ratingGrp:FlxGroup;
+
+	public var alpha(default, set):Float = 1.0;
+	public var alphaList:Map<FlxSprite, Float> = [];
+
+	public function set_alpha(v:Float):Float
+	{
+		alpha = v;
+		for (item => stored in alphaList)
+			if (item != null)
+				item.alpha = stored * alpha;
+		return alpha;
+	}
+
+	public function updateAlphaList(list:Array<FlxSprite>)
+	{
+		for(spr in list)
+			alphaList.set(spr, spr.alpha);
+	}
 
 	public function new(hudName:String, play:Playable)
 	{

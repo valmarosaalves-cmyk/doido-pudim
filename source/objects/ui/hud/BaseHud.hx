@@ -56,6 +56,7 @@ class BaseHud extends ClassHud
 		botplayTxt.y -= (botplayTxt.height / 2);
 		add(botplayTxt);
 
+		updateAlphaList([healthBar, iconP1, iconP2, scoreTxt, timeTxt]);
 		updatePositions();
 	}
 

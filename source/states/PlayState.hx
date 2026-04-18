@@ -191,6 +191,7 @@ class PlayState extends MusicBeatState implements Playable
 			case "vslice": new VSliceHud(this);
 			default: new BaseHud(this);
 		}
+		hudClass.alpha = 0;
 		add(hudClass);
 
 		for (event in spawnEvents)
@@ -236,6 +237,18 @@ class PlayState extends MusicBeatState implements Playable
 			{
 				if (note.stepTime < (curStepFloat + Conductor.getStepAtTime(startOffset)))
 					playField.curSpawnNote++;
+			}
+		}
+		else
+		{
+			for (strumline in playField.strumlines)
+			{
+				var strumMult:Int = (strumline.downscroll ? 1 : -1);
+				for (strum in strumline.strums)
+				{
+					strum.y += NoteUtil.noteWidth(false) * 0.6 * strumMult;
+					strum.alpha = 0.0001;
+				}
 			}
 		}
 
@@ -740,6 +753,63 @@ class PlayState extends MusicBeatState implements Playable
 		hudClass.stepHit(curStep);
 	}
 
+	public function countDown(count:Int)
+	{
+		if (!startedCountdown)
+			startedCountdown = true;
+
+		switch (count)
+		{
+			case 0:
+				noteIntro();
+			case 2:
+				FlxTween.tween(hudClass, {alpha: 1.0}, Conductor.crochet * 2 / 1000);
+			case 4:
+				startSong();
+		}
+
+		if (count < 4) // countdown
+		{
+			countdownSfx[count].play();
+
+			// BIG WIP!
+			if (count >= 1)
+			{
+				var countName:String = ["ready", "set", "go"][count - 1];
+				var countSprite = new FlxSprite();
+				countSprite.loadImage('ui/countdown/base/$countName');
+				countSprite.scale.set(0.65, 0.65);
+				countSprite.updateHitbox();
+				countSprite.screenCenter();
+				countSprite.cameras = [camHUD];
+				hudClass.add(countSprite);
+
+				FlxTween.tween(countSprite, {alpha: 0}, Conductor.stepCrochet * 2.8 / 1000, {
+					startDelay: Conductor.stepCrochet * 1 / 1000,
+					onComplete: function(twn:FlxTween)
+					{
+						countSprite.destroy();
+					}
+				});
+			}
+		}
+	}
+
+	public function noteIntro()
+	{
+		for (strumline in playField.strumlines)
+		{
+			for (strum in strumline.strums)
+			{
+				// actual tween
+				FlxTween.tween(strum, {y: strum.initialPos.y, alpha: 0.9}, (Conductor.crochet / 1000) * 2, {
+					ease: FlxEase.circOut,
+					startDelay: 0.2 + (0.15 * strum.lane),
+				});
+			}
+		}
+	}
+
 	override function beatHit()
 	{
 		super.beatHit();
@@ -750,18 +820,7 @@ class PlayState extends MusicBeatState implements Playable
 
 		// COUNTDOWN AND SONG START
 		if (curBeat <= 0)
-		{
-			// start song
-			if (curBeat == 0)
-				startSong();
-			else if (curBeat + 4 >= 0) // countdown
-			{
-				// trace(curBeat + 4);
-				countdownSfx[curBeat + 4].play();
-				if (!startedCountdown)
-					startedCountdown = true;
-			}
-		}
+			countDown(curBeat + 4);
 
 		for (char in characters)
 		{
