@@ -1,0 +1,12 @@
+/*
+*
+* This script makes the notes spawn only 2 steps in front the strumline, instead of the default 32
+*
+*/
+function createPost()
+{
+    for(strumline in playField.strumlines)
+    {
+        strumline.spawnStep = 2;
+    }
+}

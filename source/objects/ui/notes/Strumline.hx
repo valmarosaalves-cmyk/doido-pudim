@@ -20,6 +20,8 @@ class Strumline extends FlxGroup
 	
 	public var hasModchart:Bool = false;
 	public var pauseNotes:Bool = false;
+	public var spawnStep:Float = 32;
+	public var despawnStep:Float = 12;
 
 	// checking if you can ghost tap with the "idle" option
 	public var ghostTappingIdle:Bool = true;

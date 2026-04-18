@@ -1,3 +1,9 @@
+/*
+*
+* This script hides the opponent stumline, makes the player strums centered in a "cross" shape
+* and also makes notes scroll from the direction the strum in pointing at.
+*
+*/
 import flixel.FlxG;
 import Math;
 
@@ -7,10 +13,13 @@ function createPost() {
     for(strum in playField.dadStrumline.strums)
         strum.x -= 2000;
 
+    for(strumline in playField.strumlines)
+        strumline.hasModchart = true;
+
     //lol!
     playField.bfStrumline.downscroll = true;
 
-    var radius:Int = 150;
+    var radius:Int = 80;
     //[x,y,angle]
     var angles:Array<Array<Int>> = [
         [-radius,0,-90],
@@ -18,7 +27,7 @@ function createPost() {
         [0,-radius,0],
         [radius,0,90]
     ];
-
+    
     for(strum in playField.bfStrumline.strums) {
         strum.strumAngle = angles[strum.lane][2];
         strum.x = (FlxG.width / 2)  + angles[strum.lane][0];

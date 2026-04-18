@@ -1,3 +1,10 @@
+/*
+*
+* This script disables the default note path that the notes follow and
+* makes the notes follow a circular shape around the strums instead
+* hold/long notes also follow the same circular shape
+*
+*/
 import doido.song.Conductor;
 import flixel.FlxG;
 import flixel.math.FlxAngle;
@@ -34,7 +41,7 @@ function update(elapsed)
         }
         var strum = strumline.strums[note.data.lane];
 
-        var radius:Float = 20;
+        var radius:Float = 16;
         var noteSpeed:Float = note.noteSpeed ?? strumline.scrollSpeed;
         noteSpeed *= note.noteSpeedMult;
         noteSpeed *= radius;

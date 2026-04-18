@@ -1,3 +1,9 @@
+/*
+*
+* This script makes the notes only update position when a step is hit
+* howhever it is only a visual effect, it does not affect any inputs directly
+*
+*/
 function createPost()
 {
     for(strumline in playField.strumlines)

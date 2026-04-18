@@ -111,17 +111,15 @@ class PlayField extends FlxGroup
 		// spawning notes
 		if (curSpawnNote < spawnNotes.length)
 		{
-			var spawnStep:Float = 32; // spawns notes 32 steps ahead
-
 			for (i in 0...spawnNotes.length)
 			{
 				if (i < curSpawnNote)
 					continue;
 
 				var noteData = spawnNotes[curSpawnNote];
-				if (noteDiffStep(noteData) < spawnStep)
+				var strumline = strumlines[noteData.strumline];
+				if (noteDiffStep(noteData) < strumline.spawnStep) // spawns notes 32 steps ahead
 				{
-					var strumline = strumlines[noteData.strumline];
 					strumline.addNote(noteData);
 					curSpawnNote++;
 				}
@@ -162,7 +160,7 @@ class PlayField extends FlxGroup
 						strumline.ghostTappingIdle = false;
 				}
 
-				var despawnStep:Float = 12; // kills after 12 steps
+				var despawnStep:Float = strumline.despawnStep; // kills after 12 steps
 				if (curStepFloat > note.data.stepTime + note.data.length + despawnStep)
 					strumline.killNote(note);
 			}

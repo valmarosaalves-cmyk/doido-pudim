@@ -1,0 +1,1 @@
+here are some scripts examples made by diogotv and teles so you can learn how the modcharting system works!
