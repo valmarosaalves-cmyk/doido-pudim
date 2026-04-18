@@ -1,0 +1,13 @@
+function createPost()
+{
+    for(strumline in playField.strumlines)
+    {
+        strumline.pauseNotes = true;
+    }
+}
+
+function stepHit(curStep)
+{
+    for(strumline in playField.strumlines)
+        strumline.updateNotes(curStepFloat);
+}

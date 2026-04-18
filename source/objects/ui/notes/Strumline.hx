@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import objects.ui.notes.Splash.Cover;
 
 class Strumline extends FlxGroup
@@ -14,13 +15,14 @@ class Strumline extends FlxGroup
 	public var isPlayer:Bool = false;
 	public var botplay:Bool = false;
 	public var wide:Bool = false;
-	public var hasModchart:Bool = false;
 
 	public var scrollSpeed:Float = 1.0;
+	
+	public var hasModchart:Bool = false;
+	public var pauseNotes:Bool = false;
 
 	// checking if you can ghost tap with the "idle" option
 	public var ghostTappingIdle:Bool = true;
-	// public var strumlineData:Int = 0;
 	public var holdingNotes:Array<Bool> = [];
 
 	public var quantNotes:Bool = Save.data.quantNotes;
@@ -148,6 +150,34 @@ class Strumline extends FlxGroup
 
 			note.updateOffsets();
 			NoteUtil.setNotePos(note, strum, angle * downMult, offsetX, offsetY);
+		}
+		updateHoldClipping(curStepFloat);
+	}
+
+	public function updateHoldClipping(curStepFloat:Float)
+	{
+		// calculating the clipping by how much you held the note
+		for(hold in notes)
+		{
+			if (!hold.isHold)
+				continue;
+
+			if (!hold.missed)
+			{
+				var holdHitLength = (curStepFloat - hold.data.stepTime);
+				var daRect = (hold.clipRect ?? new FlxRect());
+				daRect.set(0, 0, hold.frameWidth, hold.frameHeight);
+
+				var rawSize:Float = (holdHitLength - hold.holdIndex);
+				if (rawSize > 0)
+				{
+					daRect.y = FlxMath.remapToRange(rawSize, 0.0, hold.holdStep, 0.0, hold.frameHeight);
+					if (daRect.y > daRect.height)
+						daRect.y = daRect.height;
+				}
+
+				hold.clipRect = daRect;
+			}
 		}
 	}
 

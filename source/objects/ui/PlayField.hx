@@ -2,7 +2,6 @@ package objects.ui;
 
 import doido.song.SongHandler.AssetModifiers;
 import flixel.math.FlxMath;
-import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import doido.song.Conductor;
@@ -197,9 +196,6 @@ class PlayField extends FlxGroup
 			for (i in 0...strumline.holdingNotes.length)
 				strumline.holdingNotes[i] = false;
 
-			// updating notes
-			strumline.updateNotes(curStepFloat);
-
 			// updating player inputs
 			if (strumline.isPlayer && !strumline.botplay)
 			{
@@ -250,13 +246,6 @@ class PlayField extends FlxGroup
 							else if (onGhostTap != null)
 							{
 								onGhostTap(i, strumline);
-								/*if(startedCountdown)
-									{
-										
-										{
-											onGhostTap(i, NoteUtil.directions[i]);
-										}
-								}*/
 							}
 						}
 					}
@@ -302,30 +291,16 @@ class PlayField extends FlxGroup
 									_onNoteMiss(hold, strumline);
 							}
 						}
-
-						// calculating the clipping by how much you held the note
-						// if (!strumline.pauseNotes)
-						if (true && !hold.missed)
-						{
-							var daRect = (hold.clipRect ?? new FlxRect());
-							daRect.set(0, 0, hold.frameWidth, hold.frameHeight);
-
-							var rawSize:Float = holdHitLength - hold.holdIndex;
-							if (rawSize > 0)
-							{
-								daRect.y = FlxMath.remapToRange(rawSize, 0.0, hold.holdStep, 0.0, hold.frameHeight);
-								if (daRect.y > daRect.height)
-									daRect.y = daRect.height;
-							}
-
-							hold.clipRect = daRect;
-						}
 					}
 
 					if (holdParent.missed && !hold.missed)
 						_onNoteMiss(hold, strumline);
 				}
 			}
+
+			// updating notes
+			if (!strumline.pauseNotes)
+				strumline.updateNotes(curStepFloat);
 		}
 	}
 

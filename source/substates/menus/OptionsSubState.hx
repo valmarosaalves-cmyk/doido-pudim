@@ -122,10 +122,12 @@ class OptionsSubState extends MusicBeatSubState
 
 						for (strumline in playState.playField.strumlines)
 						{
-							strumline.downscroll = playState.downscroll;
-							strumline.recalculateY();
+							if (!strumline.hasModchart) {
+								strumline.downscroll = playState.downscroll;
+								strumline.recalculateY();
+								strumline.updateNotes(playState.curStepFloat);
+							}
 						}
-						playState.playField.updateNotes();
 					}
 				},
 				{
@@ -152,11 +154,13 @@ class OptionsSubState extends MusicBeatSubState
 						var _i:Int = 0;
 						for (strumline in playState.playField.strumlines)
 						{
-							strumline.x = (FlxG.width / 2) + strumPos[_i % strumPos.length];
-							strumline.recalculateX();
+							if (!strumline.hasModchart) {
+								strumline.x = (FlxG.width / 2) + strumPos[_i % strumPos.length];
+								strumline.recalculateX();
+								strumline.updateNotes(playState.curStepFloat);
+							}
 							_i++;
 						}
-						playState.playField.updateNotes();
 					}
 				},
 				{
