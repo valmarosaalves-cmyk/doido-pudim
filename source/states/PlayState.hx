@@ -29,7 +29,7 @@ import doido.objects.DoidoHitbox;
 class PlayState extends MusicBeatState implements Playable
 {
 	public static var SONG:DoidoSong;
-	public static var skip:Bool = false;
+	public static var startPos:Float = 0;
 	public static var songDiff:String = "normal";
 
 	// story mode
@@ -127,6 +127,7 @@ class PlayState extends MusicBeatState implements Playable
 		DiscordIO.changePresence("Playing - " + CHART.song);
 		persistentDraw = true;
 		persistentUpdate = false;
+		MusicBeat.stopMusic();
 
 		var scriptPaths:Array<String> = Assets.getScriptArray(CHART.song);
 		for (path in scriptPaths)
@@ -219,15 +220,21 @@ class PlayState extends MusicBeatState implements Playable
 		add(pauseButton);
 		#end
 
-		if (skip)
+		// TO-DO: account for events
+		if (startPos > Conductor.crochet * 8)
 		{
-			audio.play();
-			audio.pause();
-			audio.time = 50000;
+			var startOffset:Float = Conductor.crochet * 4;
+			Conductor.songPos = startPos - startOffset;
+			startPos = 0;
+
+			audio.play(Conductor.songPos);
+			startedSong = true;
+			startedCountdown = true;
 			updateStep();
+
 			for (note in CHART.notes)
 			{
-				if (note.stepTime <= curStepFloat)
+				if (note.stepTime < (curStepFloat + Conductor.getStepAtTime(startOffset)))
 					playField.curSpawnNote++;
 			}
 		}
@@ -259,6 +266,9 @@ class PlayState extends MusicBeatState implements Playable
 				Timings.addScore(note, noteDiff);
 				rating = Timings.addAccuracyDiff(noteDiff);
 				hudClass.popUpCombo(Timings.combo);
+
+				if (!note.missed)
+					Timings.notesHit++;
 
 				var judge = Timings.getTiming(rating).judge;
 				var healthJudge:Float = 0.05 * judge;
@@ -849,4 +859,8 @@ interface Playable
 	var songLength(get, never):Float;
 	var player1(get, never):String;
 	var player2(get, never):String;
+
+	var curStep:Int;
+	var curStepFloat:Float;
+	var curBeat:Int;
 }

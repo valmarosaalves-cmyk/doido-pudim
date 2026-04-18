@@ -250,9 +250,7 @@ class Freeplay extends MusicBeatState
 				else
 				{
 					if (FlxG.keys.justPressed.SHIFT)
-						PlayState.skip = true;
-					else
-						PlayState.skip = false;
+						PlayState.startPos = 50000;
 
 					MusicBeat.stopMusic();
 					MusicBeat.switchState(new states.LoadingState());

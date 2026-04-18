@@ -1,5 +1,6 @@
 package states.editors;
 
+import substates.editors.ChartTestSubState;
 import substates.editors.PopupSubState;
 import doido.Cache;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -115,6 +116,9 @@ class ChartingState extends MusicBeatState
 		Conductor.initialBPM = CHART.bpm;
 		Conductor.mapBPMChanges(EVENTS.events);
 		Conductor.songPos = 0;
+		persistentDraw = true;
+		persistentUpdate = false;
+		MusicBeat.stopMusic();
 
 		characters = Assets.list("data/characters/", true, JSON).concat(["face"]);
 
@@ -289,7 +293,9 @@ class ChartingState extends MusicBeatState
 		// fileWindow.addButton("Reload Chart", "Ctrl + Shift + Alt + R");
 		// fileWindow.addSeparator();
 		// fileWindow.addButton("Preview", "ESC");
-		fileWindow.addButton("Playtest", "Enter", (btn) -> play());
+		fileWindow.addButton("Play Song", "Enter", (btn) -> play());
+		fileWindow.addButton("Play from Here", "Shift + Enter", (btn) -> play(true));
+		fileWindow.addButton("Test Song", "ESC", (btn) -> openTester());
 		fileWindow.updateBg();
 
 		var editWindow = new MenuWindow(x, y + 30, width, this);
@@ -1303,7 +1309,10 @@ class ChartingState extends MusicBeatState
 				resetSection();
 
 			if (FlxG.keys.justPressed.ENTER)
-				play();
+				play(FlxG.keys.pressed.SHIFT);
+
+			if (FlxG.keys.justPressed.ESCAPE)
+				openTester();
 
 			if (FlxG.keys.justPressed.EIGHT || FlxG.keys.justPressed.NUMPADEIGHT)
 				noFunAllowed = !noFunAllowed;
@@ -1382,11 +1391,19 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	public function play()
+	public function play(testHere:Bool = false)
 	{
+		if (testHere)
+			PlayState.startPos = Conductor.songPos;
 		PlayState.SONG = SONG;
 		MusicBeat.switchState(new LoadingState());
 		FlxG.mouse.visible = false;
+	}
+
+	public function openTester()
+	{
+		persistentDraw = false;
+		openSubState(new ChartTestSubState(SONG, Conductor.songPos));
 	}
 
 	function selectAll()
