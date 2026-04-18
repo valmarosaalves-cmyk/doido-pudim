@@ -60,6 +60,7 @@ class ChartingState extends MusicBeatState
 	public static var GRID_ZOOM:Float = 1.0;
 
 	public static var noFunAllowed:Bool = false; // reduced animations
+	public static var quantNotes:Bool = Save.data.quantNotes;
 
 	public var audio:AudioHandler;
 	public var playingSong:Bool = false;
@@ -549,6 +550,16 @@ class ChartingState extends MusicBeatState
 			playbackSlider.value = playbackStepper.value;
 			audio.speed = playbackStepper.value;
 		});
+
+		var quantCheck:Checkmark = new Checkmark(quantNotes);
+		quantCheck.onUp.add((btn) ->
+		{
+			quantNotes = quantCheck.value;
+		});
+		quantCheck.x = getX("margin_right", quantCheck.width);
+		quantCheck.y = tab.bg.y + tab.bg.height - quantCheck.height - 8;
+		tab.add(quantCheck);
+		tab.add(createText(quantCheck.x - 70, quantCheck.y + 5, "Quants:"));
 
 		return tab;
 	}
@@ -1546,7 +1557,7 @@ class ChartingState extends MusicBeatState
 				break;
 
 			var note:ChartingNote = cast renderNotes.recycle(ChartingNote);
-			note.loadData(noteData, noteskin);
+			note.loadData(noteData, noteskin + (quantNotes ? '-quant' : ''));
 			note.reloadSprite();
 
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
@@ -1570,7 +1581,7 @@ class ChartingState extends MusicBeatState
 			if (noteData.length > 0)
 			{
 				var hold:ChartingNote = cast renderNotes.recycle(ChartingNote);
-				hold.loadData(noteData, noteskin);
+				hold.loadData(noteData, noteskin + (quantNotes ? '-quant' : ''));
 				hold.isHold = true;
 				hold.reloadSprite();
 
