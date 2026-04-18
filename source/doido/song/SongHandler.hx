@@ -40,6 +40,8 @@ typedef AssetModifiers =
 	var ?playerNotes:String;
 	var ?opponentNotes:String;
 	var ?hudType:String;
+	var ?ratings:String;
+	var ?countdown:String;
 	var ?gameOverPath:String;
 }
 
@@ -180,9 +182,10 @@ class SongHandler
 				playerNotes: "base",
 				opponentNotes: "base",
 				hudType: "base",
+				ratings: "base",
+				countdown: "base",
 				gameOverPath: "base",
-			},
-			// difficulties: ["normal"]
+			}
 		};
 
 		var metaPath:String = 'songs/$jsonInput/meta';
@@ -230,6 +233,9 @@ class SongHandler
 		mod.playerNotes = (b.playerNotes ?? a.playerNotes);
 		mod.opponentNotes = (b.opponentNotes ?? a.opponentNotes);
 		mod.hudType = (b.hudType ?? a.hudType);
+		mod.ratings = (b.ratings ?? a.ratings);
+		mod.countdown = (b.countdown ?? a.countdown);
+		mod.gameOverPath = (b.gameOverPath ?? a.gameOverPath);
 
 		return mod;
 	}

@@ -278,7 +278,7 @@ class PlayState extends MusicBeatState implements Playable
 			{
 				Timings.addScore(note, noteDiff);
 				rating = Timings.addAccuracyDiff(noteDiff);
-				hudClass.popUpCombo(Timings.combo);
+				hudClass.popUpCombo(Timings.combo, META.assets.ratings);
 
 				if (!note.missed)
 					Timings.notesHit++;
@@ -291,7 +291,7 @@ class PlayState extends MusicBeatState implements Playable
 			}
 
 			if (rating != "miss")
-				hudClass.popUpRating(rating);
+				hudClass.popUpRating(rating, META.assets.ratings);
 			hudClass.updateScoreTxt();
 		}
 
@@ -777,8 +777,14 @@ class PlayState extends MusicBeatState implements Playable
 			{
 				var countName:String = ["ready", "set", "go"][count - 1];
 				var countSprite = new FlxSprite();
-				countSprite.loadImage('ui/countdown/base/$countName');
-				countSprite.scale.set(0.65, 0.65);
+				countSprite.loadImage('ui/countdown/${META.assets.countdown}/$countName');
+				if (META.assets.countdown == "pixel")
+				{
+					countSprite.scale.set(6.5, 6.5);
+					countSprite.antialiasing = false;
+				}
+				else
+					countSprite.scale.set(0.65, 0.65);
 				countSprite.updateHitbox();
 				countSprite.screenCenter();
 				countSprite.cameras = [camHUD];

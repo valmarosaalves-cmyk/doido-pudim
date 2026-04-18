@@ -60,9 +60,9 @@ class BaseHud extends ClassHud
 		updatePositions();
 	}
 
-	override function popUpRating(ratingName:String = ""):RatingSprite
+	override function popUpRating(ratingName:String = "", assetPath:String = "base"):RatingSprite
 	{
-		var rating = super.popUpRating(ratingName);
+		var rating = super.popUpRating(ratingName, assetPath);
 		rating.ratingScale = 0.7;
 		rating.screenCenter(X);
 		if (play.middlescroll #if TOUCH_CONTROLS && !Save.data.modernControls #end)
@@ -72,9 +72,9 @@ class BaseHud extends ClassHud
 		return rating;
 	}
 
-	override function popUpCombo(comboNum:Int):Array<ComboSprite>
+	override function popUpCombo(comboNum:Int, assetPath:String = "base"):Array<ComboSprite>
 	{
-		var numberArray = super.popUpCombo(comboNum);
+		var numberArray = super.popUpCombo(comboNum, assetPath);
 
 		for (number in numberArray)
 		{

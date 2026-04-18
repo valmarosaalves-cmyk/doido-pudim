@@ -53,18 +53,18 @@ class VSliceHud extends ClassHud
 		updatePositions();
 	}
 
-	override function popUpRating(ratingName:String = ""):RatingSprite
+	override function popUpRating(ratingName:String = "", assetPath:String = "base"):RatingSprite
 	{
-		var rating = super.popUpRating(ratingName);
+		var rating = super.popUpRating(ratingName, assetPath);
 		rating.screenCenter(X);
 		rating.y = FlxG.height / 2 - 150;
 		rating.defaultAnim();
 		return rating;
 	}
 
-	override function popUpCombo(comboNum:Int):Array<ComboSprite>
+	override function popUpCombo(comboNum:Int, assetPath:String = "base"):Array<ComboSprite>
 	{
-		var numberArray = super.popUpCombo(comboNum);
+		var numberArray = super.popUpCombo(comboNum, assetPath);
 
 		for (number in numberArray)
 		{

@@ -228,7 +228,10 @@ class LoadingState extends MusicBeatState
 		for (image in Assets.list('images/ui/hud/${META.assets.hudType}/', false, IMAGE))
 			Assets.image(formatImage(image));
 
-		for (image in Assets.list('images/ui/ratings/${META.assets.hudType}/', false, IMAGE))
+		for (image in Assets.list('images/ui/ratings/${META.assets.ratings}/', false, IMAGE))
+			Assets.image(formatImage(image));
+
+		for (image in Assets.list('images/ui/countdown/${META.assets.countdown}/', false, IMAGE))
 			Assets.image(formatImage(image));
 	}
 

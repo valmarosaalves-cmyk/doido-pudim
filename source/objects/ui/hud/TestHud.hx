@@ -43,9 +43,9 @@ class TestHud extends ClassHud
 		updatePositions();
 	}
 
-	override function popUpRating(ratingName:String = ""):RatingSprite
+	override function popUpRating(ratingName:String = "", assetPath:String = "base"):RatingSprite
 	{
-		var rating = super.popUpRating(ratingName);
+		var rating = super.popUpRating(ratingName, assetPath);
 		rating.ratingScale = 0.7;
 		rating.screenCenter(X);
 		rating.y = ratingPos;
@@ -53,9 +53,9 @@ class TestHud extends ClassHud
 		return rating;
 	}
 
-	override function popUpCombo(comboNum:Int):Array<ComboSprite>
+	override function popUpCombo(comboNum:Int, assetPath:String = "base"):Array<ComboSprite>
 	{
-		var numberArray = super.popUpCombo(comboNum);
+		var numberArray = super.popUpCombo(comboNum, assetPath);
 
 		for (number in numberArray)
 		{
