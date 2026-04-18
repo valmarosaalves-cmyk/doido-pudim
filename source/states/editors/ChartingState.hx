@@ -1132,12 +1132,18 @@ class ChartingState extends MusicBeatState
 					if (FlxG.mouse.overlaps(renderNotes))
 					{
 						var mightBeHold:Bool = false;
+						var noteExists:Bool = false;
 
 						curCursor = POINTER;
 						for (note in renderNotes.members)
 						{
 							if (FlxG.mouse.overlaps(note))
 							{
+								if (CHART.notes.contains(note.data))
+									noteExists = true;
+								else
+									continue;
+
 								// hold hitbox
 								if ((note.isHold && FlxG.mouse.y > note.y + GRID_SIZE / 2)
 									|| (!note.isHold && FlxG.mouse.y > note.y + GRID_SIZE * 0.75))
@@ -1147,12 +1153,13 @@ class ChartingState extends MusicBeatState
 								}
 							}
 						}
+
 						if (FlxG.mouse.pressedRight)
 						{
 							var removed:Bool = false;
 							for (note in renderNotes.members)
 							{
-								if (FlxG.mouse.overlaps(note))
+								if (FlxG.mouse.overlaps(note) && noteExists)
 								{
 									removed = true;
 									if (note.isHold)
@@ -1177,7 +1184,7 @@ class ChartingState extends MusicBeatState
 							var clearNote:NoteData = null;
 							for (note in renderNotes.members)
 							{
-								if (FlxG.mouse.overlaps(note))
+								if (FlxG.mouse.overlaps(note) && noteExists)
 								{
 									if (FlxG.keys.pressed.CONTROL)
 									{
