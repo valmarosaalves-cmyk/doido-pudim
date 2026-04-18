@@ -154,6 +154,8 @@ class Main extends Sprite
 
 	public static var fpsX(default, set):Float = 5;
 	public static var fpsY(default, set):Float = 5;
+	public static var fpsWidth(get, never):Float;
+	public static var fpsHeight(get, never):Float;
 
 	public static function set_fpsX(f:Float)
 	{
@@ -168,6 +170,12 @@ class Main extends Sprite
 		scaleFps();
 		return f;
 	}
+
+	public static function get_fpsWidth():Float
+		return fpsCounter?.bgWidth ?? 80;
+
+	public static function get_fpsHeight():Float
+		return fpsCounter?.bgHeight ?? 50;
 
 	public static function setFpsPos(x:Float, y:Float)
 	{
