@@ -37,7 +37,7 @@ class CreditsState extends MusicBeatState
 	public var nameTxt:Alphabet;
 	public var descTxt:Alphabet;
 
-	public var leaving:Bool = false;
+	public var leaving:Bool = true;
 	public var holdTimer:Float = 0.0;
 	public var holdMax:Float = 0.55;
 
@@ -124,7 +124,7 @@ class CreditsState extends MusicBeatState
 	override function closeSubState()
 	{
 		super.closeSubState();
-		MusicBeat.activateTimers(true);
+		leaving = false;
 	}
 
 	var elapsedTime:Float = 0.0;
@@ -132,7 +132,6 @@ class CreditsState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		persistentUpdate = true;
 		if (!leaving)
 		{
 			var change:Int = (Controls.pressed(UI_RIGHT) ? 1 : 0) - (Controls.pressed(UI_LEFT) ? 1 : 0);
@@ -151,11 +150,10 @@ class CreditsState extends MusicBeatState
 			{
 				if (!astraEasterEgg)
 				{
-					persistentUpdate = false;
 					var url = creditList[curSelected].link;
 					if (url != null && url.length > 0)
 					{
-						MusicBeat.activateTimers(false);
+						leaving = true;
 						MusicBeat.openURL(url);
 					}
 				}
