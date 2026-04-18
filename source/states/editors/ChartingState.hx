@@ -111,7 +111,7 @@ class ChartingState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		setFpsPos(18, FlxG.height - 125 - Std.int(Main.fpsCounter.bgHeight));
+		setFpsPos(18, FlxG.height - 125 - Main.fpsHeight);
 		FlxG.mouse.visible = true;
 		Conductor.initialBPM = CHART.bpm;
 		Conductor.mapBPMChanges(EVENTS.events);
