@@ -171,6 +171,8 @@ class Main extends Sprite
 
 	public static function setFpsPos(x:Float, y:Float)
 	{
+		if(fpsCounter == null) return;
+		
 		@:bypassAccessor {
 			fpsX = x;
 			fpsY = y;
@@ -180,6 +182,8 @@ class Main extends Sprite
 
 	public static function scaleFps()
 	{
+		if(fpsCounter == null) return;
+
 		var scaleX:Float = FlxG.stage.window.width / FlxG.width;
 		var scaleY:Float = FlxG.stage.window.height / FlxG.height;
 		var scale:Float = Math.min(scaleX, scaleY);
