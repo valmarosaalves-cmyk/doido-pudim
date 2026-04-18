@@ -42,8 +42,9 @@ class AudioHandler
 		else
 			voicesGlobal = null;
 
-		if (voicesGlobal?.length < length)
-			length = voicesGlobal.length;
+		if (voicesGlobal != null)
+			if (voicesGlobal?.length < length)
+				length = voicesGlobal.length;
 
 		// opponent voices
 		if (Assets.fileExists('songs/${song}/audio/Voices$diff-opp', SOUND))
@@ -53,8 +54,9 @@ class AudioHandler
 		else
 			voicesOpp = null;
 
-		if (voicesOpp?.length < length)
-			length = voicesOpp.length;
+		if (voicesOpp != null)
+			if (voicesOpp?.length < length)
+				length = voicesOpp.length;
 
 		muteVoices = false;
 	}
