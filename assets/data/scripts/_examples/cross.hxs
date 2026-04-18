@@ -1,7 +1,7 @@
 /*
 *
-* This script hides the opponent stumline, makes the player strums centered in a "cross" shape
-* and also makes notes scroll from the direction the strum in pointing at.
+* This script hides the opponent strumline and makes the player strums centered in a "cross" shape
+* it also makes notes scroll from the direction the strum in pointing at.
 *
 */
 import flixel.FlxG;

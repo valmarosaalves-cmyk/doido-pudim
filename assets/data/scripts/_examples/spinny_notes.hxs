@@ -1,6 +1,7 @@
 /*
 *
-* This script disables the default note path that the notes follow and
+* This script hides the opponent strumline and makes the player strumline centered on the screen
+* it also disables the default note path that the notes follow and
 * makes the notes follow a circular shape around the strums instead
 * hold/long notes also follow the same circular shape
 *
