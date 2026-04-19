@@ -67,6 +67,9 @@ class Strumline extends FlxGroup
 
 	public function addNote(noteData:NoteData)
 	{
+		var holdResolution:Float = this.holdResolution;
+		if (Save.data.lowQuality) holdResolution = 1;
+
 		var note:Note = cast recycle(Note);
 		note.loadData(noteData, skin);
 		note.reloadSprite();
