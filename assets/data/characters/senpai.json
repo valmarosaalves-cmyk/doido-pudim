@@ -7,6 +7,10 @@
 	"idleAnims": [],
 	"spriteType": "SPARROW",
 	"spritesheet": "senpai/senpai",
+	"globalOffset": {
+		"x": 20,
+		"y": 80
+	},
 	"anims": [
 		{
 			"prefix": "Senpai Idle instance 1",
@@ -54,5 +58,5 @@
 			}
 		}
 	],
-	"singType": "LOOP"
+	"singType": "LAST"
 }

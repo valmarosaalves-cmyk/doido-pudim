@@ -1,0 +1,128 @@
+{
+	"pixel": true,
+	"scale": {
+		"x": 6,
+		"y": 6
+	},
+	"anims": [
+		{
+			"prefix": "BF IDLE instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "idle",
+			"framerate": null,
+			"offset": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF LEFT NOTE instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singLEFT",
+			"framerate": null,
+			"offset": {
+				"x": -1,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF DOWN NOTE instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singDOWN",
+			"framerate": null,
+			"offset": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF UP NOTE instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singUP",
+			"framerate": null,
+			"offset": {
+				"x": -1,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF RIGHT NOTE instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singRIGHT",
+			"framerate": null,
+			"offset": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF LEFT MISS instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singLEFTmiss",
+			"framerate": null,
+			"offset": {
+				"x": -1,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF DOWN MISS instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singDOWNmiss",
+			"framerate": null,
+			"offset": {
+				"x": 1,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF UP MISS instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singUPmiss",
+			"framerate": null,
+			"offset": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "BF RIGHT MISS instance 1",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singRIGHTmiss",
+			"framerate": null,
+			"offset": {
+				"x": 1,
+				"y": 0
+			}
+		}
+	],
+	"spritesheet": "bf-pixel/bfPixel",
+	"flipX": true
+}

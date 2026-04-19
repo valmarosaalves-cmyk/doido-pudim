@@ -1,0 +1,78 @@
+{
+	"singType": "LOOP",
+	"anims": [
+		{
+			"prefix": "idle spirit_",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": true,
+			"name": "idle",
+			"framerate": null,
+			"offset": {
+				"x": 0,
+				"y": 0
+			}
+		},
+		{
+			"prefix": "left_",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": false,
+			"name": "singLEFT",
+			"framerate": null,
+			"offset": {
+				"x": 9,
+				"y": -1
+			}
+		},
+		{
+			"prefix": "spirit down_",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singDOWN",
+			"framerate": null,
+			"offset": {
+				"x": 66,
+				"y": 65
+			}
+		},
+		{
+			"prefix": "up_",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singUP",
+			"framerate": null,
+			"offset": {
+				"x": 0,
+				"y": 9
+			}
+		},
+		{
+			"prefix": "right_",
+			"indices": [],
+			"flipX": null,
+			"flipY": null,
+			"loop": null,
+			"name": "singRIGHT",
+			"framerate": null,
+			"offset": {
+				"x": -5,
+				"y": -1
+			}
+		}
+	],
+	"spritesheet": "senpai/spirit",
+	"pixel": true,
+	"scale": {
+		"x": 6,
+		"y": 6
+	},
+	"idleAnims": [],
+	"spriteType": "PACKER"
+}

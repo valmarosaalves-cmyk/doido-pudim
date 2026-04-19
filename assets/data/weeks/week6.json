@@ -1,0 +1,13 @@
+{
+    "songs": [
+        {"song": "senpai", "icon":"senpai"},
+        {"song": "roses", "icon":"senpai-angry"},
+        {"song": "thorns", "icon":"spirit"}
+    ],
+    "weekFile": "week6",
+    "weekName": "hating simulator",
+    "chars": ["senpai", "bf", "gf"],
+    "diffs": ["easy", "normal", "hard", "erect", "nightmare"],
+    "storyDiffs": ["easy", "normal", "hard"],
+    "storyColor": "0xFFFF3C6E"
+}

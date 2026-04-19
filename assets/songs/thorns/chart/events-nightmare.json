@@ -1,0 +1,158 @@
+{
+	"events": [
+		{
+			"stepTime": 0,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 64,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 128,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 192,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 256,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 320,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 384,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 448,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 512,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 544,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 640,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 656,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 768,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 832,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 896,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 960,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 1024,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 1072,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 1152,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 1216,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 1280,
+			"data": [
+				"dad"
+			],
+			"name": "Camera Focus"
+		},
+		{
+			"stepTime": 1344,
+			"data": [
+				"bf"
+			],
+			"name": "Camera Focus"
+		}
+	]
+}

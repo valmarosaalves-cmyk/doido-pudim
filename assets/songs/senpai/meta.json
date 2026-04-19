@@ -1,0 +1,16 @@
+{
+	"composer": "Kawai Sprite",
+	"player1": "bf-pixel",
+	"player2": "senpai",
+	"stage": "school",
+	"assets": {
+		"playerNotes": "pixel",
+		"ratings": "pixel",
+		"countdown": "pixel",
+		"opponentNotes": "pixel",
+		"gameOverPath": "base",
+		"hudType": "base"
+	},
+	"charter": "Unknown",
+	"gf": "gf-pixel"
+}

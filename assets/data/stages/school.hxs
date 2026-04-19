@@ -2,14 +2,16 @@ var bgGirls:FlxSprite;
 
 function create()
 {
-    camZoom = 0.8;
-    gfPos.y += 80;
+    camZoom = 1;
+    gfPos = {x: 660 + 20, y: 580 + 50};
+    dadPos = {x: 260 + 50, y: 700};
+    bfPos = {x: 1100 - 70, y: 700};
 
     var bgSky = new FlxSprite().loadGraphic(Assets.image('stages/school/weebSky'));
     bgSky.scrollFactor.set(0.1, 0.1);
     add(bgSky);
     
-    var bgSchool:FlxSprite = new FlxSprite(-200, 0).loadGraphic(Assets.image('stages/school/weebSchool'));
+    var bgSchool:FlxSprite = new FlxSprite(-50, 0).loadGraphic(Assets.image('stages/school/weebSchool'));
     bgSchool.scrollFactor.set(0.6, 0.90);
     add(bgSchool);
     
