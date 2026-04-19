@@ -24,6 +24,7 @@ class HealthIcon extends FlxSprite
 	public var barColor:FlxColor;
 
 	public var globalScale(default, set):Float = 1;
+
 	public function set_globalScale(v:Float):Float
 	{
 		globalScale = v;
@@ -50,8 +51,10 @@ class HealthIcon extends FlxSprite
 		}
 		catch (e)
 		{
-			Logs.print('ICON $curIcon LOAD ERROR: $e', ERROR);
-			data = DEFAULT;
+			if (curIcon.contains('-'))
+				return setIcon(formatChar(curIcon), isPlayer);
+			else
+				data = DEFAULT;
 		}
 
 		var iconGraphic = Assets.image('icons/${data.image ?? curIcon}');
@@ -61,7 +64,8 @@ class HealthIcon extends FlxSprite
 		animation.add("icon", [for (i in 0...gridFrames) i], 0, false);
 		animation.play("icon");
 
-		if (data.scale == null) data.scale = DEFAULT.scale;
+		if (data.scale == null)
+			data.scale = DEFAULT.scale;
 		set_globalScale(globalScale);
 
 		barColor = SpriteUtil.getColor(data.color ?? DEFAULT.color);
@@ -92,7 +96,6 @@ class HealthIcon extends FlxSprite
 	public static function defaultIcon():IconData
 	{
 		return {
-			image: "face",
 			color: "0xFFA1A1A1",
 			scale: 1,
 			gridWidth: 150,
@@ -100,4 +103,7 @@ class HealthIcon extends FlxSprite
 			flipY: false
 		};
 	}
+
+	inline public static function formatChar(char:String):String
+		return char.substring(0, char.lastIndexOf('-'));
 }

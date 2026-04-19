@@ -1,0 +1,22 @@
+{
+    "spritesheet": "senpai",
+    "scale": {
+        "x": 1,
+        "y": 1
+    },
+    "globalOffset": {
+        "x": -30,
+        "y": 0
+    },
+    "anims": [
+        {
+            "name": "idle",
+            "prefix": "idle",
+            "loop": true,
+            "offset": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ]
+}
