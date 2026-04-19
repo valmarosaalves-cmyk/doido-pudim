@@ -10,8 +10,6 @@ import objects.ui.notes.Splash.Cover;
 
 class Strumline extends FlxGroup
 {
-	final resolution:Float = 1;
-
 	public var x:Float = 0;
 	public var downscroll:Bool = false;
 	public var isPlayer:Bool = false;
@@ -24,6 +22,7 @@ class Strumline extends FlxGroup
 	public var pauseNotes:Bool = false;
 	public var spawnStep:Float = 32;
 	public var despawnStep:Float = 12;
+	public var holdResolution:Float = 1;
 
 	// checking if you can ghost tap with the "idle" option
 	public var ghostTappingIdle:Bool = true;
@@ -79,7 +78,7 @@ class Strumline extends FlxGroup
 		// searchs for hold notes
 		if (noteData.length > 0)
 		{
-			var holdLength:Int = Math.ceil((noteData.length * resolution) + 1);
+			var holdLength:Int = Math.ceil((noteData.length * holdResolution) + 1);
 			var holdIndex:Float = 0.0;
 			for (i in 0...holdLength)
 			{
@@ -101,7 +100,7 @@ class Strumline extends FlxGroup
 					step = 0.5;
 				else
 					step = 1.0;
-				hold.holdStep = step / (hold.isHoldEnd ? 1 : resolution);
+				hold.holdStep = step / (hold.isHoldEnd ? 1 : holdResolution);
 
 				hold.holdIndex = holdIndex;
 				note.children.push(hold);
