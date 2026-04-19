@@ -88,18 +88,16 @@ class Strumline extends FlxGroup
 				hold.isHold = true;
 				hold.isHoldEnd = (i == holdLength - 1);
 
-				var step:Float;
+				var step:Float = 1.0;
 				if (i == holdLength - 2)
 				{
-					// (i == holdLength - 2 ? endDiff : 1.0)
 					step = noteData.length - Math.floor(noteData.length);
 					if (step <= 0.0)
 						step = 1.0; // oh well
 				}
 				else if (hold.isHoldEnd)
 					step = 0.5;
-				else
-					step = 1.0;
+				
 				hold.holdStep = step / (hold.isHoldEnd ? 1 : holdResolution);
 
 				hold.holdIndex = holdIndex;
