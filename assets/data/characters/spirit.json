@@ -1,5 +1,6 @@
 {
 	"singType": "LOOP",
+	"cameraOffset": {"x": 0, "y": 60},
 	"anims": [
 		{
 			"prefix": "idle spirit_",
