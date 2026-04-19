@@ -1,5 +1,6 @@
 package states;
 
+import doido.Mods;
 import doido.song.Highscore;
 import doido.song.Highscore.ScoreData;
 import doido.objects.Alphabet;
@@ -29,6 +30,9 @@ class DebugMenu extends MusicBeatState
 		"Options",
 		"Credits",
 		"Main Menu",
+		#if MODS_FOLDER
+		"Mods",
+		#end
 		#if !mobile "Character Editor", "Crash Handler", "Popup" #end
 	];
 	var text:FlxText;
@@ -120,6 +124,10 @@ class DebugMenu extends MusicBeatState
 						};
 						PlayState.loadWeek(week, "hard"); */
 					MusicBeat.switchState(new states.menus.StoryMenuState());
+				#if MODS_FOLDER
+				case "mods":
+					MusicBeat.switchState(new ModManager());
+				#end
 				default:
 					MusicBeat.switchState(new Freeplay());
 			}
@@ -292,6 +300,86 @@ class Freeplay extends MusicBeatState
 		drawScore();
 	}
 }
+
+#if MODS_FOLDER
+class ModManager extends MusicBeatState
+{
+	var text:FlxText;
+	var title:FlxText;
+	var cur:Int = 0;
+	var options:Array<String> = [];
+
+	override function create()
+	{
+		super.create();
+		MusicBeat.playMusic("freakyMenu");
+		DiscordIO.changePresence("In the Mod Manager");
+
+		var bg = new FlxSprite().loadGraphic(Assets.image('menuInvert'));
+		bg.screenCenter();
+		add(bg);
+
+		text = new FlxText(10, 0, 0, '');
+		text.setFormat(Main.globalFont, 48, 0xFFFFFFFF, LEFT);
+		text.setOutline(0xFF000000, 3);
+		add(text);
+		updateList();
+		drawText();
+		text.y = FlxG.height - text.height - 10;
+
+		title = new FlxText(10, 0, 0, 'Mods');
+		title.setFormat(Main.globalFont, 100, 0xFFFFFFFF, LEFT);
+		title.setOutline(0xFF000000, 5);
+		title.y = text.y - title.height;
+		add(title);
+	}
+
+	function updateList()
+	{
+		options = [];
+		for (mod => enabled in Mods.modList)
+			options.push(mod + ' - ' + enabled);
+		options.push("Reload List");
+	}
+
+	function drawText()
+	{
+		text.text = "";
+		for (i in 0...options.length)
+			text.text += (i == cur ? "> " : "") + options[i] + "\n";
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		if (Controls.justPressed(UI_UP))
+			changeSelection(-1);
+		if (Controls.justPressed(UI_DOWN))
+			changeSelection(1);
+
+		if (Controls.justPressed(BACK))
+			MusicBeat.switchState(new states.DebugMenu());
+
+		if (Controls.justPressed(ACCEPT))
+		{
+			if (cur == 0)
+				Mods.setMod("test", !Mods.modList.get("test"));
+			updateList();
+			drawText();
+		}
+	}
+
+	public function changeSelection(change:Int = 0)
+	{
+		if (change != 0)
+			FlxG.sound.play(Assets.sound('scroll'));
+
+		cur += change;
+		cur = FlxMath.wrap(cur, 0, options.length - 1);
+		drawText();
+	}
+}
+#end
 
 class DebugControls extends MusicBeatState
 {

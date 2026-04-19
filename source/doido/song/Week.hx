@@ -63,6 +63,8 @@ class Week
 				list.push(rawWeek);
 		}
 
+		
+
 		return list;
 	}
 

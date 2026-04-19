@@ -27,6 +27,10 @@ class Init extends MusicBeatState
 		FlxG.mouse.useSystemCursor = true;
 		FlxG.mouse.visible = false;
 
+		#if MODS_FOLDER
+		doido.Mods.init();
+		#end
+
 		FlxGraphic.defaultPersist = true;
 		openfl.Assets.cache.enabled = false;
 		Cache.initCache();

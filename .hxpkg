@@ -40,6 +40,11 @@
 				"name": "hxcpp",
 				"link": "https://github.com/FunkinCrew/hxcpp",
 				"branch": "1a468335a0016aa87439c1878b5b845f88a4bae0"
+			},
+			{
+				"name": "polymod",
+				"link": "https://github.com/FunkinCrew/polymod",
+				"branch": "5c307d24369def05f44353c60719bd71e7844727"
 			}
 		]
 	}

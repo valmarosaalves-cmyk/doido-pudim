@@ -33,6 +33,7 @@
 	<define name="TOUCH_CONTROLS"		if="mobile"/>
 	<define name="SCREENSHOT_FEATURE" 	if="cpp" unless="mobile"/>
 	<define name="THREAD_LOADING" 	    if="cpp"/>
+	<define name="MODS_FOLDER" 	    	if="false"/>
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
@@ -42,6 +43,7 @@
 
 	<source path="source" />
 	<assets path="assets" />
+	<assets path="mods" if="MODS_FOLDER"/>
 
 	<!-- OpenAL config -->
 	<section if="desktop">
@@ -59,9 +61,8 @@
 	<haxedef name="hscriptPos" />
 	
 	<haxelib name="hxdiscord_rpc" if="DISCORD_RPC" />
-	
-	<!-- ______ Custom Doido Libraries ______ -->
 	<haxelib name="flixel-animate" version="1.4.0" />
+	<haxelib name="polymod" if="MODS_FOLDER" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
