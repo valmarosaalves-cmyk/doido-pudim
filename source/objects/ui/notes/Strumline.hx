@@ -10,6 +10,8 @@ import objects.ui.notes.Splash.Cover;
 
 class Strumline extends FlxGroup
 {
+	final resolution:Float = 1;
+
 	public var x:Float = 0;
 	public var downscroll:Bool = false;
 	public var isPlayer:Bool = false;
@@ -17,7 +19,7 @@ class Strumline extends FlxGroup
 	public var wide:Bool = false;
 
 	public var scrollSpeed:Float = 1.0;
-	
+
 	public var hasModchart:Bool = false;
 	public var pauseNotes:Bool = false;
 	public var spawnStep:Float = 32;
@@ -77,7 +79,7 @@ class Strumline extends FlxGroup
 		// searchs for hold notes
 		if (noteData.length > 0)
 		{
-			var holdLength:Int = Math.ceil(noteData.length + 1);
+			var holdLength:Int = Math.ceil((noteData.length * resolution) + 1);
 			var holdIndex:Float = 0.0;
 			for (i in 0...holdLength)
 			{
@@ -86,18 +88,21 @@ class Strumline extends FlxGroup
 
 				hold.isHold = true;
 				hold.isHoldEnd = (i == holdLength - 1);
+
+				var step:Float;
 				if (i == holdLength - 2)
 				{
 					// (i == holdLength - 2 ? endDiff : 1.0)
-					var endDiff:Float = noteData.length - Math.floor(noteData.length);
-					if (endDiff <= 0.0)
-						endDiff = 1.0; // oh well
-					hold.holdStep = endDiff;
+					step = noteData.length - Math.floor(noteData.length);
+					if (step <= 0.0)
+						step = 1.0; // oh well
 				}
 				else if (hold.isHoldEnd)
-					hold.holdStep = 0.5;
+					step = 0.5;
 				else
-					hold.holdStep = 1.0;
+					step = 1.0;
+				hold.holdStep = step / (hold.isHoldEnd ? 1 : resolution);
+
 				hold.holdIndex = holdIndex;
 				note.children.push(hold);
 
@@ -159,7 +164,7 @@ class Strumline extends FlxGroup
 	public function updateHoldClipping(curStepFloat:Float)
 	{
 		// calculating the clipping by how much you held the note
-		for(hold in notes)
+		for (hold in notes)
 		{
 			if (!hold.isHold)
 				continue;
