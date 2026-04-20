@@ -1,11 +1,14 @@
 package doido;
 
 #if MODS_FOLDER
+import polymod.util.VersionUtil;
 import polymod.format.ParseRules;
 import polymod.Polymod;
+import polymod.PolymodConfig;
+import thx.semver.Version;
 import sys.io.File;
+import doido.song.Week.WeekOrder;
 
-// used for the list json
 typedef Mod =
 {
 	var name:String;
@@ -17,75 +20,186 @@ typedef ModList =
 	var mods:Array<Mod>;
 }
 
+/*
+ * This is a very early version of Doido's new Mod API.
+ * Please keep in mind a lot of things are not yet implemented
+ * and others may break when we change stuff.
+ * TO-DO
+ * - Mod Settings
+ * - Credits
+ * - Better Meta
+ * - Better Mod Manager
+ * - Support for more soft-coded things
+ */
+
 class Mods
 {
-    //idk if im gonna need this for something
-	public static var modMetas:Array<ModMetadata> = [];
-	public static var modList:Map<String, Bool> = [];
+	static final API_VERSION:Version = "0.1.0";
+	// idk if im gonna need this for something
+	public static var modList:ModList = {mods: []};
 
 	public static function init()
 	{
+		PolymodConfig.modMetadataFile = 'doidoMeta.json';
+		PolymodConfig.modIconFile = 'doidoIcon.png';
 		Polymod.init({
 			modRoot: "mods",
 			dirs: [],
 			frameworkParams: {
 				coreAssetRedirect: "assets"
 			},
+			apiVersionRule: VersionUtil.anyPatch(API_VERSION),
+			errorCallback: onError,
 			parseRules: new ParseRules(), // disables it i hope
-			ignoredFiles: ["mods.json"],
+			ignoredFiles: ["assets/data/weeks/order.json", "mods/mods.json"],
 			useScriptedClasses: false
 		});
 		loadJson();
 		scan();
-		loadMods();
 	}
 
 	// scans the mods folder for new mods n stuff
 	public static function scan()
 	{
-		modMetas = Polymod.scan({modRoot: "mods"});
+		var modMetas = Polymod.scan({modRoot: "mods"});
+		var scanned:Array<String> = [];
 		for (meta in modMetas)
 		{
-			if (modList.get(meta.id) == null)
-				modList.set(meta.id, true);
+			if (!exists(meta.id))
+				setMod(meta.id); // just to be safe
+			scanned.push(meta.id);
 		}
+
+		for (mod in modList.mods)
+			if (!scanned.contains(mod.name))
+				modList.mods.remove(mod);
+
 		saveJson();
+		loadMods();
 	}
 
 	public static function loadJson()
 	{
-		var savedMods:ModList = cast haxe.Json.parse(openfl.Assets.getText("mods/mods.json").trim());
-		for (mod in savedMods.mods)
-			modList.set(mod.name, mod.enabled);
+		try
+		{
+			modList = cast haxe.Json.parse(openfl.Assets.getText("mods/mods.json").trim());
+		}
+		catch (e)
+		{
+			Logs.print('Error loading Mod List: $e', ERROR);
+			modList = {mods: []};
+		}
 	}
 
 	public static function saveJson()
 	{
-		var savedMods:ModList = {mods: []};
-		for (mod => enabled in modList)
-			savedMods.mods.push({name: mod, enabled: enabled});
-		var data:String = haxe.Json.stringify(savedMods, "\t");
+		var data:String = haxe.Json.stringify(modList, "\t");
 		File.saveContent("mods/mods.json", data);
 	}
 
 	public static function loadMods()
 	{
 		var enabledMods:Array<String> = [];
-		for (mod => enabled in modList)
-			if (enabled)
-				enabledMods.push(mod);
-
-		trace(enabledMods);
+		for (mod in modList.mods)
+			if (mod.enabled)
+				enabledMods.push(mod.name);
 		Polymod.loadOnlyMods(enabledMods);
 	}
 
-	public static function setMod(mod:String, enable:Bool)
+	public static function getMod(mod:String)
 	{
-		if (modList.get(mod) == null)
-			return; // cant update an existing mod...
-		modList.set(mod, enable);
+		var index:Int = getIndex(mod);
+		return index == -1 ? false : modList.mods[index].enabled;
+	}
+
+	public static function setMod(mod:String, ?enable:Bool, save:Bool = false)
+	{
+		var index:Int = getIndex(mod);
+
+		if (index == -1)
+			addMod(mod);
+		else
+			modList.mods[index].enabled = enable ?? modList.mods[index].enabled;
+
+		if (save)
+		{
+			saveJson();
+			loadMods();
+		}
+	}
+
+	// unsafe, dont use
+	public static function addMod(mod:String)
+	{
+		modList.mods.push({
+			name: mod,
+			enabled: true
+		});
+	}
+
+	public static function getIndex(mod:String)
+	{
+		for (i in 0...modList.mods.length)
+			if (mod == modList.mods[i].name)
+				return i;
+
+		return -1;
+	}
+
+	public static function exists(mod:String)
+		return getIndex(mod) >= 0;
+
+	public static function move(index:Int, offset:Int)
+	{
+		// check if its in bounds
+		if (index + offset >= modList.mods.length || index + offset < 0)
+			return;
+
+		trace("um");
+
+		var temp = modList.mods[index];
+		modList.mods[index] = modList.mods[index + offset];
+		modList.mods[index + offset] = temp;
 		saveJson();
 		loadMods();
 	}
+
+	static var skippedErrors:Array<PolymodErrorType> = [NOTICE];
+
+	public static function onError(err:PolymodError):Void
+	{
+		if (skippedErrors.contains(err.severity))
+			return;
+
+		Logs.print('Polymod.${(cast err.origin).toUpperCase()} | ${err.message}', POLYMOD, true, true, false);
+	}
+
+	public static var weekList(get, never):Array<String>;
+
+	public static function get_weekList():Array<String>
+	{
+		var weekList:Array<String> = [];
+		for (mod in modList.mods)
+		{
+			if (mod.enabled)
+			{
+				try
+				{
+					var order:WeekOrder = {order: []};
+					order = cast getJSON("data/weeks/order", mod.name);
+					weekList = weekList.concat(order.order);
+				}
+				catch (e)
+				{
+					Logs.print('WEEK ORDER LOAD ERROR, on mod ${mod.name}: $e');
+				}
+			}
+		}
+
+		return weekList;
+	}
+
+	public static function getJSON(key:String, mod:String):Dynamic
+		return haxe.Json.parse(Polymod.getFileSystem().getFileContent('mods/$mod/$key.json').trim());
 }
 #end

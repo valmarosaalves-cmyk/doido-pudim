@@ -42,22 +42,9 @@
 				"branch": "1a468335a0016aa87439c1878b5b845f88a4bae0"
 			},
 			{
-				"name": "polymod",
-				"link": "https://github.com/FunkinCrew/polymod",
-				"branch": "5c307d24369def05f44353c60719bd71e7844727"
-			},
-			{
-				"name": "jsonpatch",
-				"version": "1.1.0"
-			},
-			{
-				"name": "jsonpath",
-				"version": "1.1.0"
-			},
-			{
-				"name": "thx.core",
-				"link": "https://github.com/fponticelli/thx.core",
-				"branch": "2bf2b992e06159510f595554e6b952e47922f128"
+				"name": "polymod-lite",
+				"link": "https://github.com/DoidoTeam/polymod-lite",
+				"branch": "master"
 			},
 			{
 				"name": "thx.semver",

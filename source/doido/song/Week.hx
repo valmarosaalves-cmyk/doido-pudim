@@ -56,14 +56,16 @@ class Week
 			order.order = Assets.list("data/weeks/", true, ["order"], JSON);
 		}
 
+		#if MODS_FOLDER
+		order.order = order.order.concat(doido.Mods.weekList);
+		#end
+
 		for (week in order.order)
 		{
 			var rawWeek:WeekData = loadWeek(week);
 			if ((!rawWeek.storyModeOnly || storyMode) && (!rawWeek.freeplayOnly || freeplay) && rawWeek.songs.length > 0)
 				list.push(rawWeek);
 		}
-
-		
 
 		return list;
 	}

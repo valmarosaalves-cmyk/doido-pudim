@@ -57,7 +57,11 @@ class HealthIcon extends FlxSprite
 				data = DEFAULT;
 		}
 
-		var iconGraphic = Assets.image('icons/${data.image ?? curIcon}');
+		var iconPath = data.image ?? curIcon;
+		if (!Assets.fileExists('images/icons/$iconPath', IMAGE))
+			iconPath = "face";
+
+		var iconGraphic = Assets.image('icons/$iconPath');
 		gridFrames = data.gridFrames ?? (Math.floor(iconGraphic.width / (data.gridWidth ?? DEFAULT.gridWidth)));
 		loadGraphic(iconGraphic, true, Math.floor(iconGraphic.width / gridFrames), iconGraphic.height);
 

@@ -22,6 +22,7 @@ enum ErrorType
 	WARNING;
 	ERROR;
 	HSCRIPT;
+	POLYMOD;
 }
 
 class Logs
@@ -33,6 +34,7 @@ class Logs
 		WARNING => [93, "D7FC04"],
 		ERROR => [91, "D60D0D"],
 		HSCRIPT => [94, "0000FF"],
+		POLYMOD => [95, "F5276C"],
 	];
 
 	public static function init()
@@ -74,6 +76,7 @@ class Logs
 	{
 		return switch (type)
 		{
+			case POLYMOD: "[POLYMOD]";
 			case HSCRIPT: "[HSCRIPT]";
 			case WARNING: "[WARNING]";
 			case ERROR: "[ ERROR ]";

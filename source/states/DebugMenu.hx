@@ -308,6 +308,7 @@ class ModManager extends MusicBeatState
 	var title:FlxText;
 	var cur:Int = 0;
 	var options:Array<String> = [];
+	var reordering:Bool = false;
 
 	override function create()
 	{
@@ -323,22 +324,21 @@ class ModManager extends MusicBeatState
 		text.setFormat(Main.globalFont, 48, 0xFFFFFFFF, LEFT);
 		text.setOutline(0xFF000000, 3);
 		add(text);
-		updateList();
-		drawText();
-		text.y = FlxG.height - text.height - 10;
 
 		title = new FlxText(10, 0, 0, 'Mods');
 		title.setFormat(Main.globalFont, 100, 0xFFFFFFFF, LEFT);
 		title.setOutline(0xFF000000, 5);
-		title.y = text.y - title.height;
 		add(title);
+
+		updateList();
+		drawText();
 	}
 
 	function updateList()
 	{
 		options = [];
-		for (mod => enabled in Mods.modList)
-			options.push(mod + ' - ' + enabled);
+		for (mod in Mods.modList.mods)
+			options.push(mod.name + ' - ' + mod.enabled);
 		options.push("Reload List");
 	}
 
@@ -347,6 +347,8 @@ class ModManager extends MusicBeatState
 		text.text = "";
 		for (i in 0...options.length)
 			text.text += (i == cur ? "> " : "") + options[i] + "\n";
+		text.y = FlxG.height - text.height - 10;
+		title.y = text.y - title.height;
 	}
 
 	override function update(elapsed:Float)
@@ -362,17 +364,32 @@ class ModManager extends MusicBeatState
 
 		if (Controls.justPressed(ACCEPT))
 		{
-			if (cur == 0)
-				Mods.setMod("test", !Mods.modList.get("test"));
+			if (options[cur] == "Reload List")
+				Mods.scan();
+			else
+			{
+				var mod = Mods.modList.mods[cur];
+				Mods.setMod(mod.name, !mod.enabled, true);
+			}
+
 			updateList();
 			drawText();
+			changeSelection();
 		}
+
+		reordering = FlxG.keys.pressed.SHIFT;
 	}
 
 	public function changeSelection(change:Int = 0)
 	{
 		if (change != 0)
 			FlxG.sound.play(Assets.sound('scroll'));
+
+		if (reordering && cur != 0 && options[cur] != "Reload List")
+		{
+			Mods.move(cur, change);
+			updateList();
+		}
 
 		cur += change;
 		cur = FlxMath.wrap(cur, 0, options.length - 1);
