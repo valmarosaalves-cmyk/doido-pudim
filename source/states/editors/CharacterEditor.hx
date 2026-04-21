@@ -386,7 +386,7 @@ class CharacterEditor extends MusicBeatState
 		indices = new PsychUIInputText(getX("margin_first"), getY(bottomY - 1), textWidth, animEditing.indices.join(", "), 14);
 		indices.onChange.add((old, cur, input) ->
 		{
-			animEditing.indices = cur.split(",").map(s -> Std.parseInt(s) ?? 0);
+			animEditing.indices = cur.split(",").map(s -> Std.parseInt(s)).filter(n -> n != null);
 		});
 		indices.cameras = [camHUD];
 		tab.add(indices);

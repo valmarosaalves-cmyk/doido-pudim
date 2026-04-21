@@ -424,7 +424,14 @@ class PsychUIInputText extends FlxSpriteGroup
 				focusOn.unfocus();
 			focusOn.resetCaret();
 		}
-		return (focusOn = v);
+		focusOn = v;
+
+		if (focusOn != null)
+			Controls.setSoundKeys(true);
+		else
+			Controls.setSoundKeys(false);
+
+		return focusOn;
 	}
 
 	override function update(elapsed:Float)
