@@ -240,12 +240,14 @@ class PlayState extends MusicBeatState implements Playable
 				if (note.stepTime < (curStepFloat + Conductor.getStepAtTime(startOffset)))
 					playField.curSpawnNote++;
 			}
+			hudClass.alpha = 1;
 		}
 		else
 		{
 			for (strumline in playField.strumlines)
 			{
-				if (strumline.hasModchart) continue;
+				if (strumline.hasModchart)
+					continue;
 				var strumMult:Int = (strumline.downscroll ? 1 : -1);
 				for (strum in strumline.strums)
 				{
@@ -261,8 +263,6 @@ class PlayState extends MusicBeatState implements Playable
 		camGame.zoom = camZoom;
 		for (cam in [camHUD, camStrum])
 			cam.zoom = defaultHudZoom;
-
-		
 	}
 
 	public function setUpInput()
@@ -650,7 +650,8 @@ class PlayState extends MusicBeatState implements Playable
 	public function pauseSong()
 	{
 		paused = true;
-		for (snd in FlxG.sound.list) {
+		for (snd in FlxG.sound.list)
+		{
 			snd.pause();
 		}
 		audio.pause();
@@ -807,8 +808,9 @@ class PlayState extends MusicBeatState implements Playable
 	{
 		for (strumline in playField.strumlines)
 		{
-			if (strumline.hasModchart) continue;
-			
+			if (strumline.hasModchart)
+				continue;
+
 			for (strum in strumline.strums)
 			{
 				// actual tween

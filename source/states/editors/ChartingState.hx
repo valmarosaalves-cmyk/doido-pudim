@@ -1420,6 +1420,10 @@ class ChartingState extends MusicBeatState
 
 	public function openTester()
 	{
+		playingSong = false;
+		if (audio.playing)
+			audio.pause();
+
 		persistentDraw = false;
 		openSubState(new ChartTestSubState(SONG, Conductor.songPos));
 	}
