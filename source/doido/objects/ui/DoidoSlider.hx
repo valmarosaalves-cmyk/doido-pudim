@@ -91,7 +91,7 @@ class DoidoSlider extends FlxSpriteGroup
 	var mousePos(get, never):FlxPoint;
 
 	function get_mousePos():FlxPoint
-		return FlxG.mouse.getViewPosition(FlxG.cameras.list[FlxG.cameras.list.length - 1]);
+		return FlxG.mouse.getViewPosition(MusicBeat.getTopCamera());
 
 	override function update(elapsed:Float)
 	{

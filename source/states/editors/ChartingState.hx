@@ -7,12 +7,13 @@ import flixel.graphics.frames.FlxFramesCollection;
 import openfl.geom.Rectangle;
 import flixel.graphics.FlxGraphic;
 import objects.ui.HealthIcon;
-import doido.objects.ui.DoidoWindow.ChooserWindow;
-import doido.objects.ui.QuickButton.Checkmark;
+import doido.objects.ui.window.DoidoChooser;
+import doido.objects.ui.DoidoCheckmark;
 import doido.objects.ui.PsychUINumericStepper;
-import doido.objects.ui.DoidoWindow.BaseWindow;
-import doido.objects.ui.DoidoWindow.MenuWindow;
-import doido.objects.ui.DoidoWindow.IWindow;
+import doido.objects.ui.window.DoidoWindow;
+import doido.objects.ui.window.DoidoMenu;
+import doido.objects.ui.window.DoidoBox;
+import doido.objects.ui.buttons.DoidoButton;
 import doido.objects.ui.*;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
@@ -37,7 +38,7 @@ import objects.ui.notes.Note;
 import shaders.MultiplyShader;
 import haxe.Json;
 import flixel.util.FlxColor;
-import doido.objects.ui.QuickButton.TextButton;
+import doido.objects.ui.buttons.DoidoTextButton;
 import flixel.graphics.frames.FlxFrame;
 import doido.song.SongHandler;
 
@@ -237,7 +238,7 @@ class ChartingState extends MusicBeatState
 
 		// fileWindow.addButton("Open Events", "Ctrl + Alt + O");
 		// fileWindow.addSeparator();
-		fileWindow.addButton("Open Song", (btn) ->
+		fileWindow.addButton("Open Song", () ->
 		{
 			var newSong:String = CHART.song;
 			var newDiff:String = PlayState.songDiff;
@@ -256,7 +257,7 @@ class ChartingState extends MusicBeatState
 			diffField.onChange.add((old, cur, input) -> newDiff = cur);
 			openStuff.push(diffField);
 
-			var ok = new TextButton("Ok", "small");
+			var ok = new DoidoTextButton("Ok", "small");
 			ok.screenCenter();
 			ok.y += 50;
 			openStuff.push(ok);
@@ -264,7 +265,7 @@ class ChartingState extends MusicBeatState
 			var popup = new PopupSubState("Open Song:", 320, 150, openStuff);
 			openSubState(popup);
 
-			ok.button.onUp.add((btn) ->
+			ok.button.onUp.add(() ->
 			{
 				try
 				{
@@ -280,23 +281,23 @@ class ChartingState extends MusicBeatState
 				// popup.close();
 			});
 		});
-		fileWindow.addButton("Save Song", "Ctrl + S", (btn) ->
+		fileWindow.addButton("Save Song", "Ctrl + S", () ->
 		{
 			save(CHART, PlayState.songDiff);
 			save(EVENTS, "events");
 			save(META, "meta");
 		});
 		fileWindow.addSeparator();
-		fileWindow.addButton("Save Chart", "Ctrl + Shift + S", (btn) -> save(CHART, PlayState.songDiff));
-		fileWindow.addButton("Save Events", "Ctrl + Alt + S", (btn) -> save(EVENTS, "events"));
-		fileWindow.addButton("Save Meta", "Ctrl + Tab + S", (btn) -> save(META, "meta"));
+		fileWindow.addButton("Save Chart", "Ctrl + Shift + S", () -> save(CHART, PlayState.songDiff));
+		fileWindow.addButton("Save Events", "Ctrl + Alt + S", () -> save(EVENTS, "events"));
+		fileWindow.addButton("Save Meta", "Ctrl + Tab + S", () -> save(META, "meta"));
 		fileWindow.addSeparator();
 		// fileWindow.addButton("Reload Chart", "Ctrl + Shift + Alt + R");
 		// fileWindow.addSeparator();
 		// fileWindow.addButton("Preview", "ESC");
-		fileWindow.addButton("Play Song", "Enter", (btn) -> play());
-		fileWindow.addButton("Play from Here", "Shift + Enter", (btn) -> play(true));
-		fileWindow.addButton("Test Song", "ESC", (btn) -> openTester());
+		fileWindow.addButton("Play Song", "Enter", () -> play());
+		fileWindow.addButton("Play from Here", "Shift + Enter", () -> play(true));
+		fileWindow.addButton("Test Song", "ESC", () -> openTester());
 		fileWindow.updateBg();
 
 		var editWindow = new MenuWindow(x, y + 30, width, this);
@@ -304,9 +305,9 @@ class ChartingState extends MusicBeatState
 		// editWindow.addButton("Undo", "Ctrl + Z");
 		// editWindow.addButton("Redo", "Ctrl + Y");
 		// editWindow.addSeparator();
-		editWindow.addButton("Select All", "Ctrl + A", (btn) -> selectAll());
+		editWindow.addButton("Select All", "Ctrl + A", () -> selectAll());
 		editWindow.addSeparator();
-		editWindow.addButton("Chart Converter", (btn) ->
+		editWindow.addButton("Chart Converter", () ->
 		{
 			var newSong:String = CHART.song;
 			var newDiff:String = PlayState.songDiff;
@@ -325,7 +326,7 @@ class ChartingState extends MusicBeatState
 			diffField.onChange.add((old, cur, input) -> newDiff = cur);
 			openStuff.push(diffField);
 
-			var ok = new TextButton("Convert", "small");
+			var ok = new DoidoTextButton("Convert", "small");
 			ok.screenCenter();
 			ok.y += 50;
 			openStuff.push(ok);
@@ -333,7 +334,7 @@ class ChartingState extends MusicBeatState
 			var popup = new PopupSubState("Chart Converter", 520, 150, openStuff);
 			openSubState(popup);
 
-			ok.button.onUp.add((btn) ->
+			ok.button.onUp.add(() ->
 			{
 				var songs:Array<String> = newSong.split(",").map(s -> s.trim());
 				var diffs:Array<String> = newDiff.split(",").map(s -> s.trim());
@@ -364,8 +365,8 @@ class ChartingState extends MusicBeatState
 		viewWindow.title = "View";
 		// viewWindow.addButton("Go to Section...");
 		// viewWindow.addSeparator();
-		viewWindow.addButton("Go to Song Start", "Ctrl + R", (btn) -> goToSong(0));
-		viewWindow.addButton("Go to Song End", null, (btn) -> goToSong(audio.length - 1));
+		viewWindow.addButton("Go to Song Start", "Ctrl + R", () -> goToSong(0));
+		viewWindow.addButton("Go to Song End", null, () -> goToSong(audio.length - 1));
 		// viewWindow.addButton("Go to...");
 		viewWindow.updateBg();
 
@@ -373,9 +374,9 @@ class ChartingState extends MusicBeatState
 		add(menuBox);
 	}
 
-	function createBasic(title:String = "test"):BaseWindow
+	function createBasic(title:String = "test"):DoidoWindow
 	{
-		var newWindow:BaseWindow = new BaseWindow(this);
+		var newWindow:DoidoWindow = new DoidoWindow(this);
 		newWindow.title = title;
 		newWindow.bg.scale.set(458, 501);
 		newWindow.bg.updateHitbox();
@@ -396,7 +397,7 @@ class ChartingState extends MusicBeatState
 
 	var spacingH:Float = 30;
 
-	function createChartingTab():BaseWindow
+	function createChartingTab():DoidoWindow
 	{
 		var tab = createBasic("Charting");
 
@@ -421,8 +422,8 @@ class ChartingState extends MusicBeatState
 		tab.add(createText(getX(), getY(2) + 3, "Opponent:", 0xFFD8DAF6));
 		tab.add(createText(getX(), getY(3) + 3, "Instrumental:", 0xFFD8DAF6));
 
-		var playerVol:Checkmark = new Checkmark(true);
-		playerVol.onUp.add((btn) ->
+		var playerVol:DoidoCheckmark = new DoidoCheckmark(true);
+		playerVol.onUp.add(() ->
 		{
 			audio.muteVoices = !playerVol.value;
 		});
@@ -433,8 +434,8 @@ class ChartingState extends MusicBeatState
 		var playerStepper = new PsychUINumericStepper(getX("margin_right", 100), getY(1), 0.01, 1, 0, 1.0, 2, 100, true);
 		tab.add(playerStepper);
 
-		var oppVol:Checkmark = new Checkmark(true);
-		oppVol.onUp.add((btn) ->
+		var oppVol:DoidoCheckmark = new DoidoCheckmark(true);
+		oppVol.onUp.add(() ->
 		{
 			audio.muteOpponent = !oppVol.value;
 		});
@@ -445,8 +446,8 @@ class ChartingState extends MusicBeatState
 		var oppStepper = new PsychUINumericStepper(getX("margin_right", 100), getY(2), 0.01, 1, 0, 1.0, 2, 100, true);
 		tab.add(oppStepper);
 
-		var instVol:Checkmark = new Checkmark(true);
-		instVol.onUp.add((btn) ->
+		var instVol:DoidoCheckmark = new DoidoCheckmark(true);
+		instVol.onUp.add(() ->
 		{
 			audio.muteInst = !instVol.value;
 		});
@@ -551,8 +552,8 @@ class ChartingState extends MusicBeatState
 			audio.speed = playbackStepper.value;
 		});
 
-		var quantCheck:Checkmark = new Checkmark(quantNotes);
-		quantCheck.onUp.add((btn) ->
+		var quantCheck:DoidoCheckmark = new DoidoCheckmark(quantNotes);
+		quantCheck.onUp.add(() ->
 		{
 			quantNotes = quantCheck.value;
 		});
@@ -564,7 +565,7 @@ class ChartingState extends MusicBeatState
 		return tab;
 	}
 
-	function createSongTab():BaseWindow
+	function createSongTab():DoidoWindow
 	{
 		var tab = createBasic("Song");
 
@@ -609,7 +610,7 @@ class ChartingState extends MusicBeatState
 		});
 		tab.add(speedStepper);
 
-		var reloadButton = new TextButton("Reload Audio", (btn) ->
+		var reloadButton = new DoidoTextButton("Reload Audio", () ->
 		{
 			playingSong = false;
 			audio.pause();
@@ -619,7 +620,7 @@ class ChartingState extends MusicBeatState
 		reloadButton.x = getX("margin_right", reloadButton.width);
 		reloadButton.y = getY(2) - 9;
 		reloadButton.button.setColorTransform(0.59, 0.78, 1);
-		reloadButton.text.color = 0xFFFFFFFF;
+		reloadButton.label.color = 0xFFFFFFFF;
 		tab.add(reloadButton);
 
 		var balls:FlxSprite = new FlxSprite().loadImage("editors/charting/balls");
@@ -659,8 +660,8 @@ class ChartingState extends MusicBeatState
 		bfIcon.setPosition(getX() + 145 - bfIcon.width, getY(11) - 10);
 		tab.add(bfIcon);
 
-		var bfButton = new TextButton("");
-		bfButton.button.onUp.add((btn) ->
+		var bfButton = new DoidoTextButton("");
+		bfButton.button.onUp.add(() ->
 		{
 			if (test.buttonId == "bf")
 			{
@@ -677,7 +678,7 @@ class ChartingState extends MusicBeatState
 				test.onClick = (name) ->
 				{
 					test.options = [];
-					bfButton.text.text = name;
+					bfButton.text = name;
 					bfIcon.setIcon(name, false);
 					bfButton.button.setColorTransform(bfIcon.barColor.redFloat, bfIcon.barColor.greenFloat, bfIcon.barColor.blueFloat);
 					META.player1 = name;
@@ -689,8 +690,8 @@ class ChartingState extends MusicBeatState
 		bfButton.x = getX(); // bfButton.width
 		bfButton.y = getY(11) + 22;
 		bfButton.button.setColorTransform(bfIcon.barColor.redFloat, bfIcon.barColor.greenFloat, bfIcon.barColor.blueFloat);
-		bfButton.text.text = META.player1;
-		bfButton.text.color = 0xFFFFFFFF;
+		bfButton.text = META.player1;
+		bfButton.label.color = 0xFFFFFFFF;
 		tab.add(bfButton);
 
 		var oppIcon = new HealthIcon();
@@ -699,8 +700,8 @@ class ChartingState extends MusicBeatState
 		oppIcon.setPosition(getX("center", 145) + 145 - oppIcon.width, getY(11) - 10);
 		tab.add(oppIcon);
 
-		var oppButton = new TextButton("",);
-		oppButton.button.onUp.add((btn) ->
+		var oppButton = new DoidoTextButton("",);
+		oppButton.button.onUp.add(() ->
 		{
 			if (test.buttonId == "opp")
 			{
@@ -717,7 +718,7 @@ class ChartingState extends MusicBeatState
 				test.onClick = (name) ->
 				{
 					test.options = [];
-					oppButton.text.text = name;
+					oppButton.text = name;
 					oppIcon.setIcon(name, false);
 					oppButton.button.setColorTransform(oppIcon.barColor.redFloat, oppIcon.barColor.greenFloat, oppIcon.barColor.blueFloat);
 					META.player2 = name;
@@ -729,8 +730,8 @@ class ChartingState extends MusicBeatState
 		oppButton.x = getX("center", oppButton.width); // bfButton.width
 		oppButton.y = getY(11) + 22;
 		oppButton.button.setColorTransform(oppIcon.barColor.redFloat, oppIcon.barColor.greenFloat, oppIcon.barColor.blueFloat);
-		oppButton.text.text = META.player2;
-		oppButton.text.color = 0xFFFFFFFF;
+		oppButton.text = META.player2;
+		oppButton.label.color = 0xFFFFFFFF;
 		tab.add(oppButton);
 
 		var gfIcon = new HealthIcon();
@@ -739,8 +740,8 @@ class ChartingState extends MusicBeatState
 		gfIcon.setPosition(getX("margin_right", 145) + 145 - gfIcon.width, getY(11) - 10);
 		tab.add(gfIcon);
 
-		var gfButton = new TextButton("");
-		gfButton.button.onUp.add((btn) ->
+		var gfButton = new DoidoTextButton("");
+		gfButton.button.onUp.add(() ->
 		{
 			if (test.buttonId == "gf")
 			{
@@ -757,7 +758,7 @@ class ChartingState extends MusicBeatState
 				test.onClick = (name) ->
 				{
 					test.options = [];
-					gfButton.text.text = name;
+					gfButton.text = name;
 					gfIcon.setIcon(name, false);
 					gfButton.button.setColorTransform(gfIcon.barColor.redFloat, gfIcon.barColor.greenFloat, gfIcon.barColor.blueFloat);
 					META.gf = name;
@@ -768,16 +769,16 @@ class ChartingState extends MusicBeatState
 		gfButton.x = getX("margin_right", gfButton.width); // bfButton.width
 		gfButton.y = getY(11) + 22;
 		gfButton.button.setColorTransform(gfIcon.barColor.redFloat, gfIcon.barColor.greenFloat, gfIcon.barColor.blueFloat);
-		gfButton.text.text = META.gf;
-		gfButton.text.color = 0xFFFFFFFF;
+		gfButton.text = META.gf;
+		gfButton.label.color = 0xFFFFFFFF;
 		tab.add(gfButton);
 
 		tab.add(createText(getX(), getY(13), "Stage:", 0xFFD8DAF6));
 
 		var stages:Array<String> = Assets.list("data/stages/", true, SCRIPT);
-		stages = stages.concat(stages);
-		var stageButton = new TextButton("");
-		stageButton.button.onUp.add((btn) ->
+		//stages = stages.concat(stages);
+		var stageButton = new DoidoTextButton("");
+		stageButton.button.onUp.add(() ->
 		{
 			if (test.buttonId == "stages")
 			{
@@ -794,7 +795,7 @@ class ChartingState extends MusicBeatState
 				test.onClick = (name) ->
 				{
 					test.options = [];
-					stageButton.text.text = name;
+					stageButton.text = name;
 					META.stage = name;
 					test.buttonId = "";
 				};
@@ -802,15 +803,15 @@ class ChartingState extends MusicBeatState
 		});
 		stageButton.x = getX(); // bfButton.width
 		stageButton.y = getY(13) + 22;
-		stageButton.text.text = META.stage;
+		stageButton.text = META.stage;
 		// stageButton.text.color = 0xFFFFFFFF;
 		tab.add(stageButton);
 
 		tab.add(createText(getX("center", 145), getY(13), "Meta:", 0xFFD8DAF6));
 		tab.add(createText(getX("margin_right", 145), getY(13), "Assets:", 0xFFD8DAF6));
 
-		var metaButton = new TextButton("Edit");
-		metaButton.button.onUp.add((btn) ->
+		var metaButton = new DoidoTextButton("Edit");
+		metaButton.button.onUp.add(() ->
 		{
 			var metaComposer:String = META.composer;
 			var metaCharter:String = META.charter;
@@ -829,7 +830,7 @@ class ChartingState extends MusicBeatState
 			charter.onChange.add((old, cur, input) -> metaCharter = cur);
 			metaStuff.push(charter);
 
-			var ok = new TextButton("Ok", "small");
+			var ok = new DoidoTextButton("Ok", "small");
 			ok.screenCenter();
 			ok.y += 50;
 			metaStuff.push(ok);
@@ -837,7 +838,7 @@ class ChartingState extends MusicBeatState
 			var popup = new PopupSubState("Editing Meta:", 320, 150, metaStuff);
 			openSubState(popup);
 
-			ok.button.onUp.add((btn) ->
+			ok.button.onUp.add(() ->
 			{
 				META.composer = metaComposer;
 				META.charter = metaCharter;
@@ -848,8 +849,8 @@ class ChartingState extends MusicBeatState
 		metaButton.y = getY(13) + 22;
 		tab.add(metaButton);
 
-		var skinsButton = new TextButton("Edit");
-		skinsButton.button.onUp.add((btn) ->
+		var skinsButton = new DoidoTextButton("Edit");
+		skinsButton.button.onUp.add(() ->
 		{
 			var dadSkin:String = META.assets.opponentNotes;
 			var bfSkin:String = META.assets.playerNotes;
@@ -868,7 +869,7 @@ class ChartingState extends MusicBeatState
 			bfnotes.onChange.add((old, cur, input) -> bfSkin = cur);
 			metaStuff.push(bfnotes);
 
-			var ok = new TextButton("Ok", "small");
+			var ok = new DoidoTextButton("Ok", "small");
 			ok.screenCenter();
 			ok.y += 50;
 			metaStuff.push(ok);
@@ -876,7 +877,7 @@ class ChartingState extends MusicBeatState
 			var popup = new PopupSubState("Editing Assets:", 320, 150, metaStuff);
 			openSubState(popup);
 
-			ok.button.onUp.add((btn) ->
+			ok.button.onUp.add(() ->
 			{
 				META.assets.opponentNotes = dadSkin;
 				META.assets.playerNotes = bfSkin;
@@ -1479,7 +1480,7 @@ class ChartingState extends MusicBeatState
 		if (!tweeningSongPos)
 		{
 			if (Math.abs(Conductor.songPos - target) <= 10000 || noFunAllowed)
-				tweenSongPos(0, 0.25, FlxEase.cubeInOut);
+				tweenSongPos(target, 0.25, FlxEase.cubeInOut);
 			else
 			{
 				FlxTween.tween(FlxG.camera, {zoom: 1.3}, 1.6, {ease: FlxEase.cubeIn, startDelay: 0.4});
@@ -1599,7 +1600,7 @@ class ChartingState extends MusicBeatState
 				hold.holdParent = note; // idk you might need it
 				hold.setZ(1);
 
-				if (!renderNotes.members.contains(note))
+				if (!renderNotes.members.contains(hold))
 					renderNotes.add(hold);
 			}
 		}
@@ -1755,7 +1756,7 @@ class ChartingGrid extends FlxSprite
 	}
 }
 
-class GridWindow extends BaseWindow
+class GridWindow extends DoidoWindow
 {
 	var windowTitle:FlxBitmapText;
 	var zoomTxt:FlxBitmapText;
@@ -1817,13 +1818,13 @@ class GridWindow extends BaseWindow
 	}
 }
 
-class TimeWindow extends BaseWindow
+class TimeWindow extends DoidoWindow
 {
 	public var timeTxt:FlxBitmapText;
 	public var infoTxt:FlxBitmapText;
 	public var timeBar:DoidoBar;
 	public var timeBall:FlxSprite;
-	public var oldMark:Checkmark;
+	public var oldMark:DoidoCheckmark;
 	public var oldTxt:FlxBitmapText;
 
 	public var buttons:Array<FlxSprite> = [];
@@ -1856,36 +1857,36 @@ class TimeWindow extends BaseWindow
 		add(timeBall);
 
 		// play button
-		addButton(0, 0, (btn) ->
+		addButton(0, 0, () ->
 		{
 			if (!chartState.tweeningSongPos)
 				chartState.playingSong = !chartState.playingSong;
-			else
+			/*else
 			{
-				FlxTween.completeTweensOf(btn);
+				FlxTween.completeTweensOf();
 				FlxTween.color(btn, 0.4, 0xFFFF0000, 0xFFFFFFFF);
 				FlxTween.shake(btn, 0.05, 0.4);
-			}
+			}*/
 		});
 
 		// section buttons
-		addButton(-32, 3, (btn) ->
+		addButton(-32, 3, () ->
 		{
 			chartState.changeSection(-1);
 		});
-		addButton(32, 2, (btn) ->
+		addButton(32, 2, () ->
 		{
 			chartState.changeSection(1);
 		});
 
 		// reset button
-		addButton(64, 4, (btn) ->
+		addButton(64, 4, () ->
 		{
 			chartState.resetSection();
 		});
 
-		oldMark = new Checkmark(false);
-		oldMark.onUp.add((btn) ->
+		oldMark = new DoidoCheckmark(false);
+		oldMark.onUp.add(() ->
 		{
 			oldTimer = oldMark.value;
 		});
@@ -1925,9 +1926,9 @@ class TimeWindow extends BaseWindow
 		super.draw();
 	}
 
-	public function addButton(xOffset:Float, frame:Int, func:QuickButton->Void)
+	public function addButton(xOffset:Float, frame:Int, func:Void->Void)
 	{
-		var newBtn = new QuickButton(func);
+		var newBtn = new DoidoButton(func);
 		newBtn.loadSparrow("editors/charting/timeButtons");
 		newBtn.animation.addByPrefix("btn", "timeButtons", 0, false);
 		newBtn.animation.play("btn", true, false, frame);

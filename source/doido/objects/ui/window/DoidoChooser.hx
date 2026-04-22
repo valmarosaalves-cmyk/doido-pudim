@@ -1,21 +1,14 @@
-package doido.objects.ui;
+package doido.objects.ui.window;
 
-import doido.objects.ui.QuickButton.ChooserButton;
-import doido.objects.ui.DoidoSlider;
-import flixel.FlxBasic;
-import flixel.group.FlxGroup;
-import doido.objects.ui.QuickButton.MenuButton;
-import states.editors.ChartingState;
-import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
 import flixel.math.FlxMath;
 import doido.utils.EditorUtil;
-
-enum MenuObjects
-{
-	BUTTON;
-	SEPARATOR;
-}
+import states.editors.ChartingState;
+import flixel.FlxSprite;
+import flixel.text.FlxBitmapText;
+import doido.objects.ui.buttons.DoidoButton;
+import objects.ui.HealthIcon;
 
 enum ChooserView
 {
@@ -31,7 +24,7 @@ enum ChooserType
 	NOTETYPE;
 }
 
-class ChooserWindow extends BaseWindow
+class ChooserWindow extends DoidoWindow
 {
 	public var x:Float;
 	public var y:Float;
@@ -99,7 +92,7 @@ class ChooserWindow extends BaseWindow
 
 		for (i in 0...filtered.length)
 		{
-			var button:ChooserButton = new ChooserButton(filtered[i], descs[i] ?? "", type, view, buttonWidth, buttonHeight, (btn) ->
+			var button:ChooserButton = new ChooserButton(filtered[i], descs[i] ?? "", type, view, buttonWidth, buttonHeight, () ->
 			{
 				if (onClick != null)
 					onClick(filtered[i]);
@@ -218,73 +211,91 @@ class ChooserWindow extends BaseWindow
 	}
 }
 
-class MenuWindow extends BaseWindow
+class ChooserButton extends FlxSpriteGroup
 {
-	public var buttons:Array<MenuButton> = [];
-	public var separators:Array<FlxSprite> = [];
+	var _label:FlxBitmapText;
+	var _desc:FlxBitmapText;
 
-	var width:Float = 0;
-	var yOffset:Float = 0;
+	public var button:DoidoButton;
+	public var icon:FlxSprite;
 
-	public function new(x:Float = 0, y:Float = 0, width:Float = 100, chartState:ChartingState)
-	{
-		super(chartState);
-		this.width = width;
-		bg.setPosition(x, y);
-	}
-
-	public function updateBg()
-	{
-		bg.scale.set(width, yOffset);
-		bg.updateHitbox();
-	}
-
-	public function addButton(label:String, ?bind:String, ?func:QuickButton->Void)
-	{
-		var newBtn = new MenuButton(label, bind, width, func);
-		buttons.push(newBtn);
-		add(newBtn);
-
-		newBtn.x = bg.x;
-		newBtn.y = bg.y + yOffset;
-		yOffset += newBtn.height;
-	}
-
-	public function addSeparator()
-	{
-		var separator:FlxSprite = new FlxSprite().makeColor(width, 3, 0xFF000000);
-		separator.alpha = 0.5;
-		add(separator);
-
-		separator.x = bg.x;
-		separator.y = bg.y + yOffset;
-		yOffset += separator.height;
-	}
-}
-
-class BaseWindow extends FlxGroup implements IWindow
-{
-	public var chartState:ChartingState;
-	public var bg:FlxSprite;
-	public var title:String = "";
-
-	public function new(chartState:ChartingState)
+	public function new(label:String, desc:String = "", type:ChooserType, view:ChooserView, width:Int = 318, height:Int = 22, ?onUp:Void->Void,
+			?onDown:Void->Void)
 	{
 		super();
-		this.chartState = chartState;
 
-		bg = new FlxSprite().makeColor(100, 100, 0xFF000000);
-		bg.alpha = 0.5;
-		add(bg);
+		button = new DoidoButton(onUp, onDown);
+		button.makeGraphic(width, height, 0xFFD8DAF6);
+		button.alpha = 0;
+		button.maxScale = 1;
+		button.minScale = 1;
+		button.changeScale = false;
+		button.onDisable.add(() ->
+		{
+			if (button.disabled)
+				button.alpha = 0;
+		});
+		add(button);
+
+		button.onHover.add(() ->
+		{
+			button.alpha = 0.2;
+		});
+		button.onOut.add(() ->
+		{
+			button.alpha = 0;
+		});
+
+		icon = new FlxSprite();
+		switch (type)
+		{
+			case CHARACTER:
+				var uhhh = new HealthIcon();
+				uhhh.setIcon(label, false);
+				icon.loadGraphicFromSprite(uhhh);
+			default:
+				icon.visible = false;
+		}
+		icon.setGraphicSize(width - 20, height - 20);
+		icon.updateHitbox();
+		icon.x = button.x + (button.width - icon.width) / 2;
+		icon.y = button.y + 5;
+		add(icon);
+
+		_label = new FlxBitmapText(0, 0, Assets.bitmapFont("phantommuff"));
+		_label.color = 0xFFFFFFFF;
+		_label.alignment = CENTER;
+		_label.text = label;
+		_label.scale.set(0.625, 0.625);
+		_label.updateHitbox();
+		add(_label);
+
+		_desc = new FlxBitmapText(0, 0, Assets.bitmapFont("phantommuff"));
+		_desc.color = 0xFFD8DAF6;
+		_desc.alignment = CENTER;
+		_desc.text = desc;
+		_desc.scale.set(0.625, 0.625);
+		_desc.updateHitbox();
+		add(_desc);
+
+		switch (view)
+		{
+			case GRID:
+				_label.x = button.x + (button.width - _label.width) / 2;
+				_label.y = button.y + button.height - _label.height - 2;
+			default:
+				_label.setPosition(button.x
+					+ ((button.width / 2) - (_label.width / 2))
+					- (_desc.width / 2)
+					- 1,
+					button.y
+					+ ((button.height / 2) - (_label.height / 2)));
+				_desc.setPosition(button.x
+					+ ((button.width / 2) - (_desc.width / 2))
+					+ (_label.width / 2)
+					+ 1,
+					button.y
+					+ ((button.height / 2) - (_desc.height / 2)));
+		}
 	}
-
-	public var overlapping(get, never):Bool;
-
-	public function get_overlapping():Bool
-		return FlxG.mouse.overlaps(bg, camera);
-}
-
-interface IWindow
-{
-	var overlapping(get, never):Bool;
 }

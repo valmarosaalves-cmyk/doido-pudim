@@ -8,9 +8,9 @@ import flixel.math.FlxRect;
 class DoidoBar extends FlxSpriteGroup
 {
 	public var border:FlxSprite;
-
 	public var sideL:FlxSprite;
 	public var sideR:FlxSprite;
+	
 	public var percent(default, set):Float = 0;
 
 	public function set_percent(v:Float)

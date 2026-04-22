@@ -1,7 +1,7 @@
 package states.editors;
 
 import doido.objects.DoidoSprite.Animation;
-import doido.objects.ui.DoidoWindow.BaseWindow;
+import doido.objects.ui.window.DoidoWindow;
 import doido.objects.DoidoCamera;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
@@ -12,14 +12,15 @@ import objects.Character;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.text.FlxBitmapText;
 import doido.objects.ui.DoidoSlider;
-import doido.objects.ui.DoidoWindow.IWindow;
 import doido.objects.ui.*;
-import doido.objects.ui.DoidoWindow.ChooserWindow;
+import doido.objects.ui.window.DoidoChooser;
 import flixel.util.FlxColor;
-import doido.objects.ui.QuickButton.TextButton;
-import doido.objects.ui.QuickButton.Checkmark;
+import doido.objects.ui.buttons.DoidoTextButton;
+import doido.objects.ui.DoidoCheckmark;
 import haxe.Json;
 import doido.objects.DoidoSprite;
+import doido.objects.ui.window.*;
+import doido.objects.ui.buttons.*;
 
 class CharacterEditor extends MusicBeatState
 {
@@ -110,9 +111,9 @@ class CharacterEditor extends MusicBeatState
 		addMain();
 	}
 
-	function createBasic(title:String = "test"):BaseWindow
+	function createBasic(title:String = "test"):DoidoWindow
 	{
-		var newWindow:BaseWindow = new BaseWindow(null);
+		var newWindow:DoidoWindow = new DoidoWindow(null);
 		newWindow.title = title;
 		newWindow.bg.scale.set(458, 501);
 		newWindow.bg.updateHitbox();
@@ -121,7 +122,7 @@ class CharacterEditor extends MusicBeatState
 		return newWindow;
 	}
 
-	function createCharacter():BaseWindow
+	function createCharacter():DoidoWindow
 	{
 		var tab = createBasic("Character");
 
@@ -154,10 +155,10 @@ class CharacterEditor extends MusicBeatState
 		sprite.cameras = [camHUD];
 		tab.add(sprite);
 
-		var player:Checkmark = new Checkmark(char.isPlayer);
+		var player:DoidoCheckmark = new DoidoCheckmark(char.isPlayer);
 		player.x = getX("margin_right", player.width);
 		player.y = getY(1) - 2;
-		player.onUp.add((btn) ->
+		player.onUp.add(() ->
 		{
 			char.isPlayer = player.value;
 			flipCheck(char);
@@ -165,10 +166,10 @@ class CharacterEditor extends MusicBeatState
 		tab.add(player);
 		tab.add(createText(player.x - 60, getY(1) + 2, "Player:", 0xFFD8DAF6));
 
-		var ghostFlip:Checkmark = new Checkmark(ghost.isPlayer);
+		var ghostFlip:DoidoCheckmark = new DoidoCheckmark(ghost.isPlayer);
 		ghostFlip.x = player.x - 60 - ghostFlip.width - 5;
 		ghostFlip.y = getY(1) - 2;
-		ghostFlip.onUp.add((btn) ->
+		ghostFlip.onUp.add(() ->
 		{
 			ghost.isPlayer = ghostFlip.value;
 			flipCheck(ghost);
@@ -176,12 +177,12 @@ class CharacterEditor extends MusicBeatState
 		tab.add(ghostFlip);
 		tab.add(createText(ghostFlip.x - 55, getY(1) + 2, "Ghost:", 0xFFD8DAF6));
 
-		var reload = new TextButton("Reload Sprite", "small");
+		var reload = new DoidoTextButton("Reload Sprite", "small");
 		reload.x = getX("margin_right", reload.width);
 		reload.y = getY(0) - 3;
 		reload.button.setColorTransform(1, 0, 0);
-		reload.text.color = 0xFFFFFFFF;
-		reload.button.onUp.add((btn) ->
+		reload.label.color = 0xFFFFFFFF;
+		reload.button.onUp.add(() ->
 		{
 			char.clearAnims();
 			char.loadCharacter(true);
@@ -191,10 +192,10 @@ class CharacterEditor extends MusicBeatState
 		});
 		tab.add(reload);
 
-		var pixel:Checkmark = new Checkmark(char.data.pixel);
+		var pixel:DoidoCheckmark = new DoidoCheckmark(char.data.pixel);
 		pixel.x = getX("margin_right", pixel.width);
 		pixel.y = getY(3) - 2;
-		pixel.onUp.add((btn) ->
+		pixel.onUp.add(() ->
 		{
 			char.data.pixel = pixel.value;
 			char.antialiasing = ((char.data.pixel) ? false : flixel.FlxSprite.defaultAntialiasing);
@@ -328,7 +329,7 @@ class CharacterEditor extends MusicBeatState
 		anims.descs = offsets;
 	}
 
-	function createAnimations():BaseWindow
+	function createAnimations():DoidoWindow
 	{
 		var tab = createBasic("Animations");
 
@@ -405,10 +406,10 @@ class CharacterEditor extends MusicBeatState
 			x.cameras = [camHUD];
 			tab.add(x); */
 
-		var loop:Checkmark = new Checkmark(animEditing.loop);
+		var loop:DoidoCheckmark = new DoidoCheckmark(animEditing.loop);
 		loop.x = getX("margin_right", loop.width);
 		loop.y = getY(bottomY - 1) - 1;
-		loop.onUp.add((btn) ->
+		loop.onUp.add(() ->
 		{
 			animEditing.loop = loop.value;
 		});
@@ -423,25 +424,25 @@ class CharacterEditor extends MusicBeatState
 		}
 		tab.add(fpsStepper);
 
-		var newButton = new TextButton("Save as New", "small");
+		var newButton = new DoidoTextButton("Save as New", "small");
 		newButton.x = getX() + 20;
 		newButton.y = getY(bottomY) + 7;
 		newButton.button.setColorTransform(0, 0.79, 0);
-		newButton.text.color = 0xFFFFFFFF;
+		newButton.label.color = 0xFFFFFFFF;
 		tab.add(newButton);
 
-		var saveButton = new TextButton("Save Current", "small");
+		var saveButton = new DoidoTextButton("Save Current", "small");
 		saveButton.x = getX("center", saveButton.width);
 		saveButton.y = getY(bottomY) + 7;
 		saveButton.button.setColorTransform(0.59, 0.78, 1);
-		saveButton.text.color = 0xFFFFFFFF;
+		saveButton.label.color = 0xFFFFFFFF;
 		tab.add(saveButton);
 
-		var deleteButton = new TextButton("Delete Anim", "small");
+		var deleteButton = new DoidoTextButton("Delete Anim", "small");
 		deleteButton.x = getX("margin_right", deleteButton.width) - 20;
 		deleteButton.y = getY(bottomY) + 7;
 		deleteButton.button.setColorTransform(1, 0, 0);
-		deleteButton.text.color = 0xFFFFFFFF;
+		deleteButton.label.color = 0xFFFFFFFF;
 		tab.add(deleteButton);
 
 		tab.add(createText(getX(), getY(0) + 3, "Search:", 0xFFD8DAF6));
@@ -528,10 +529,10 @@ class CharacterEditor extends MusicBeatState
 			}
 		}
 
-		newButton.button.onUp.add((btn) -> saveAnim(false));
-		saveButton.button.onUp.add((btn) -> saveAnim(true));
+		newButton.button.onUp.add(() -> saveAnim(false));
+		saveButton.button.onUp.add(() -> saveAnim(true));
 
-		deleteButton.button.onUp.add((btn) ->
+		deleteButton.button.onUp.add(() ->
 		{
 			if (char.animList.length >= 2)
 			{
@@ -774,6 +775,8 @@ class CharacterEditor extends MusicBeatState
 		char.updateHitbox();
 		// char.scaleOffset = {x: char.offset.x, y: char.offset.y};
 		char.setPosition(middlePoint.x - (char.width - middlePoint.width) / 2, middlePoint.y + (middlePoint.height / 2) - char.height);
+		char.x += char.globalOffset.x;
+		char.y += char.globalOffset.y;
 		// char.updateOffset();
 	}
 
@@ -843,7 +846,7 @@ class CharacterEditor extends MusicBeatState
 	}
 }
 
-class AnimWindow extends BaseWindow
+class AnimWindow extends DoidoWindow
 {
 	var characterEditor:CharacterEditor;
 

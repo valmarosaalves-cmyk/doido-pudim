@@ -4,7 +4,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import doido.objects.ui.QuickButton.AnimatedButton;
+import doido.objects.ui.buttons.DoidoAnimatedButton;
 import doido.utils.EditorUtil;
 
 /*
@@ -45,7 +45,7 @@ class PsychUIDropDownMenu extends PsychUIInputText
 		bgHeight = bg.height;
 
 		var ups:String = (up ? "up" : "down");
-		button = new AnimatedButton('editors/charting/drop$ups', 'buttondrop$ups');
+		button = new DoidoAnimatedButton('editors/charting/drop$ups', 'buttondrop$ups');
 		button.x = bg.width - button.width;
 		button.y = -1;
 		button.setZ(10);

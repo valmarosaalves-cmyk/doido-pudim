@@ -1,6 +1,6 @@
 package doido.objects.ui;
 
-import doido.objects.ui.QuickButton.AnimatedButton;
+import doido.objects.ui.buttons.DoidoAnimatedButton;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 
@@ -20,9 +20,9 @@ class PsychUINumericStepper extends PsychUIInputText
 	public var max(default, set):Float = 0;
 	public var decimals(default, set):Int = 0;
 	public var isPercent(default, set):Bool = false;
-	public var buttonPlus:AnimatedButton;
-	public var buttonMinus:AnimatedButton;
-	public var buttonReset:AnimatedButton;
+	public var buttonPlus:DoidoAnimatedButton;
+	public var buttonMinus:DoidoAnimatedButton;
+	public var buttonReset:DoidoAnimatedButton;
 
 	public var onValueChange:Void->Void;
 	public var value(default, set):Float;
@@ -39,15 +39,15 @@ class PsychUINumericStepper extends PsychUIInputText
 		this.defValue = defValue;
 		_updateFilter();
 
-		buttonPlus = new AnimatedButton("editors/charting/plus", "buttonplus", (btn) -> stepValue(1));
+		buttonPlus = new DoidoAnimatedButton("editors/charting/plus", "buttonplus", () -> stepValue(1));
 		add(buttonPlus);
 
-		buttonMinus = new AnimatedButton("editors/charting/minus", "buttonminus", (btn) -> stepValue(-1));
+		buttonMinus = new DoidoAnimatedButton("editors/charting/minus", "buttonminus", () -> stepValue(-1));
 		add(buttonMinus);
 
 		if (hasReset)
 		{
-			buttonReset = new AnimatedButton("editors/charting/reset", "buttonreset", (btn) -> resetValue());
+			buttonReset = new DoidoAnimatedButton("editors/charting/reset", "buttonreset", () -> resetValue());
 			add(buttonReset);
 		}
 

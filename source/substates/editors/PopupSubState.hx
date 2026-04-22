@@ -5,7 +5,7 @@ import flixel.text.FlxBitmapText;
 import animate.internal.elements.FlxSpriteElement;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
-import doido.objects.ui.QuickButton.AnimatedButton;
+import doido.objects.ui.buttons.DoidoAnimatedButton;
 import flixel.math.FlxRect;
 import doido.objects.ui.PsychUIInputText;
 
@@ -14,7 +14,7 @@ class PopupSubState extends MusicBeatSubState
 	final clipped:Bool = false;
 
 	public var bg:FlxSprite;
-	public var closeButton:AnimatedButton;
+	public var closeButton:DoidoAnimatedButton;
 	public var titleText:FlxBitmapText;
 
 	public var width:Float = 300;
@@ -39,7 +39,7 @@ class PopupSubState extends MusicBeatSubState
 		for (obj in this.objects)
 			add(obj);
 
-		closeButton = new AnimatedButton('editors/charting/close', 'close', (btn) -> close());
+		closeButton = new DoidoAnimatedButton('editors/charting/close', 'close', () -> close());
 		add(closeButton);
 
 		titleText = new FlxBitmapText(0, 0, Assets.bitmapFont("phantommuff"));
@@ -69,7 +69,7 @@ class PopupSubState extends MusicBeatSubState
 			bg.scale.set(FlxMath.lerp(bg.scale.x, width, elapsed * 8), FlxMath.lerp(bg.scale.y, height, elapsed * 8));
 		else
 			bg.scale.set(width, height);
-		
+
 		bg.updateHitbox();
 		bg.screenCenter();
 	}

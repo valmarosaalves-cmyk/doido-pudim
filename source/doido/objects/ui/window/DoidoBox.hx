@@ -1,15 +1,17 @@
-package doido.objects.ui;
+package doido.objects.ui.window;
 
-import doido.objects.ui.DoidoWindow.IWindow;
+import doido.objects.ui.buttons.DoidoButton;
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import states.editors.ChartingState;
-import doido.objects.ui.QuickButton.BoxLabel;
-import doido.objects.ui.DoidoWindow.BaseWindow;
+import doido.objects.ui.window.DoidoWindow.IWindow;
+import flixel.text.FlxBitmapText;
+import flixel.FlxSprite;
 
 class DoidoBox extends FlxGroup implements IWindow
 {
 	public var chartState:ChartingState;
-	public var tabs:Array<BaseWindow> = [];
+	public var tabs:Array<DoidoWindow> = [];
 	public var buttons:Array<BoxLabel> = [];
 
 	public var x:Float = 0;
@@ -22,7 +24,7 @@ class DoidoBox extends FlxGroup implements IWindow
 	var spacing:Float = 5;
 
 	public function new(x:Float = 0, y:Float = 0, width:Float = 100, buttonHeight:Float = 20, startingTab:Int = -1, centerButtons:Bool = true,
-			tabs:Array<BaseWindow>, chartState:ChartingState)
+			tabs:Array<DoidoWindow>, chartState:ChartingState)
 	{
 		super();
 		this.x = x;
@@ -49,7 +51,7 @@ class DoidoBox extends FlxGroup implements IWindow
 
 	function addButton(title:String, i:Int, centerButtons:Bool)
 	{
-		var newBtn = new BoxLabel(title, buttonWidth, buttonHeight, centerButtons, (btn) ->
+		var newBtn = new BoxLabel(title, buttonWidth, buttonHeight, centerButtons, () ->
 		{
 			cur = (cur == i ? -1 : i);
 			toggleButtons();
@@ -92,5 +94,59 @@ class DoidoBox extends FlxGroup implements IWindow
 			return tabs[cur].overlapping;
 
 		return false;
+	}
+}
+
+class BoxLabel extends FlxSpriteGroup
+{
+	var text:FlxBitmapText;
+	var bg:FlxSprite;
+	var button:DoidoButton;
+	var toggled:Bool = false;
+
+	public function new(label:String, width:Float = 318, height:Float = 22, center:Bool = true, ?onUp:Void->Void, ?onDown:Void->Void)
+	{
+		super();
+
+		bg = new FlxSprite().makeColor(width, height, 0xFFFFFFFF);
+		bg.alpha = 0.5;
+		add(bg);
+
+		button = new DoidoButton(onUp, onDown);
+		button.makeColor(width, height, 0xFFD8DAF6);
+		button.alpha = 0;
+		button.changeScale = false;
+		button.maxScale = 1;
+		button.minScale = 1;
+		add(button);
+
+		button.onHover.add(() ->
+		{
+			button.alpha = 0.2;
+		});
+		button.onOut.add(() ->
+		{
+			button.alpha = 0;
+		});
+
+		text = new FlxBitmapText(0, 0, Assets.bitmapFont("phantommuff"));
+		text.color = 0xFFFFFFFF;
+		text.alignment = (center ? CENTER : LEFT);
+		text.text = label;
+		text.scale.set(0.625, 0.625);
+		text.updateHitbox();
+		text.setPosition((center ? button.x + (button.width / 2) - (text.width / 2) : button.x + 2), button.y + ((button.height / 2) - (text.height / 2)));
+		add(text);
+	}
+
+	public var selected(default, set):Bool;
+
+	public function set_selected(b:Bool):Bool
+	{
+		selected = b;
+		text.color = (selected ? 0xFF20222D : 0xFFD8DAF6);
+		bg.color = (selected ? 0xFFD8DAF6 : 0xFF000000);
+		bg.alpha = (selected ? 1 : 0.5);
+		return selected;
 	}
 }
