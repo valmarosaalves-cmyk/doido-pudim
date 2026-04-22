@@ -417,7 +417,7 @@ class ChartingState extends MusicBeatState
 		function getY(i:Int = 0)
 			return tab.bg.y + 8 + (spacingH * i);
 
-		tab.add(createText(getX(), getY(0), "Volume:"));
+		tab.add(createText(getX(), getY(0) + 3, "Volume:"));
 		tab.add(createText(getX(), getY(1) + 3, "Player:", 0xFFD8DAF6));
 		tab.add(createText(getX(), getY(2) + 3, "Opponent:", 0xFFD8DAF6));
 		tab.add(createText(getX(), getY(3) + 3, "Instrumental:", 0xFFD8DAF6));
@@ -521,7 +521,7 @@ class ChartingState extends MusicBeatState
 		tab.add(balls);
 
 		// playback
-		tab.add(createText(getX(), getY(5), "Playback:"));
+		tab.add(createText(getX(), getY(5) + 3, "Playback:"));
 
 		tab.add(createText(getX(), getY(6) + 3, "Speed:", 0xFFD8DAF6));
 
@@ -585,17 +585,17 @@ class ChartingState extends MusicBeatState
 			return tab.bg.y + 8 + (spacingH * i);
 
 		// chart options
-		// tab.add(createText(getX(), getY(0), "Chart:"));
-		tab.add(createText(getX(), getY(0) + 3, "Name:", 0xFFD8DAF6));
-		tab.add(createText(getX(), getY(1) + 3, "BPM:", 0xFFD8DAF6));
-		tab.add(createText(getX(), getY(2) + 3, "Note Speed:", 0xFFD8DAF6));
+		tab.add(createText(getX(), getY(0) + 3, "Song:"));
+		tab.add(createText(getX(), getY(1) + 3, "Name:", 0xFFD8DAF6));
+		tab.add(createText(getX(), getY(2) + 3, "BPM:", 0xFFD8DAF6));
+		tab.add(createText(getX(), getY(3) + 3, "Note Speed:", 0xFFD8DAF6));
 
 		var songName:PsychUIInputText;
-		songName = new PsychUIInputText(getX("margin_first"), getY(0), 342, CHART.song, 14);
+		songName = new PsychUIInputText(getX("margin_first"), getY(1), 342, CHART.song, 14);
 		songName.onChange.add((old, cur, input) -> CHART.song = cur);
 		tab.add(songName);
 
-		var bpmStepper = new PsychUINumericStepper(getX("margin_first"), getY(1), 1, CHART.bpm, 1, 339, 0);
+		var bpmStepper = new PsychUINumericStepper(getX("margin_first"), getY(2), 1, CHART.bpm, 1, 339, 0);
 		bpmStepper.onValueChange = (() ->
 		{
 			Conductor.initialBPM = bpmStepper.value;
@@ -603,7 +603,7 @@ class ChartingState extends MusicBeatState
 		});
 		tab.add(bpmStepper);
 
-		var speedStepper = new PsychUINumericStepper(getX("margin_first"), getY(2), 0.1, CHART.speed, 0.1, 10, 1);
+		var speedStepper = new PsychUINumericStepper(getX("margin_first"), getY(3), 0.1, CHART.speed, 0.1, 10, 1);
 		speedStepper.onValueChange = (() ->
 		{
 			CHART.speed = speedStepper.value;
@@ -618,25 +618,25 @@ class ChartingState extends MusicBeatState
 			grid.length = audio.length;
 		});
 		reloadButton.x = getX("margin_right", reloadButton.width);
-		reloadButton.y = getY(2) - 9;
+		reloadButton.y = getY(3) - 9;
 		reloadButton.button.setColorTransform(0.59, 0.78, 1);
 		reloadButton.label.color = 0xFFFFFFFF;
 		tab.add(reloadButton);
 
 		var balls:FlxSprite = new FlxSprite().loadImage("editors/charting/balls");
-		balls.setPosition(getX("center", balls.width), getY(3) + 5);
+		balls.setPosition(getX("center", balls.width), getY(4) + 5);
 		tab.add(balls);
 
 		// meta options
 		// tab.add(createText(getX(), getY(5), "Meta:"));
 
-		tab.add(createText(getX(), getY(4) + 3, "Search:", 0xFFD8DAF6));
+		tab.add(createText(getX(), getY(5) + 3, "Search:", 0xFFD8DAF6));
 
-		var test:ChooserWindow = new ChooserWindow(getX("center", 440), getY(5) + 5, 440, 165, [], this);
+		var test:ChooserWindow = new ChooserWindow(getX("center", 440), getY(6) + 5, 440, 170, [], this);
 		tab.add(test);
 
 		var filter:PsychUIInputText;
-		filter = new PsychUIInputText(getX("margin_first_search"), getY(4), 372, "", 14);
+		filter = new PsychUIInputText(getX("margin_first_search"), getY(5), 372, "", 14);
 		filter.onChange.add((old, cur, input) -> test.filter = cur);
 		filter.behindText.color = 0xFFD8DAF6;
 		tab.add(filter);
@@ -650,14 +650,14 @@ class ChartingState extends MusicBeatState
 		filter.textObj.x += glass.width + 2;
 		filter.fieldWidth -= Std.int(glass.width + 2);
 
-		tab.add(createText(getX(), getY(11), "Player:", 0xFFD8DAF6));
-		tab.add(createText(getX("center", 145), getY(11), "Opponent:", 0xFFD8DAF6));
-		tab.add(createText(getX("margin_right", 145), getY(11), "Girlfriend:", 0xFFD8DAF6));
+		tab.add(createText(getX(), getY(12) + 10, "Player:", 0xFFD8DAF6));
+		tab.add(createText(getX("center", 145), getY(12) + 10, "Opponent:", 0xFFD8DAF6));
+		tab.add(createText(getX("margin_right", 145), getY(12) + 10, "Girlfriend:", 0xFFD8DAF6));
 
 		var bfIcon = new HealthIcon();
 		bfIcon.setIcon(META.player1, false);
 		bfIcon.globalScale = 0.33;
-		bfIcon.setPosition(getX() + 145 - bfIcon.width, getY(11) - 10);
+		bfIcon.setPosition(getX() + 145 - bfIcon.width, getY(12));
 		tab.add(bfIcon);
 
 		var bfButton = new DoidoTextButton("");
@@ -688,7 +688,7 @@ class ChartingState extends MusicBeatState
 			}
 		});
 		bfButton.x = getX(); // bfButton.width
-		bfButton.y = getY(11) + 22;
+		bfButton.y = getY(12) + 32;
 		bfButton.button.setColorTransform(bfIcon.barColor.redFloat, bfIcon.barColor.greenFloat, bfIcon.barColor.blueFloat);
 		bfButton.text = META.player1;
 		bfButton.label.color = 0xFFFFFFFF;
@@ -697,7 +697,7 @@ class ChartingState extends MusicBeatState
 		var oppIcon = new HealthIcon();
 		oppIcon.setIcon(META.player2, false);
 		oppIcon.globalScale = 0.33;
-		oppIcon.setPosition(getX("center", 145) + 145 - oppIcon.width, getY(11) - 10);
+		oppIcon.setPosition(getX("center", 145) + 145 - oppIcon.width, getY(12));
 		tab.add(oppIcon);
 
 		var oppButton = new DoidoTextButton("",);
@@ -728,7 +728,7 @@ class ChartingState extends MusicBeatState
 			}
 		});
 		oppButton.x = getX("center", oppButton.width); // bfButton.width
-		oppButton.y = getY(11) + 22;
+		oppButton.y = getY(12) + 32;
 		oppButton.button.setColorTransform(oppIcon.barColor.redFloat, oppIcon.barColor.greenFloat, oppIcon.barColor.blueFloat);
 		oppButton.text = META.player2;
 		oppButton.label.color = 0xFFFFFFFF;
@@ -737,7 +737,7 @@ class ChartingState extends MusicBeatState
 		var gfIcon = new HealthIcon();
 		gfIcon.setIcon(META.gf, false);
 		gfIcon.globalScale = 0.33;
-		gfIcon.setPosition(getX("margin_right", 145) + 145 - gfIcon.width, getY(11) - 10);
+		gfIcon.setPosition(getX("margin_right", 145) + 145 - gfIcon.width, getY(12));
 		tab.add(gfIcon);
 
 		var gfButton = new DoidoTextButton("");
@@ -767,13 +767,13 @@ class ChartingState extends MusicBeatState
 			}
 		});
 		gfButton.x = getX("margin_right", gfButton.width); // bfButton.width
-		gfButton.y = getY(11) + 22;
+		gfButton.y = getY(12) + 32;
 		gfButton.button.setColorTransform(gfIcon.barColor.redFloat, gfIcon.barColor.greenFloat, gfIcon.barColor.blueFloat);
 		gfButton.text = META.gf;
 		gfButton.label.color = 0xFFFFFFFF;
 		tab.add(gfButton);
 
-		tab.add(createText(getX(), getY(13), "Stage:", 0xFFD8DAF6));
+		tab.add(createText(getX(), getY(14) + 10, "Stage:", 0xFFD8DAF6));
 
 		var stages:Array<String> = Assets.list("data/stages/", true, SCRIPT);
 		//stages = stages.concat(stages);
@@ -802,13 +802,13 @@ class ChartingState extends MusicBeatState
 			}
 		});
 		stageButton.x = getX(); // bfButton.width
-		stageButton.y = getY(13) + 22;
+		stageButton.y = getY(14) + 32;
 		stageButton.text = META.stage;
 		// stageButton.text.color = 0xFFFFFFFF;
 		tab.add(stageButton);
 
-		tab.add(createText(getX("center", 145), getY(13), "Meta:", 0xFFD8DAF6));
-		tab.add(createText(getX("margin_right", 145), getY(13), "Assets:", 0xFFD8DAF6));
+		tab.add(createText(getX("center", 145), getY(14) + 10, "Meta:", 0xFFD8DAF6));
+		tab.add(createText(getX("margin_right", 145), getY(14) + 10, "Assets:", 0xFFD8DAF6));
 
 		var metaButton = new DoidoTextButton("Edit");
 		metaButton.button.onUp.add(() ->
@@ -846,7 +846,7 @@ class ChartingState extends MusicBeatState
 			});
 		});
 		metaButton.x = getX("center", metaButton.width);
-		metaButton.y = getY(13) + 22;
+		metaButton.y = getY(14) + 32;
 		tab.add(metaButton);
 
 		var skinsButton = new DoidoTextButton("Edit");
@@ -885,22 +885,8 @@ class ChartingState extends MusicBeatState
 			});
 		});
 		skinsButton.x = getX("margin_right", skinsButton.width);
-		skinsButton.y = getY(13) + 22;
+		skinsButton.y = getY(14) + 32;
 		tab.add(skinsButton);
-
-		//
-
-		/*
-			var composer:PsychUIInputText;
-			composer = new PsychUIInputText(getX("center", 145), getY(13) + 22, 145, META.composer, 14);
-			composer.onChange.add((old, cur, input) -> META.composer = cur);
-			tab.add(composer);
-
-			var charter:PsychUIInputText;
-			charter = new PsychUIInputText(getX("margin_right", 145), getY(13) + 22, 145, META.charter, 14);
-			charter.onChange.add((old, cur, input) -> META.charter = cur);
-			tab.add(charter);
-		 */
 
 		return tab;
 	}

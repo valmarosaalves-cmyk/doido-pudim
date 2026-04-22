@@ -43,6 +43,8 @@ class TestHud extends ClassHud
 		updatePositions();
 	}
 
+	/*
+
 	override function popUpRating(ratingName:String = "", assetPath:String = "base"):RatingSprite
 	{
 		var rating = super.popUpRating(ratingName, assetPath);
@@ -77,6 +79,8 @@ class TestHud extends ClassHud
 			number.numberScale = 0.7;
 		super.positionCombo(numberArray);
 	}
+
+	*/
 
 	override function updatePositions()
 	{
