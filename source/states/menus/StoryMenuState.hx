@@ -10,6 +10,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
+import objects.ui.menu.DiffSelector;
 
 class StoryMenuState extends MusicBeatState
 {
@@ -76,7 +77,7 @@ class StoryMenuState extends MusicBeatState
 		trackTxt.y = (trackTitle.y + trackTitle.height + 12);
 		add(trackTxt);
 
-		diffSelector = new DiffSelector();
+		diffSelector = new DiffSelector("story");
 		diffSelector.diffPos.y = charBg.y + charBg.height + 30; // 20
 		diffSelector.diffPos.x = (FlxG.width - 215);
 		diffSelector.updateHitbox();
@@ -204,7 +205,7 @@ class StoryMenuState extends MusicBeatState
 		if (change != 0)
 			FlxG.sound.play(Assets.sound('scroll'));
 
-		var prevDiffs = week.storyDiffs.length;
+		var prevDiff = diff;
 		curWeek += change;
 		curWeek = FlxMath.wrap(curWeek, 0, weekList.length - 1);
 
@@ -239,8 +240,13 @@ class StoryMenuState extends MusicBeatState
 			FlxTween.color(charBg, 0.4, charBg.color, newColor);
 		}
 
-		if (prevDiffs != week.storyDiffs.length)
-			curDiff = centerDiff;
+		if (diff != prevDiff)
+		{
+			if (!week.storyDiffs.contains(prevDiff))
+				curDiff = centerDiff;
+			else
+				curDiff = week.storyDiffs.indexOf(prevDiff);
+		}
 
 		changeDiff();
 	}
@@ -253,7 +259,7 @@ class StoryMenuState extends MusicBeatState
 		curDiff += change;
 		curDiff = FlxMath.wrap(curDiff, 0, week.storyDiffs.length - 1);
 
-		diffSelector.changeDiff(diff, change);
+		diffSelector.changeDiff(diff, curDiff, week.storyDiffs.length - 1, change);
 		realScore = Highscore.getScore('week-${week.weekFile}-$diff').score;
 	}
 
@@ -326,89 +332,6 @@ class StoryChar extends Character
 
 		x += globalOffset.x;
 		y += globalOffset.y;
-	}
-}
-
-class DiffSelector extends FlxGroup
-{
-	public var arrowL:FlxSprite;
-	public var diffSpr:FlxSprite;
-	public var arrowR:FlxSprite;
-
-	public var curDiff:String = "";
-	public var diffPos:DoidoPoint = {x: 0, y: 0};
-	public var leftX:Float = 0;
-	public var rightX:Float = 0;
-
-	public function new()
-	{
-		super();
-		arrowL = new FlxSprite();
-		arrowL.frames = Assets.sparrow("menu/menuArrows");
-		arrowL.animation.addByPrefix("idle", "arrow left", 0, false);
-		arrowL.animation.addByPrefix("push", "arrow push left", 0, false);
-		arrowL.scale.set(0.8, 0.8);
-		arrowL.updateHitbox();
-		arrowL.animation.play("idle");
-
-		arrowR = new FlxSprite();
-		arrowR.frames = Assets.sparrow("menu/menuArrows");
-		arrowR.animation.addByPrefix("idle", "arrow right", 0, false);
-		arrowR.animation.addByPrefix("push", "arrow push right", 0, false);
-		arrowR.scale.set(0.8, 0.8);
-		arrowR.updateHitbox();
-		arrowR.animation.play("idle");
-
-		add(arrowL);
-		add(arrowR);
-
-		diffSpr = new FlxSprite();
-		add(diffSpr);
-
-		changeDiff();
-	}
-
-	public function changeDiff(diff:String = "", change:Int = 0)
-	{
-		if (curDiff == diff)
-			return;
-		curDiff = diff;
-
-		diffSpr.loadImage("menu/story/diff/" + diff.toLowerCase());
-		diffSpr.scale.set(0.9, 0.9);
-		diffSpr.updateHitbox();
-
-		updateHitbox();
-		diffSpr.y -= 20;
-		diffSpr.alpha = 0;
-
-		if (change > 0)
-			arrowR.x += 15;
-		else if (change < 0)
-			arrowL.x -= 15;
-	}
-
-	public function updateHitbox()
-	{
-		diffSpr.x = (diffPos.x - (diffSpr.width / 2));
-		diffSpr.y = diffPos.y;
-
-		leftX = diffSpr.x - arrowL.width - 15;
-		rightX = diffSpr.x + diffSpr.width + 15;
-
-		arrowL.y = (diffSpr.y + diffSpr.height / 2 - arrowL.height / 2);
-		arrowR.y = arrowL.y;
-	}
-
-	override public function update(elapsed:Float)
-	{
-		super.update(elapsed);
-
-		diffSpr.y = FlxMath.lerp(diffSpr.y, diffPos.y, elapsed * 12);
-		diffSpr.alpha = FlxMath.lerp(diffSpr.alpha, 1, elapsed * 8);
-
-		arrowL.x = FlxMath.lerp(arrowL.x, leftX, elapsed * 8);
-		arrowR.x = FlxMath.lerp(arrowR.x, rightX, elapsed * 8);
 	}
 }
 
