@@ -149,6 +149,9 @@ class Controls
 		if (inputDelay > 0)
 			return false;
 
+		// lets you use both "BACK" and "back", for example
+		bind = (cast bind).toLowerCase();
+
 		if (!bindMap.exists(bind))
 		{
 			Logs.print('Bind $bind not found', WARNING);

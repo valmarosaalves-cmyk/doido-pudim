@@ -86,24 +86,25 @@ class MusicBeat
 	// PlayState doesn't use this
 	public static function updateConductor()
 	{
-		if(FlxG.sound?.music?.playing)
+		if (FlxG.sound?.music?.playing)
 			Conductor.songPos = FlxG.sound.music.time;
 	}
 
 	public static var curMusic:String = "none";
+
 	public static function playMusic(?key:String, ?forceRestart:Bool = false, ?vol:Float = 0.5):Void
 	{
 		if (curMusic != "none" && curMusic != key)
 			Assets.queueMusicClear(key);
-		
-		if(key == null || key == "none")
+
+		if (key == null || key == "none")
 		{
 			curMusic = "none";
 			FlxG.sound.music.stop();
 		}
 		else
 		{
-			if(curMusic != key || forceRestart)
+			if (curMusic != key || forceRestart)
 			{
 				curMusic = key;
 				FlxG.sound.playMusic(Assets.music(key, true), vol);
@@ -111,7 +112,9 @@ class MusicBeat
 			}
 		}
 	}
-	public static function stopMusic() {
+
+	public static function stopMusic()
+	{
 		return playMusic();
 	}
 
@@ -119,14 +122,19 @@ class MusicBeat
 	// Do not use forced unless you REALLY have to
 	public static function flash(?camera:FlxCamera, ?duration:Float = 0.5, ?color:flixel.util.FlxColor, ?forced:Bool = false)
 	{
-		if(camera == null) camera = FlxG.camera;
-		if(color == null) color = 0xFFFFFFFF;
-		
-		if(!forced)
+		if (camera == null)
+			camera = FlxG.camera;
+		if (color == null)
+			color = 0xFFFFFFFF;
+
+		if (!forced)
 		{
-			switch(Save.data.flashingLights.toLowerCase()) {
-				case "off": return;
-				case "reduced": color.alphaFloat = 0.4;
+			switch (Save.data.flashingLights.toLowerCase())
+			{
+				case "off":
+					return;
+				case "reduced":
+					color.alphaFloat = 0.4;
 			}
 		}
 		camera.flash(color, duration, null, true);
@@ -189,11 +197,7 @@ class MusicBeatState extends FlxUIState
 		updateStep();
 
 		if (FlxG.keys.justPressed.F5)
-		{
-			MusicBeat.skipTrans = true;
-			MusicBeat.skipClearCache = (!FlxG.keys.pressed.SHIFT);
-			MusicBeat.resetState();
-		}
+			resetState();
 	}
 
 	private function updateStep()
@@ -245,6 +249,13 @@ class MusicBeatState extends FlxUIState
 	{
 		if (Main.fpsX != x || Main.fpsY != y)
 			Main.setFpsPos(x, y);
+	}
+
+	private function resetState()
+	{
+		MusicBeat.skipTrans = true;
+		MusicBeat.skipClearCache = (!FlxG.keys.pressed.SHIFT);
+		MusicBeat.resetState();
 	}
 }
 

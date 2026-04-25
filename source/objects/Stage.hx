@@ -7,6 +7,8 @@ import flixel.FlxSprite;
 import hscript.iris.Iris;
 import doido.utils.MathUtil;
 
+using doido.utils.ScriptUtil;
+
 class Stage
 {
 	public var playState:PlayState;
@@ -72,11 +74,7 @@ class Stage
 	function loadScript(path:String)
 	{
 		loadedScript = new Iris(Assets.getAsset(path, SCRIPT), this, {name: path, autoRun: false, autoPreset: true});
-		loadedScript.set("Paths", Assets);
-		loadedScript.set("Assets", Assets);
-		loadedScript.set("FlxSprite", FlxSprite);
-		loadedScript.set("MathUtil", MathUtil);
-		loadedScript.set("PlayState", PlayState);
+		loadedScript.setDefaults();
 		loadedScript.set("add", stageItems.push);
 		loadedScript.execute();
 		callScript("create");

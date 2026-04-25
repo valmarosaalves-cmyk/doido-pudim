@@ -26,6 +26,8 @@ import doido.song.Week.WeekData;
 import doido.objects.DoidoHitbox;
 #end
 
+using doido.utils.ScriptUtil;
+
 class PlayState extends MusicBeatState implements Playable
 {
 	public static var SONG:DoidoSong;
@@ -133,6 +135,7 @@ class PlayState extends MusicBeatState implements Playable
 		for (path in scriptPaths)
 		{
 			var newScript:Iris = new Iris(Assets.script('$path'), instance, {name: path, autoRun: true, autoPreset: true});
+			newScript.setDefaults();
 			loadedScripts.push(newScript);
 		}
 		setScript("playState", instance);

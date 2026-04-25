@@ -33,7 +33,7 @@ class DebugMenu extends MusicBeatState
 		#if MODS_FOLDER
 		"Mods",
 		#end
-		#if !mobile "Character Editor", "Crash Handler", "Popup" #end
+		#if !mobile "Character Editor", "Crash Handler", "Scripted State" #end
 	];
 	var text:FlxText;
 	var title:FlxText;
@@ -124,6 +124,8 @@ class DebugMenu extends MusicBeatState
 						};
 						PlayState.loadWeek(week, "hard"); */
 					MusicBeat.switchState(new states.menus.StoryMenuState());
+				case "scripted state":
+					MusicBeat.switchState(new ScriptedState("test"));
 				#if MODS_FOLDER
 				case "mods":
 					MusicBeat.switchState(new ModManager());
