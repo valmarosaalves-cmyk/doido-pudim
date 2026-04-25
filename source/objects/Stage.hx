@@ -75,6 +75,7 @@ class Stage
 	{
 		loadedScript = new Iris(Assets.getAsset(path, SCRIPT), this, {name: path, autoRun: false, autoPreset: true});
 		loadedScript.setDefaults();
+		loadedScript.set("PlayState", PlayState);
 		loadedScript.set("add", stageItems.push);
 		loadedScript.execute();
 		callScript("create");
