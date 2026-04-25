@@ -12,6 +12,8 @@ If you're unsure about this, or would like to suggest a feature, please [create 
 
 ## Medium priority
 - Menus (Freeplay)
+- Note Types
+- Scriptable HUDs
 - Cutscene support
 - Dialogue support
 - Score Resetting
@@ -19,11 +21,7 @@ If you're unsure about this, or would like to suggest a feature, please [create 
 - [Current Issues](https://github.com/DoidoTeam/FNF-Doido-Engine/issues)
 
 ## Low priority
-- Week 6
 - Mobile Button Sprites
-
-## In Discussion
-- Mods Folder
 
 # Rejected Features
 
