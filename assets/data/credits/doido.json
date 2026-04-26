@@ -1,0 +1,76 @@
+{
+    "category": "FNF: Doido Engine",
+    "classic": false,
+    "credits": [
+        {
+            "name": "DiogoTV",
+            "icon": "diogotv",
+            "color": "0xFF624998",
+            "info": "Doido Engine's Owner and Main Coder",
+            "link": "https://bsky.app/profile/diogotv.bsky.social"
+        },
+        {
+            "name": "teles",
+            "icon": "teles",
+            "color": "0xFFFF95AC",
+            "info": "Doido Engine's Co-Owner and Additional Coder",
+            "link": "https://youtube.com/@telesfnf"
+        },
+        {
+            "name": "GoldenFoxy",
+            "icon": "anna",
+            "color": "0xFFFFE100",
+            "info": "Main designer of Doido Engine's chart editor",
+            "link": "https://bsky.app/profile/goldenfoxy.bsky.social"
+        },
+        {
+            "name": "yoisabo",
+            "icon": "yoisabo",
+            "color": "0xFFAE314A",
+            "info": "Main artist and designer of Doido Engine's chart editor",
+            "link": "https://bsky.app/profile/yoisabo.bsky.social"
+        },
+        {
+            "name": "doubleonikoo",
+            "icon": "nikoo",
+            "color": "0xFF624998",
+            "info": "Doido Engine's credits sprite artist",
+            "link": "https://bsky.app/profile/doubleonikoo.bsky.social"
+        },
+        {
+            "name": "UTAstra",
+            "icon": "astra",
+            "color": "0xFFCE7299",
+            "info": "Coding help on Doido Engine",
+            "link": "https://x.com/utastra"
+        },
+        {
+            "name": "JulianoBeta",
+            "icon": "juyko",
+            "color": "0xFF0BA5FF",
+            "info": "Composed Doido Engine's offset menu music",
+            "link": "https://www.youtube.com/@prodjuyko"
+        },
+        {
+            "name": "crowplexus",
+            "icon": "crowplexus",
+            "color": "0xFF313538",
+            "info": "Creator of HScript Iris",
+            "link": "https://github.com/crowplexus/hscript-iris"
+        },
+        {
+            "name": "mochoco",
+            "icon": "mochoco",
+            "color": "0xFFFBFFA7",
+            "info": "Doido Engine's Mobile Button Artist",
+            "link": "https://x.com/mochocofrappe"
+        },
+        {
+            "name": "Special Thanks",
+            "icon": "heart",
+            "color": "0xFFAE314A",
+            "info": "THANK YOU:\nAnakim, ArturYoshi, BeastlyChip, Bnyu, Pi3tr0, Raphalitos and ZieroSama\nfor being cool friends!!",
+            "link": "https://youtu.be/N0IkgKHdgIc"
+        }
+    ]
+}

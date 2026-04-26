@@ -114,10 +114,11 @@ class MainMenuState extends MusicBeatState
 			item.ID = i;
 		}
 
-		var doidoSplash:String = 'Doido Engine 4.0 ${Main.internalVer}';
-		var funkySplash:String = 'Friday Night Funkin\' Rewritten';
+		var splash:String = 'Doido Engine 4.0 ${Main.internalVer}';
+		splash += '\nFriday Night Funkin\' Rewritten';
+		splash += '\nPress [TAB] to manage Mods';
 
-		var splashTxt = new FlxText(4, 0, 0, '$doidoSplash\n$funkySplash');
+		var splashTxt = new FlxText(4, 0, 0, splash);
 		splashTxt.setFormat(Main.globalFont, 18, 0xFFFFFFFF, LEFT);
 		splashTxt.setBorderStyle(OUTLINE, 0xFF000000, 1.5);
 		splashTxt.y = FlxG.height - splashTxt.height - 4;
@@ -146,6 +147,9 @@ class MainMenuState extends MusicBeatState
 
 			if (Controls.justPressed(ACCEPT))
 				options[curSelected].press();
+
+			if(FlxG.keys.justPressed.TAB)
+				MusicBeat.switchState(new states.DebugMenu.ModManager());
 		}
 		else
 		{

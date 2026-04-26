@@ -308,6 +308,7 @@ class ModManager extends MusicBeatState
 {
 	var text:FlxText;
 	var title:FlxText;
+	var ver:FlxText;
 	var cur:Int = 0;
 	var options:Array<String> = [];
 	var reordering:Bool = false;
@@ -332,6 +333,12 @@ class ModManager extends MusicBeatState
 		title.setOutline(0xFF000000, 5);
 		add(title);
 
+		ver = new FlxText(10, 0, 0, "Hold Shift to Reorder");
+		ver.setFormat(Main.globalFont, 32, 0xFFFFFFFF, LEFT);
+		ver.setOutline(0xFF000000, 2.5);
+		ver.x = title.x + title.width + 5;
+		add(ver);
+
 		updateList();
 		drawText();
 	}
@@ -351,6 +358,7 @@ class ModManager extends MusicBeatState
 			text.text += (i == cur ? "> " : "") + options[i] + "\n";
 		text.y = FlxG.height - text.height - 10;
 		title.y = text.y - title.height;
+		ver.y = text.y - ver.height;
 	}
 
 	override function update(elapsed:Float)
@@ -362,7 +370,7 @@ class ModManager extends MusicBeatState
 			changeSelection(1);
 
 		if (Controls.justPressed(BACK))
-			MusicBeat.switchState(new states.DebugMenu());
+			MusicBeat.switchState(new states.menus.MainMenuState());
 
 		if (Controls.justPressed(ACCEPT))
 		{

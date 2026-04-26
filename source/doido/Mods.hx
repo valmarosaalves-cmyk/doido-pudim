@@ -7,7 +7,7 @@ import polymod.Polymod;
 import polymod.PolymodConfig;
 import thx.semver.Version;
 import sys.io.File;
-import doido.song.Week.WeekOrder;
+import doido.song.Week.OrderList;
 
 typedef Mod =
 {
@@ -31,17 +31,21 @@ typedef ModList =
  * - Better Mod Manager
  * - Support for more soft-coded things
  */
-
 class Mods
 {
-	static final API_VERSION:Version = "0.1.0";
-	// idk if im gonna need this for something
 	public static var modList:ModList = {mods: []};
+	static final API_VERSION:Version = "0.1.0";
+	static final ignoredFiles:Array<String> = [
+		"assets/data/weeks/order.json",
+		"assets/data/credits/order.json",
+		"assets/data/credits/doido.json",
+		"mods/mods.json"
+	];
 
 	public static function init()
 	{
-		PolymodConfig.modMetadataFile = 'doidoMeta.json';
-		PolymodConfig.modIconFile = 'doidoIcon.png';
+		PolymodConfig.modMetadataFile = 'meta.json';
+		PolymodConfig.modIconFile = 'icon.png';
 		Polymod.init({
 			modRoot: "mods",
 			dirs: [],
@@ -51,7 +55,7 @@ class Mods
 			apiVersionRule: VersionUtil.anyPatch(API_VERSION),
 			errorCallback: onError,
 			parseRules: new ParseRules(), // disables it i hope
-			ignoredFiles: ["assets/data/weeks/order.json", "mods/mods.json"],
+			ignoredFiles: ignoredFiles,
 			useScriptedClasses: false
 		});
 		loadJson();
@@ -185,7 +189,7 @@ class Mods
 			{
 				try
 				{
-					var order:WeekOrder = {order: []};
+					var order:OrderList = {order: []};
 					order = cast getJSON("data/weeks/order", mod.name);
 					weekList = weekList.concat(order.order);
 				}
@@ -200,6 +204,9 @@ class Mods
 	}
 
 	public static function getJSON(key:String, mod:String):Dynamic
-		return haxe.Json.parse(Polymod.getFileSystem().getFileContent('mods/$mod/$key.json').trim());
+		return haxe.Json.parse(Polymod.getFileSystem().getFileContent(getPath('$key.json', mod)).trim());
+
+	public static inline function getPath(key:String, mod:String):String
+		return 'mods/$mod/$key';
 }
 #end

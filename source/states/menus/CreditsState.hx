@@ -1,5 +1,6 @@
 package states.menus;
 
+import doido.song.Week.OrderList;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -9,21 +10,27 @@ import flixel.math.FlxMath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxSprite;
 
+// single person
 typedef CreditData =
 {
 	var name:String;
 	var icon:String;
-	var color:FlxColor;
+	var color:Dynamic;
 	var info:String;
 	var ?link:String;
 }
 
+typedef CreditList =
+{
+	var category:String;
+	var credits:Array<CreditData>;
+	var ?classic:Bool;
+}
+
 class CreditsState extends MusicBeatState
 {
-	// use this to toggle on icons instead of chars for the credits!
-	final classic:Bool = FlxG.random.bool(1);
-
-	public var creditList:Array<CreditData> = [];
+	public var creditList:CreditList;
+	public var orderList:OrderList;
 	public var curSelected:Int = 0;
 
 	// ANGLE STUFF
@@ -43,9 +50,9 @@ class CreditsState extends MusicBeatState
 
 	var astraEasterEgg:Bool = false;
 
-	function addCredit(name:String, icon:String = "", color:FlxColor, info:String = "", ?link:String)
+	function addCredit(name:String, icon:String = "", color:Dynamic, info:String = "", ?link:String)
 	{
-		creditList.push({
+		creditList.credits.push({
 			name: name,
 			icon: icon,
 			color: color,
@@ -57,37 +64,21 @@ class CreditsState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		// btw you dont need to credit everyone here on your mod
-		// just credit doido engine as a whole and we're good
-		addCredit('DiogoTV', 'diogotv', 0xFF624998, "Doido Engine's Owner and Main Coder", 'https://bsky.app/profile/diogotv.bsky.social');
-		addCredit('teles', 'teles', 0xFFFF95AC, "Doido Engine's Co-Owner and Additional Coder", 'https://youtube.com/@telesfnf');
-		addCredit('GoldenFoxy', 'anna', 0xFFFFE100, "Main designer of Doido Engine's chart editor", 'https://bsky.app/profile/goldenfoxy.bsky.social');
-		addCredit('yoisabo', 'yoisabo', 0xFFAE314A, "Main artist and designer of Doido Engine's chart editor", 'https://bsky.app/profile/yoisabo.bsky.social');
-		addCredit('doubleonikoo', 'nikoo', 0xFF624998, "Doido Engine's credits sprite artist", 'https://bsky.app/profile/doubleonikoo.bsky.social');
-		addCredit('UTAstra', 'astra', 0xFFCE7299, "Coding help on Doido Engine", "https://x.com/utastra");
-		addCredit('JulianoBeta', 'juyko', 0xFF0BA5FF, "Composed Doido Engine's offset menu music", 'https://www.youtube.com/@prodjuyko');
-		addCredit('crowplexus', 'crowplexus', 0xFF313538, "Creator of HScript Iris", 'https://github.com/crowplexus/hscript-iris');
-		addCredit('mochoco', 'mochoco', 0xFFFBFFA7, "Doido Engine's Mobile Button Artist", 'https://x.com/mochocofrappe');
 
-		// SPECIAL THANKS
-		final specialPeople = 'Anakim, ArturYoshi, BeastlyChip, Bnyu, Pi3tr0, Raphalitos and ZieroSama';
-		addCredit('Special Thanks', 'heart', 0xFFAE314A, 'THANK YOU:\n${specialPeople}\nfor being cool friends!!', "https://youtu.be/N0IkgKHdgIc");
-		
-		// GITHUB CONTRIBUTORS
-		getContributors((names) -> {
+		creditList = cast(Assets.json('data/credits/doido'));
+		creditList.classic = creditList.classic ?? false;
+		getContributors((names) ->
+		{
 			if (names.length > 0)
 			{
-				addCredit(
-					'Github Contributors', 'github', 0xFFFFFFFF,
-					'THANKS TO: ${names}\nfor helping out doido engine!!',
-					'https://github.com/DoidoTeam/FNF-Doido-Engine/graphs/contributors'
-				);
+				addCredit('Github Contributors', 'github', "0xFFFFFFFF", 'THANKS TO: ${names}\nfor helping out doido engine!!',
+					'https://github.com/DoidoTeam/FNF-Doido-Engine/graphs/contributors');
 			}
 		});
 
 		/*
-		*	Don't modify the rest of the code unless you know what you're doing!!
-		*/
+		 *	Don't modify the rest of the code unless you know what you're doing!!
+		 */
 		persistentUpdate = true;
 		DiscordIO.changePresence("Credits - Thanks!!");
 		MusicBeat.playMusic("girlfriendsRingtone");
@@ -111,10 +102,10 @@ class CreditsState extends MusicBeatState
 		descTxt.updateHitbox();
 		add(descTxt);
 
-		angleStep = (360 / creditList.length);
-		for (i in 0...creditList.length)
+		angleStep = (360 / creditList.credits.length);
+		for (i in 0...creditList.credits.length)
 		{
-			var newChar = new CreditChar(creditList[i].icon, classic);
+			var newChar = new CreditChar(creditList.credits[i].icon, creditList.classic);
 			newChar.ID = i;
 			creditGuys.add(newChar);
 		}
@@ -150,7 +141,7 @@ class CreditsState extends MusicBeatState
 			{
 				if (!astraEasterEgg)
 				{
-					var url = creditList[curSelected].link;
+					var url = creditList.credits[curSelected].link;
 					if (url != null && url.length > 0)
 					{
 						leaving = true;
@@ -203,7 +194,7 @@ class CreditsState extends MusicBeatState
 			var selected:Bool = (curSelected == char.ID);
 			char.selected = selected;
 
-			var whichChar = (classic ? "_classic" : char.curChar);
+			var whichChar = (creditList.classic ? "_classic" : char.curChar);
 			switch (whichChar)
 			{
 				case "nikoo" | "_classic": // nothing
@@ -297,34 +288,31 @@ class CreditsState extends MusicBeatState
 		rawSelected += change;
 		curSelected += change;
 		if (curSelected < 0)
-			curSelected = creditList.length - 1;
-		if (curSelected > creditList.length - 1)
+			curSelected = creditList.credits.length - 1;
+		if (curSelected > creditList.credits.length - 1)
 			curSelected = 0;
 
-		var curCredit = creditList[curSelected];
+		var curCredit = creditList.credits[curSelected];
 		nameTxt.text = curCredit.name;
 		descTxt.text = '<color value=#FFFFFF>${curCredit.info}</color>';
-		txtBG.setGraphicSize(
-			Math.max(nameTxt.width, descTxt.width) + 80,
-			(descTxt.y + descTxt.height) - nameTxt.y + 48
-		);
+		txtBG.setGraphicSize(Math.max(nameTxt.width, descTxt.width) + 80, (descTxt.y + descTxt.height) - nameTxt.y + 48);
 		txtBG.updateHitbox();
 		txtBG.y = nameTxt.y - 20;
 
-		for(item in [nameTxt, descTxt, txtBG])
+		for (item in [nameTxt, descTxt, txtBG])
 		{
 			if (Std.isOfType(item, Alphabet))
 				item.x = FlxG.width / 2;
 			else
 				item.screenCenter(X);
-			
+
 			item.x += change * 60;
 			FlxTween.cancelTweensOf(item);
 			FlxTween.tween(item, {x: item.x - change * 60}, 0.4, {ease: FlxEase.cubeOut});
 		}
 
 		FlxTween.cancelTweensOf(bg);
-		FlxTween.color(bg, 0.4, bg.color, curCredit.color);
+		FlxTween.color(bg, 0.4, bg.color, SpriteUtil.getColor(curCredit.color));
 
 		astraEasterEgg = (curCredit.icon == "astra");
 	}
@@ -333,8 +321,8 @@ class CreditsState extends MusicBeatState
 	{
 		var names:String = "";
 
-		var blacklist:Array<String> = Assets.textToArray('data/credits/blacklist');
-		var json:Dynamic = Assets.json("data/credits/contributors");
+		var blacklist:Array<String> = Assets.textToArray('data/credits/github/blacklist');
+		var json:Dynamic = Assets.json("data/credits/github/contributors");
 		if (json != null)
 		{
 			var i:Int = 0;
@@ -374,7 +362,7 @@ class CreditChar extends FlxSprite
 	public var selectedScaleElapsed:Float = 0.0;
 	public var selectedScaleX:Float = 0.0;
 	public var selectedScaleY:Float = 0.0;
-	
+
 	public var nikooJumpOffset:Float = 0.0;
 	public var nikooCanJump:Bool = true;
 
@@ -394,7 +382,7 @@ class CreditChar extends FlxSprite
 				else
 					this.loadImage('$path/null');
 		}
-		
+
 		outline = new FlxSprite();
 		outline.loadGraphic(graphic);
 		outline.setColorTransform(0, 0, 0, 1, 255, 255, 255, 0);
@@ -420,10 +408,7 @@ class CreditChar extends FlxSprite
 			for (i in 0...segments)
 			{
 				var angle:Float = i * step;
-				outline.setPosition(
-					x + Math.cos(angle) * thickness,
-					y + Math.sin(angle) * thickness
-				);
+				outline.setPosition(x + Math.cos(angle) * thickness, y + Math.sin(angle) * thickness);
 				outline.origin.set(origin.x, origin.y);
 				outline.scale.set(scale.x, scale.y);
 				outline.offset.set(offset.x, offset.y);

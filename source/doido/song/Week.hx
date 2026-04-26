@@ -19,7 +19,7 @@ typedef WeekSong =
 	var ?icon:String;
 }
 
-typedef WeekOrder =
+typedef OrderList =
 {
 	var order:Array<String>;
 }
@@ -43,7 +43,7 @@ class Week
 
 	public static function weekList(storyMode:Bool = false, freeplay:Bool = true):Array<WeekData>
 	{
-		var order:WeekOrder = {order: []};
+		var order:OrderList = {order: []};
 		var list:Array<WeekData> = [];
 
 		try
