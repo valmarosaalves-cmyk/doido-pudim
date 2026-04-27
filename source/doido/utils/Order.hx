@@ -1,40 +1,44 @@
 package doido.utils;
 
+import flixel.math.FlxMath;
+
 typedef OrderList =
 {
 	var order:Array<String>;
+	var ?index:Int;
 }
 
 class Order
 {
 	public static function getOrder(path:String, first:Bool = false):Array<String>
 	{
-		var list:Array<String> = getList(path);
+		var list:Array<String> = getList(path).order;
 		#if MODS_FOLDER
-		if (first) // mods before base
+		var lenght = list.length;
+		var mods:Array<OrderList> = [];
+		for (mod in Mods.modList.mods)
 		{
-			var i = Mods.modList.mods.length - 1;
-			while (i >= 0)
-			{
-                var mod = Mods.modList.mods[i];
-				if (mod.enabled)
-					list = getModList(path, mod.name).concat(list);
-				i--;
-			}
+			if (!mod.enabled)
+				continue;
+
+			var newList = getModList(path, mod.name);
+			newList.index = newList.index ?? (first ? 0 : lenght);
+			mods.push(newList);
 		}
-		else
+
+		mods.sort((a, b) -> a.index - b.index);
+		var offset = 0;
+		for (mod in mods)
 		{
-			for (mod in Mods.modList.mods)
-			{
-				if (mod.enabled)
-					list = list.concat(getModList(path, mod.name));
-			}
+			var index = mod.index + offset;
+			index = FlxMath.wrap(index, 0, lenght);
+			list = list.slice(0, index).concat(mod.order).concat(list.slice(index));
 		}
 		#end
 		return list;
 	}
 
-	public static function getList(path:String):Array<String>
+	public static function getList(path:String):OrderList
 	{
 		var order:OrderList = {order: []};
 		try
@@ -46,12 +50,12 @@ class Order
 			Logs.print('ORDER LOAD ERROR: $e');
 			order.order = Assets.list('$path/', true, ["order"], JSON);
 		}
-		return order.order;
+		return order;
 	}
 
 	#if MODS_FOLDER
 	// to-do: list folder
-	public static function getModList(path:String, mod:String):Array<String>
+	public static function getModList(path:String, mod:String):OrderList
 	{
 		var order:OrderList = {order: []};
 		try
@@ -62,7 +66,7 @@ class Order
 		{
 			Logs.print('WEEK ORDER LOAD ERROR, on mod ${mod}: $e');
 		}
-		return order.order;
+		return order;
 	}
 	#end
 }
