@@ -1,5 +1,5 @@
 {
-    "category": "FNF: Doido Engine",
+    "category": "FNF: <wave intensity=10 speed=3>DOIDO</wave> <shake intensity=2 speed=10><color value=#FF0000>ENGINE</color></shake>",
     "classic": false,
     "credits": [
         {
@@ -71,6 +71,13 @@
             "color": "0xFFAE314A",
             "info": "THANK YOU:\nAnakim, ArturYoshi, BeastlyChip, Bnyu, Pi3tr0, Raphalitos and ZieroSama\nfor being cool friends!!",
             "link": "https://youtu.be/N0IkgKHdgIc"
+        },
+        {
+            "name": "Github Contributors",
+            "icon": "github",
+            "color": "0xFFFFFFFF",
+            "info": "THANKS TO: <contributors>\nfor helping out doido engine!!",
+            "link": "https://github.com/DoidoTeam/FNF-Doido-Engine/graphs/contributors"
         }
     ]
 }

@@ -7,7 +7,6 @@ import polymod.Polymod;
 import polymod.PolymodConfig;
 import thx.semver.Version;
 import sys.io.File;
-import doido.song.Week.OrderList;
 
 typedef Mod =
 {
@@ -176,31 +175,6 @@ class Mods
 			return;
 
 		Logs.print('Polymod.${(cast err.origin).toUpperCase()} | ${err.message}', POLYMOD, true, true, false);
-	}
-
-	public static var weekList(get, never):Array<String>;
-
-	public static function get_weekList():Array<String>
-	{
-		var weekList:Array<String> = [];
-		for (mod in modList.mods)
-		{
-			if (mod.enabled)
-			{
-				try
-				{
-					var order:OrderList = {order: []};
-					order = cast getJSON("data/weeks/order", mod.name);
-					weekList = weekList.concat(order.order);
-				}
-				catch (e)
-				{
-					Logs.print('WEEK ORDER LOAD ERROR, on mod ${mod.name}: $e');
-				}
-			}
-		}
-
-		return weekList;
 	}
 
 	public static function getJSON(key:String, mod:String):Dynamic

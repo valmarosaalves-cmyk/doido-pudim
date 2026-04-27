@@ -148,8 +148,10 @@ class MainMenuState extends MusicBeatState
 			if (Controls.justPressed(ACCEPT))
 				options[curSelected].press();
 
+			#if MODS_FOLDER
 			if(FlxG.keys.justPressed.TAB)
 				MusicBeat.switchState(new states.DebugMenu.ModManager());
+			#end
 		}
 		else
 		{

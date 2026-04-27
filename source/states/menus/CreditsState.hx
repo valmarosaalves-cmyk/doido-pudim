@@ -1,6 +1,5 @@
 package states.menus;
 
-import doido.song.Week.OrderList;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -9,6 +8,7 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxSprite;
+import doido.utils.Order;
 
 // single person
 typedef CreditData =
@@ -29,8 +29,13 @@ typedef CreditList =
 
 class CreditsState extends MusicBeatState
 {
-	public var creditList:CreditList;
-	public var orderList:OrderList;
+	public var lists:Array<CreditList> = [];
+	public var curList:Int = 0;
+	public var creditList(get, never):CreditList;
+
+	public function get_creditList():CreditList
+		return lists[curList];
+
 	public var curSelected:Int = 0;
 
 	// ANGLE STUFF
@@ -43,6 +48,7 @@ class CreditsState extends MusicBeatState
 	public var txtBG:FlxSprite;
 	public var nameTxt:Alphabet;
 	public var descTxt:Alphabet;
+	public var catTxt:Alphabet;
 
 	public var leaving:Bool = true;
 	public var holdTimer:Float = 0.0;
@@ -64,24 +70,19 @@ class CreditsState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-
-		creditList = cast(Assets.json('data/credits/doido'));
-		creditList.classic = creditList.classic ?? false;
-		getContributors((names) ->
-		{
-			if (names.length > 0)
-			{
-				addCredit('Github Contributors', 'github', "0xFFFFFFFF", 'THANKS TO: ${names}\nfor helping out doido engine!!',
-					'https://github.com/DoidoTeam/FNF-Doido-Engine/graphs/contributors');
-			}
-		});
-
-		/*
-		 *	Don't modify the rest of the code unless you know what you're doing!!
-		 */
 		persistentUpdate = true;
 		DiscordIO.changePresence("Credits - Thanks!!");
 		MusicBeat.playMusic("girlfriendsRingtone");
+		leaving = false; // ???
+
+		for (list in Order.getOrder('data/credits', true))
+		{
+			var newList:CreditList = cast(Assets.json('data/credits/$list'));
+			newList.classic = newList.classic ?? false;
+			for (credit in newList.credits)
+				credit.info = credit.info.replace("<contributors>", getContributors());
+			lists.push(newList);
+		}
 
 		bg = new FlxSprite().loadGraphic(Assets.image('menuDesat'));
 		bg.alpha = 0.6;
@@ -102,14 +103,22 @@ class CreditsState extends MusicBeatState
 		descTxt.updateHitbox();
 		add(descTxt);
 
-		angleStep = (360 / creditList.credits.length);
+		catTxt = new Alphabet(FlxG.width / 2, 40, "", true, CENTER);
+		add(catTxt);
+
+		changeCategory();
+	}
+
+	function spawnGuys()
+	{
+		creditGuys.killMembers();
 		for (i in 0...creditList.credits.length)
 		{
-			var newChar = new CreditChar(creditList.credits[i].icon, creditList.classic);
+			var newChar = creditGuys.recycle(CreditChar);
+			newChar.reload(creditList.credits[i].icon, creditList.classic);
 			newChar.ID = i;
 			creditGuys.add(newChar);
 		}
-		changeSelection();
 	}
 
 	override function closeSubState()
@@ -130,6 +139,15 @@ class CreditsState extends MusicBeatState
 				holdTimer += elapsed;
 			else
 				holdTimer = 0.0;
+
+			if (lists.length > 1)
+			{
+				if (Controls.justPressed(UI_UP))
+					changeCategory(-1);
+
+				if (Controls.justPressed(UI_DOWN))
+					changeCategory(-1);
+			}
 
 			if (Controls.justPressed(UI_LEFT) || Controls.justPressed(UI_RIGHT) || holdTimer >= holdMax)
 			{
@@ -182,7 +200,8 @@ class CreditsState extends MusicBeatState
 
 		elapsedTime += elapsed;
 		lerpSelected = FlxMath.lerp(lerpSelected, rawSelected, elapsed * 4);
-		for (char in creditGuys.members)
+
+		creditGuys.forEachAlive((char) ->
 		{
 			var daAngle = FlxAngle.asRadians((char.ID - lerpSelected) * angleStep);
 
@@ -276,8 +295,32 @@ class CreditsState extends MusicBeatState
 			char.x = ((FlxG.width - char.width) / 2) + Math.sin(daAngle) * 400;
 			char.y = (nameTxt.y - 160 - char.height) + Math.cos(daAngle) * 80;
 			char.setZ(Math.floor(char.y + char.height));
-		}
+		});
 		creditGuys.sort(ZIndex.sort);
+	}
+
+	public function changeCategory(?change:Int = 0)
+	{
+		if (change != 0)
+			FlxG.sound.play(Assets.sound("scroll"));
+
+		curList += change;
+		curList = FlxMath.wrap(curList, 0, lists.length - 1);
+
+		angleStep = (360 / creditList.credits.length);
+		spawnGuys();
+		curSelected = 0;
+		rawSelected = 0;
+
+		// go to the nearest 0
+		var total = creditList.credits.length;
+		lerpSelected = lerpSelected % total;
+		if (lerpSelected > total / 2)
+			lerpSelected -= total;
+
+		catTxt.text = creditList.category;
+
+		changeSelection();
 	}
 
 	public function changeSelection(?change:Int = 0)
@@ -317,7 +360,7 @@ class CreditsState extends MusicBeatState
 		astraEasterEgg = (curCredit.icon == "astra");
 	}
 
-	function getContributors(callback:String->Void)
+	function getContributors()
 	{
 		var names:String = "";
 
@@ -345,7 +388,7 @@ class CreditsState extends MusicBeatState
 			}
 		}
 
-		callback(names);
+		return names;
 	}
 }
 
@@ -366,12 +409,28 @@ class CreditChar extends FlxSprite
 	public var nikooJumpOffset:Float = 0.0;
 	public var nikooCanJump:Bool = true;
 
-	public function new(curChar:String, classic:Bool = false)
+	public function new()
 	{
 		super();
-		this.curChar = curChar;
+		outline = new FlxSprite();
 		shadow = new FlxSprite();
 		shadow.loadImage("credits/shadow");
+	}
+
+	public function reload(curChar:String, classic:Bool = false)
+	{
+		this.curChar = curChar;
+		angle = 0;
+		scale.set(1, 1);
+		offset.set(0, 0);
+		shadowScale = 1.0;
+		shadowBaseY = 1.0;
+		selected = false;
+		selectedScaleElapsed = 0.0;
+		selectedScaleX = 0.0;
+		selectedScaleY = 0.0;
+		nikooJumpOffset = 0.0;
+		nikooCanJump = true;
 
 		var path:String = 'credits/' + (classic ? "icons" : "char");
 		switch (curChar)
@@ -383,7 +442,6 @@ class CreditChar extends FlxSprite
 					this.loadImage('$path/null');
 		}
 
-		outline = new FlxSprite();
 		outline.loadGraphic(graphic);
 		outline.setColorTransform(0, 0, 0, 1, 255, 255, 255, 0);
 	}

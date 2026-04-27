@@ -1,5 +1,7 @@
 package doido.song;
 
+import doido.utils.Order;
+
 typedef WeekData =
 {
 	var songs:Array<WeekSong>;
@@ -17,11 +19,6 @@ typedef WeekSong =
 {
 	var song:String;
 	var ?icon:String;
-}
-
-typedef OrderList =
-{
-	var order:Array<String>;
 }
 
 class Week
@@ -43,30 +40,14 @@ class Week
 
 	public static function weekList(storyMode:Bool = false, freeplay:Bool = true):Array<WeekData>
 	{
-		var order:OrderList = {order: []};
+		var order:Array<String> = Order.getOrder('data/weeks');
 		var list:Array<WeekData> = [];
-
-		try
-		{
-			order = cast Assets.json('data/weeks/order');
-		}
-		catch (e)
-		{
-			Logs.print('WEEK ORDER LOAD ERROR: $e');
-			order.order = Assets.list("data/weeks/", true, ["order"], JSON);
-		}
-
-		#if MODS_FOLDER
-		order.order = order.order.concat(doido.Mods.weekList);
-		#end
-
-		for (week in order.order)
+		for (week in order)
 		{
 			var rawWeek:WeekData = loadWeek(week);
 			if ((!rawWeek.storyModeOnly || storyMode) && (!rawWeek.freeplayOnly || freeplay) && rawWeek.songs.length > 0)
 				list.push(rawWeek);
 		}
-
 		return list;
 	}
 
