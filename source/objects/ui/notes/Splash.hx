@@ -13,7 +13,8 @@ class Splash extends BaseSplash
 		hasRgb = false;
 		rgb = skin.endsWith("-quant");
 
-		switch (skin.replace("-quant", ""))
+		var formatted:String = skin.replace("-quant", "");
+		switch (formatted)
 		{
 			case "pixel" | "pixel-quant" | "pixel-rgb":
 				var frameArr:Array<Int> = [0, 1, 2, 3, 4, 5];
@@ -35,16 +36,19 @@ class Splash extends BaseSplash
 				hasRgb = true;
 
 			default:
-				this.loadSparrow('ui/notes/base/${rgb ? 'quant/' : ''}splashes');
-				direction = rgb ? "" : direction + " ";
+				if (Assets.fileExists('images/ui/notes/$formatted/quant/splashes', IMAGE))
+					hasRgb = true;
+				else if (!Assets.fileExists('images/ui/notes/$formatted/splashes', IMAGE))
+					formatted = "base";
 
+				this.loadSparrow('ui/notes/$formatted/${(rgb && hasRgb) ? 'quant/' : ''}splashes');
+				direction = (rgb && hasRgb) ? "" : direction + " ";
 				for (i in 1...3)
 				{
 					animation.addByPrefix('splash$i', '${direction}splash $i', 24, false);
 				}
 				splashScale = 0.8;
 				startAlpha = 0.8;
-				hasRgb = true;
 		}
 
 		super.reloadSplash();
@@ -70,7 +74,8 @@ class Cover extends BaseSplash
 		hasRgb = false;
 		rgb = skin.endsWith("-quant");
 
-		switch (skin.replace("-quant", ""))
+		var formatted:String = skin.replace("-quant", "");
+		switch (formatted)
 		{
 			case "pixel" | "pixel-quant" | "pixel-rgb":
 				function getArr(arr:Array<Int>):Array<Int>
@@ -98,16 +103,19 @@ class Cover extends BaseSplash
 				hasRgb = true;
 
 			default:
-				this.loadSparrow('ui/notes/base/${rgb ? 'quant/' : ''}covers');
-				direction = rgb ? "" : direction.toUpperCase();
+				if (Assets.fileExists('images/ui/notes/$formatted/quant/covers', IMAGE))
+					hasRgb = true;
+				else if (!Assets.fileExists('images/ui/notes/$formatted/covers', IMAGE))
+					formatted = "base";
 
+				this.loadSparrow('ui/notes/$formatted/${(rgb && hasRgb) ? 'quant/' : ''}covers');
+				direction = (rgb && hasRgb) ? "" : direction.toUpperCase();
 				animation.addByPrefix("start", 'holdCoverStart$direction', 24, false);
 				animation.addByPrefix("loop", 'holdCover${direction}0', 24, true);
 				animation.addByPrefix("splash", 'holdCoverEnd$direction', 24, false);
 				splashScale = 0.7;
-				hasRgb = true;
 
-				if (rgb)
+				if (rgb && hasRgb)
 					addOffset("splash", {x: -6, y: -16});
 				else
 				{

@@ -33,7 +33,8 @@ class StrumNote extends DoidoSprite
 		var hasRgb:Bool = false;
 		rgb = skin.endsWith("-quant");
 
-		switch (skin.replace("-quant", ""))
+		var formatted:String = skin.replace("-quant", "");
+		switch (formatted)
 		{
 			case "pixel":
 				this.loadImage('ui/notes/pixel/${rgb ? 'quant/' : ''}notes', true, 17, 17);
@@ -47,13 +48,16 @@ class StrumNote extends DoidoSprite
 				hasRgb = true;
 
 			default:
-				this.loadSparrow('ui/notes/base/${rgb ? 'quant/' : ''}strums');
+				if (Assets.fileExists('images/ui/notes/$formatted/quant/strums', IMAGE))
+					hasRgb = true;
+				else if (!Assets.fileExists('images/ui/notes/$formatted/strums', IMAGE))
+					formatted = "base";
 
+				this.loadSparrow('ui/notes/$formatted/${(rgb && hasRgb) ? 'quant/' : ''}strums');
 				for (anim in ["static", "pressed", "confirm"])
 					animation.addByPrefix(anim, 'strum $direction $anim', 24, false);
 
 				strumScale = 0.7;
-				hasRgb = true;
 		}
 
 		if (!hasRgb)

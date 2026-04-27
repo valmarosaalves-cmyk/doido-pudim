@@ -87,7 +87,8 @@ class Note extends FlxSprite
 		quant = skin.endsWith("-quant");
 		rgb = quant;
 
-		switch (skin.replace("-quant", ""))
+		var formatted:String = skin.replace("-quant", "");
+		switch (formatted)
 		{
 			case "pixel":
 				var path = 'ui/notes/pixel/${rgb ? 'quant/' : ''}';
@@ -103,14 +104,15 @@ class Note extends FlxSprite
 				hasRgb = true;
 
 			default:
-				rgb = skin.endsWith("-rgb") || skin.endsWith("-quant");
-				quant = skin.endsWith("-quant");
-				this.loadSparrow('ui/notes/base/${rgb ? 'quant/' : ''}notes');
+				if (Assets.fileExists('images/ui/notes/$formatted/quant/notes', IMAGE))
+					hasRgb = true;
+				else if (!Assets.fileExists('images/ui/notes/$formatted/notes', IMAGE))
+					formatted = "base";
 
+				this.loadSparrow('ui/notes/$formatted/${(rgb && hasRgb) ? 'quant/' : ''}notes');
 				var postfix:String = (isHold ? " hold" + (isHoldEnd ? " end" : "") : "");
 				animation.addByPrefix(direction, 'note ${direction}${postfix}0', 0, false);
 				noteScale = 0.7;
-				hasRgb = true;
 		}
 
 		if (!hasRgb)
