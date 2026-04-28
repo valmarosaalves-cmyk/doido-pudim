@@ -111,7 +111,6 @@ class FreeplayState extends MusicBeatState
             }
         }
 
-        // not adding pooling to this rn im kinda lazy ngl
         namesGrp.killMembers();
         var i = 0;
         for (song in songs)
@@ -259,6 +258,19 @@ class FreeplayState extends MusicBeatState
 
     public function startSong()
     {
+        if (curSong.name.toLowerCase() == "random")
+        {
+            var possibleList:Array<Int> = [];
+            for(i in 0...songs.length)
+            {
+                var song = songs[i];
+                if (song.diffs.contains(curSong.diffs[curDiff]) && song != curSong)
+                    possibleList.push(i);
+            }
+            FlxG.random.shuffle(possibleList);
+            changeSelection(FlxG.random.getObject(possibleList));
+        }
+
 		try
 		{
 			PlayState.loadSong(curSong.name, curSong.diffs[curDiff]);
