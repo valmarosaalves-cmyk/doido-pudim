@@ -1,8 +1,5 @@
 package doido;
 
-import openfl.display.BitmapData;
-import flixel.graphics.FlxGraphic;
-import haxe.io.Bytes;
 #if MODS_FOLDER
 import polymod.util.VersionUtil;
 import polymod.format.ParseRules;
@@ -10,6 +7,9 @@ import polymod.Polymod;
 import polymod.PolymodConfig;
 import thx.semver.Version;
 import sys.io.File;
+import openfl.display.BitmapData;
+import flixel.graphics.FlxGraphic;
+import haxe.io.Bytes;
 
 typedef Mod =
 {
@@ -194,7 +194,7 @@ class Mods
 			}
 		}
 
-		if(icon == null)
+		if (icon == null)
 			return Assets.image("icon");
 		else
 			return FlxGraphic.fromBitmapData(BitmapData.fromBytes(icon));

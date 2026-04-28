@@ -1,5 +1,6 @@
 package substates.menus;
 
+#if MODS_FOLDER
 import flixel.graphics.FlxGraphic;
 import flixel.FlxSprite;
 import doido.objects.Alphabet;
@@ -224,3 +225,4 @@ class ModAlphabet extends Alphabet
 		super.draw();
 	}
 }
+#end
