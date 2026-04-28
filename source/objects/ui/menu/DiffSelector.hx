@@ -4,10 +4,12 @@ import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 
-enum SelectorType {
+enum SelectorType
+{
 	STORY;
 	FREEPLAY;
 }
+
 class DiffSelector extends FlxGroup
 {
 	public var arrowL:FlxSprite;
@@ -21,6 +23,10 @@ class DiffSelector extends FlxGroup
 	public var curDiff:String = "";
 	public var curId:Int = 0; // rename later
 	public var diffCount:Int = 0;
+
+	// lol
+	var storedY:Float = -1;
+	var storedHeight:Float = -1;
 
 	// style
 	public var style:SelectorType = FREEPLAY;
@@ -55,8 +61,8 @@ class DiffSelector extends FlxGroup
 	public function new(style:SelectorType)
 	{
 		super();
-        this.style = style;
-        
+		this.style = style;
+
 		arrowL = new FlxSprite();
 		arrowL.frames = Assets.sparrow(curStyle.get("arrowSpr"));
 		arrowL.animation.addByPrefix("idle", curStyle.get("arrowIdleL"), 24, true);
@@ -122,9 +128,14 @@ class DiffSelector extends FlxGroup
 				dots.add(dot);
 			}
 		}
-		
+
 		for (arrow in [arrowL, arrowR])
 			arrow.alpha = (count > 1 ? 1.0 : 0.0001);
+
+		if (storedY == -1)
+			storedY = diffSpr.y;
+		if (storedHeight == -1)
+			storedHeight = diffSpr.height;
 
 		updateHitbox();
 
@@ -148,13 +159,13 @@ class DiffSelector extends FlxGroup
 		leftX = diffSpr.x - arrowL.width - 15;
 		rightX = diffSpr.x + diffSpr.width + 15;
 
-		arrowL.y = (diffSpr.y + diffSpr.height / 2 - arrowL.height / 2);
+		arrowL.y = (storedY + storedHeight / 2 - arrowL.height / 2);
 		arrowR.y = arrowL.y;
 
 		dots.forEachAlive((dot) ->
 		{
 			dot.x = diffPos.x - (dot.width / 2) + (dotSpacing * dot.ID) - (diffCount * dotSpacing) / 2;
-			dot.y = diffPos.y + diffSpr.height + 10;
+			dot.y = diffPos.y + storedHeight + 10;
 		});
 	}
 

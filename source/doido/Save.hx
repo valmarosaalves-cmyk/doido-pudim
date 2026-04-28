@@ -21,18 +21,19 @@ class SaveVariables
 	public var darkMode:Bool = true;
 	public var discordRPC:Bool = #if DISCORD_RPC true #else false #end;
 	public var fpsCounter:Bool = #if desktop true #else false #end;
+	public var fasterTransitions:Bool = false;
 	public var hitsound:String = "OFF";
 	public var hitsoundVolume:Float = 0.4;
 	public var flashingLights:String = "ON";
 	public var splashNotes:String = "ALWAYS";
-	
+
 	// graphics
 	public var fps:Int = 60;
 	public var windowSize:String = '${Main.gameWidth}x${Main.gameHeight}';
 	public var gpuCaching:Bool = false;
 	public var antialiasing:Bool = true;
 	public var lowQuality:Bool = false;
-	
+
 	// mobile
 	public var modernControls:Bool = #if TOUCH_CONTROLS true #else false #end;
 	public var invertX:Bool = false;
@@ -98,7 +99,7 @@ class Save
 
 		if (Main.fpsCounter != null)
 			Main.fpsCounter.visible = data.fpsCounter;
-		
+
 		DiscordIO.check();
 	}
 }

@@ -7,6 +7,7 @@ typedef WeekData =
 	var songs:Array<WeekSong>;
 	var ?weekFile:String;
 	var ?weekName:String;
+	var ?freeplayName:String;
 	var ?chars:Array<String>;
 	var ?diffs:Array<String>;
 	var ?storyDiffs:Array<String>;
@@ -29,6 +30,7 @@ class Week
 			songs: [],
 			weekFile: "week1",
 			weekName: "unknown",
+			freeplayName: "unknown",
 			chars: ["dad", "bf", "gf"],
 			freeplayOnly: false,
 			storyModeOnly: false,
@@ -67,6 +69,7 @@ class Week
 
 		newWeek.weekFile = newWeek.weekFile ?? DEFAULT.weekFile;
 		newWeek.weekName = newWeek.weekName ?? DEFAULT.weekName;
+		newWeek.freeplayName = newWeek.freeplayName ?? newWeek.weekName;
 
 		newWeek.chars = newWeek.chars ?? DEFAULT.chars;
 		newWeek.diffs = newWeek.diffs ?? DEFAULT.diffs;

@@ -7,5 +7,6 @@
         {"song": "commotion", "icon":"dad"}
     ],
     "freeplayOnly": true,
+    "freeplayName": "extra songs",
     "diffs": ["hard"]
 }

@@ -122,7 +122,8 @@ class OptionsSubState extends MusicBeatSubState
 
 						for (strumline in playState.playField.strumlines)
 						{
-							if (!strumline.hasModchart) {
+							if (!strumline.hasModchart)
+							{
 								strumline.downscroll = playState.downscroll;
 								strumline.recalculateY();
 								strumline.updateNotes(playState.curStepFloat);
@@ -154,7 +155,8 @@ class OptionsSubState extends MusicBeatSubState
 						var _i:Int = 0;
 						for (strumline in playState.playField.strumlines)
 						{
-							if (!strumline.hasModchart) {
+							if (!strumline.hasModchart)
+							{
 								strumline.x = (FlxG.width / 2) + strumPos[_i % strumPos.length];
 								strumline.recalculateX();
 								strumline.updateNotes(playState.curStepFloat);
@@ -236,6 +238,18 @@ class OptionsSubState extends MusicBeatSubState
 					},
 				},
 				#end
+				{
+					name: "Faster Transitions",
+					get: () -> Save.data.fasterTransitions,
+					set: (b:Bool) -> Save.data.fasterTransitions = b,
+					desc: (b:Bool) ->
+					{
+						if (b)
+							return "Transitions between states will play faster.";
+						else
+							return "Transitions between states will play slower.";
+					},
+				},
 				{
 					name: "Hitsound SFX",
 					get: () -> Save.data.hitsound,

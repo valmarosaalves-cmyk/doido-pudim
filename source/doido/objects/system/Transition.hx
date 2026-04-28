@@ -29,6 +29,7 @@ class Transition extends MusicBeatSubState
 		this.fadeOut = fadeOut;
 		this.transition = transition;
 
+		var speed = (Save.data.fasterTransitions ? 0.75 : 1);
 		switch (transition)
 		{
 			case 'funkin':
@@ -51,7 +52,7 @@ class Transition extends MusicBeatSubState
 				sprBlack.y = yPos[curY];
 				updateGradPos();
 
-				FlxTween.tween(sprBlack, {y: yPos[curY + 1]}, fadeOut ? 0.6 : 0.8, {
+				FlxTween.tween(sprBlack, {y: yPos[curY + 1]}, (fadeOut ? 0.6 : 0.8) * speed, {
 					onComplete: function(twn:FlxTween)
 					{
 						endTransition();
@@ -63,7 +64,7 @@ class Transition extends MusicBeatSubState
 				add(sprBlack);
 
 				sprBlack.alpha = (fadeOut ? 1 : 0);
-				FlxTween.tween(sprBlack, {alpha: fadeOut ? 0 : 1}, 0.32, {
+				FlxTween.tween(sprBlack, {alpha: fadeOut ? 0 : 1}, 0.32 * speed, {
 					onComplete: function(twn:FlxTween)
 					{
 						endTransition();
