@@ -39,7 +39,7 @@ class StoryMenuState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		setFpsPos(Main.fpsX, 65);
+		setFpsPos(Main.fpsX, 60);
 		DiscordIO.changePresence("In the Story Menu");
 		weekList = Week.weekList(true, false);
 
