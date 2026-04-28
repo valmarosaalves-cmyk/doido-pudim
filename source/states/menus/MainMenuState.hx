@@ -160,7 +160,8 @@ class MainMenuState extends MusicBeatState
 
 			#if MODS_FOLDER
 			if(FlxG.keys.justPressed.TAB)
-				MusicBeat.switchState(new states.DebugMenu.ModManager());
+				openSubState(new substates.menus.ModSubState());
+			//	MusicBeat.switchState(new states.DebugMenu.ModManager());
 			#end
 		}
 		else

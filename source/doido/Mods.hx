@@ -1,5 +1,8 @@
 package doido;
 
+import openfl.display.BitmapData;
+import flixel.graphics.FlxGraphic;
+import haxe.io.Bytes;
 #if MODS_FOLDER
 import polymod.util.VersionUtil;
 import polymod.format.ParseRules;
@@ -33,6 +36,7 @@ typedef ModList =
 class Mods
 {
 	public static var modList:ModList = {mods: []};
+	public static var modMetas:Array<ModMetadata> = [];
 	static final API_VERSION:Version = "0.1.0";
 	static final ignoredFiles:Array<String> = [
 		"assets/data/weeks/order.json",
@@ -64,7 +68,8 @@ class Mods
 	// scans the mods folder for new mods n stuff
 	public static function scan()
 	{
-		var modMetas = Polymod.scan({modRoot: "mods"});
+		modMetas = []; // just to be sure
+		modMetas = Polymod.scan({modRoot: "mods"});
 		var scanned:Array<String> = [];
 		for (meta in modMetas)
 		{
@@ -175,6 +180,24 @@ class Mods
 			return;
 
 		Logs.print('Polymod.${(cast err.origin).toUpperCase()} | ${err.message}', POLYMOD, true, true, false);
+	}
+
+	public static function getIcon(mod:String)
+	{
+		var icon:Bytes = null;
+		for (meta in modMetas)
+		{
+			if (meta.id == mod)
+			{
+				icon = meta.icon;
+				break;
+			}
+		}
+
+		if(icon == null)
+			return Assets.image("icon");
+		else
+			return FlxGraphic.fromBitmapData(BitmapData.fromBytes(icon));
 	}
 
 	public static function getJSON(key:String, mod:String):Dynamic
