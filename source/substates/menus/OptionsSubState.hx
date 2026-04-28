@@ -63,9 +63,9 @@ class OptionsSubState extends MusicBeatSubState
 
 	public var curAttachType:AttachmentType = CATEGORY;
 
-	public var holdTimer:Float = 0.0;
-	public var holdMax:Float = 0.4;
-	public var holdTimerSfx:Bool = false;
+	public var holdTimerSlider:Float = 0.0;
+	public var holdMaxSlider:Float = 0.4;
+	public var holdTimerSliderSfx:Bool = false;
 
 	public function new(?playState:PlayState)
 	{
@@ -282,7 +282,7 @@ class OptionsSubState extends MusicBeatSubState
 					canPlaySound: () -> return (Save.data.hitsound == "OFF"),
 					onChange: () ->
 					{
-						if (holdTimerSfx)
+						if (holdTimerSliderSfx)
 							NoteUtil.playHitsound();
 					}
 				},
@@ -522,7 +522,7 @@ class OptionsSubState extends MusicBeatSubState
 
 	public function changeSelection(?change:Int = 0)
 	{
-		holdTimer = 0.0;
+		holdTimerSlider = 0.0;
 		if (change != 0)
 			FlxG.sound.play(Assets.sound("scroll"));
 		curSelection = FlxMath.wrap(curSelection + change, 0, optionList.get(curCategoryString).length);
@@ -722,6 +722,9 @@ class OptionsSubState extends MusicBeatSubState
 
 	public var curOption:OptionData;
 
+	var holdTimer:Float = 0.0;
+	var holdMax:Float = 0.5;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -731,10 +734,17 @@ class OptionsSubState extends MusicBeatSubState
 			close();
 		}
 
-		if (Controls.justPressed(UI_UP))
-			changeSelection(-1);
-		else if (Controls.justPressed(UI_DOWN))
-			changeSelection(1);
+		var change:Int = (Controls.pressed(UI_DOWN) ? 1 : 0) - (Controls.pressed(UI_UP) ? 1 : 0);
+		if (change != 0)
+			holdTimer += elapsed;
+		else
+			holdTimer = 0.0;
+		if (Controls.justPressed(UI_UP) || Controls.justPressed(UI_DOWN) || holdTimer >= holdMax)
+		{
+			changeSelection(change);
+			if (holdTimer >= holdMax)
+				holdTimer = holdMax - 0.12;
+		}
 
 		var formatBGWidth:Float = bgWidth + 140;
 		var formatBGHeight:Float = bgHeight + 80;
@@ -804,35 +814,35 @@ class OptionsSubState extends MusicBeatSubState
 
 						var change:Int = (Controls.pressed(UI_RIGHT) ? 1 : 0) - (Controls.pressed(UI_LEFT) ? 1 : 0);
 						if (change != 0)
-							holdTimer += elapsed;
+							holdTimerSlider += elapsed;
 						else
-							holdTimer = 0.0;
+							holdTimerSlider = 0.0;
 
-						if (Controls.justPressed(UI_LEFT) || Controls.justPressed(UI_RIGHT) || holdTimer >= holdMax)
+						if (Controls.justPressed(UI_LEFT) || Controls.justPressed(UI_RIGHT) || holdTimerSlider >= holdMaxSlider)
 						{
 							var prevPercent = attach.sliderBar.percent;
 
 							var step:Float = curOption.step ?? 1.0;
-							if (holdTimer >= holdMax && curOption.hold != null)
+							if (holdTimerSlider >= holdMaxSlider && curOption.hold != null)
 								step = curOption.hold;
 							var newValue:Float = curOption.get() + change * step;
 							attach.setSliderValue(newValue, curOption);
 
-							if (holdTimer < holdMax)
-								holdTimerSfx = true;
+							if (holdTimerSlider < holdMaxSlider)
+								holdTimerSliderSfx = true;
 							else
 							{
 								if (prevPercent == attach.sliderBar.percent)
-									holdTimerSfx = false;
+									holdTimerSliderSfx = false;
 								else
-									holdTimerSfx = !holdTimerSfx;
+									holdTimerSliderSfx = !holdTimerSliderSfx;
 							}
 
-							if (holdTimerSfx && curOption.canPlaySound())
+							if (holdTimerSliderSfx && curOption.canPlaySound())
 								playSound('options/slider-${change < 0 ? "down" : "up"}');
 
-							if (holdTimer >= holdMax)
-								holdTimer = holdMax - 0.02; // 0.02
+							if (holdTimerSlider >= holdMaxSlider)
+								holdTimerSlider = holdMaxSlider - 0.02; // 0.02
 
 							saveOptions();
 						}

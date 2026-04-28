@@ -40,6 +40,7 @@ class StoryMenuState extends MusicBeatState
 	{
 		super.create();
 		setFpsPos(Main.fpsX, 60);
+		MusicBeat.playMusic("freakyMenu");
 		DiscordIO.changePresence("In the Story Menu");
 		weekList = Week.weekList(true, false);
 
@@ -131,16 +132,27 @@ class StoryMenuState extends MusicBeatState
 
 	var canSelect = true;
 
+	var holdTimer:Float = 0.0;
+	var holdMax:Float = 0.5;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		if (canSelect)
 		{
-			if (Controls.justPressed(UI_UP))
-				changeWeek(-1);
-			if (Controls.justPressed(UI_DOWN))
-				changeWeek(1);
+			var change:Int = (Controls.pressed(UI_DOWN) ? 1 : 0) - (Controls.pressed(UI_UP) ? 1 : 0);
+			if (change != 0)
+				holdTimer += elapsed;
+			else
+				holdTimer = 0.0;
+			if (Controls.justPressed(UI_UP) || Controls.justPressed(UI_DOWN) || holdTimer >= holdMax)
+			{
+				changeWeek(change);
+				if (holdTimer >= holdMax)
+					holdTimer = holdMax - 0.12;
+			}
+
 			if (Controls.justPressed(UI_LEFT))
 				changeDiff(-1);
 			if (Controls.justPressed(UI_RIGHT))

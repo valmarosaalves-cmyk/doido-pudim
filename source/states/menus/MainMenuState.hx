@@ -131,16 +131,26 @@ class MainMenuState extends MusicBeatState
 	var flickMag:Float = 1;
 	var flickBtn:Float = 1;
 
+	var holdTimer:Float = 0.0;
+	var holdMax:Float = 0.5;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		if (canSelect)
 		{
-			if (Controls.justPressed(UI_UP))
-				changeSelection(-1);
-			if (Controls.justPressed(UI_DOWN))
-				changeSelection(1);
+			var change:Int = (Controls.pressed(UI_DOWN) ? 1 : 0) - (Controls.pressed(UI_UP) ? 1 : 0);
+			if (change != 0)
+				holdTimer += elapsed;
+			else
+				holdTimer = 0.0;
+			if (Controls.justPressed(UI_UP) || Controls.justPressed(UI_DOWN) || holdTimer >= holdMax)
+			{
+				changeSelection(change);
+				if (holdTimer >= holdMax)
+					holdTimer = holdMax - 0.12;
+			}
 
 			if (Controls.justPressed(BACK))
 				MusicBeat.switchState(new TitleState());
