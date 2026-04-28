@@ -226,8 +226,10 @@ class Timings
 		{
 			if (hasPlus)
 				result += "+";
-			if (accuracy == 100.0)
+			if (accuracy >= 99.0)
 				result = "P";
+			if (accuracy >= 100.0)
+				result = "PP";
 		}
 
 		// you cant give a result without notes :/

@@ -99,7 +99,7 @@ class DiffSelector extends FlxGroup
 
 		if (Assets.fileExists("images/" + curStyle.get("diff") + diff.toLowerCase(), XML))
 		{
-			trace("gulp");
+			// trace("gulp");
 			diffSpr.frames = Assets.sparrow(curStyle.get("diff") + diff.toLowerCase());
 			diffSpr.animation.addByPrefix("idle", "idle", 24, true);
 			diffSpr.animation.play("idle");

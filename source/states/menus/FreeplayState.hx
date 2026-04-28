@@ -1,14 +1,18 @@
 package states.menus;
 
+import doido.objects.Alphabet;
+import doido.song.Timings;
+import doido.song.Highscore;
+import doido.song.Highscore.ScoreData;
+import doido.song.Week;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
-import doido.objects.Alphabet;
-import doido.song.Week;
 import objects.ui.HealthIcon;
 import objects.ui.menu.DiffSelector;
 
@@ -35,10 +39,20 @@ class FreeplayState extends MusicBeatState
         default: 0.9;
     };
 
-    var sideBar:FlxSprite;
     var topBar:FlxSprite;
+    var bottomBar:FlxSprite;
     var namesGrp:FlxTypedGroup<FreeplayAlphabet>;
     var diffSelector:DiffSelector;
+
+    var scoreTxt:FlxText;
+    var missesTxt:FlxText;
+
+    var curScore:Int = 0;
+    var lerpScore:Float = 0.0;
+    var curAccuracy:Float = 0.0;
+    var lerpAccuracy:Float = 0.0;
+    var curMisses:Int = 0;
+    var lerpMisses:Float = 0;
 
     var disableInputs:Bool = false;
 
@@ -57,18 +71,17 @@ class FreeplayState extends MusicBeatState
 
         add(namesGrp = new FlxTypedGroup<FreeplayAlphabet>());
 
-        // idk
-        /*sideBar = new FlxSprite().makeColor(400, FlxG.height + 10, 0xFF000000);
-		sideBar.screenCenter(Y);
-        sideBar.x = FlxG.width - sideBar.width;
-		add(sideBar);*/
-
         topBar = new FlxSprite().makeColor(FlxG.width + 10, 60, 0xFF000000);
 		topBar.screenCenter(X);
 		add(topBar);
 
+        bottomBar = new FlxSprite().makeColor(FlxG.width + 10, 60, 0xFF000000);
+		bottomBar.screenCenter(X);
+        bottomBar.y = FlxG.height - bottomBar.height;
+		add(bottomBar);
+
         var weekScoreTxt = new FlxText(8, 8, 0, "FREEPLAY");
-		weekScoreTxt.setFormat(Main.globalFont, 36, 0xFFFFFFFF, RIGHT);
+		weekScoreTxt.setFormat(Main.globalFont, 36, 0xFFFFFFFF, LEFT);
 		add(weekScoreTxt);
 
         diffSelector = new DiffSelector(FREEPLAY);
@@ -78,6 +91,17 @@ class FreeplayState extends MusicBeatState
 		diffSelector.arrowL.x = diffSelector.leftX;
 		diffSelector.arrowR.x = diffSelector.rightX;
 		add(diffSelector);
+
+        scoreTxt = new FlxText(8, 8, 0, "HIGHSCORE: ");
+		scoreTxt.setFormat(Main.globalFont, 36, 0xFFFFFFFF, LEFT);
+        scoreTxt.y = FlxG.height - scoreTxt.height - 8;
+		add(scoreTxt);
+
+        missesTxt= new FlxText(8, 8, 0, "0 MISSES");
+		missesTxt.setFormat(Main.globalFont, 36, 0xFFFFFFFF, LEFT);
+        missesTxt.y = FlxG.height - missesTxt.height - 8;
+        missesTxt.x = FlxG.width - missesTxt.width - 8;
+		add(missesTxt);
 
         reloadSongs();
     }
@@ -189,6 +213,7 @@ class FreeplayState extends MusicBeatState
 
     public function changeDiff(change:Int = 0)
 	{
+        var prevDiff = diff;
         if (curDiff == -1)
 			curDiff = middleDiff;
 
@@ -200,7 +225,31 @@ class FreeplayState extends MusicBeatState
 		curDiff = FlxMath.wrap(curDiff, 0, diffLength);
 
 		diffSelector.changeDiff(diff, curDiff, diffLength, change);
-		//realScore = Highscore.getScore('week-${week.weekFile}-$diff').score;
+        namesGrp.forEachAlive((alphabet) -> {
+
+            var thisScore:ScoreData = Highscore.getScore(songs[alphabet.ID].name + '-' + songs[alphabet.ID].diffs[curDiff]);
+            var rank = Timings.getRank(thisScore.accuracy, thisScore.misses, false, true);
+
+            if (alphabet.ID == curSelected)
+            {
+                curScore = Math.floor(thisScore.score);
+                curAccuracy = thisScore.accuracy;
+                curMisses = thisScore.misses;
+            }
+
+            var color = switch(rank.toUpperCase()){
+                case "PP": '#FFFD62';
+                case "P": '#FDAAFC';
+                case "S"|"S+": '#EBE9A7';
+                case "A"|"A+": '#FDFFFF';
+                case "B"|"B+"|"C"|"C+"|"D"|"D+": '#EFA07F';
+                default: '#7496FF';
+            }
+            
+            alphabet.rankTxt.visible = (rank != "?");
+            alphabet.rankTxt.text = '<color value=${color}>${rank}</color>';
+            
+        });
 	}
 
     var holdTimer:Float = 0.0;
@@ -237,6 +286,38 @@ class FreeplayState extends MusicBeatState
 
             if (Controls.justPressed(ACCEPT) || FlxG.keys.justPressed.SEVEN)
                 startSong();
+        }
+
+        // score
+        if (Math.abs(lerpScore - curScore) <= 40)
+            lerpScore = curScore;
+        else
+            lerpScore = FlxMath.lerp(lerpScore, curScore, elapsed * 12);
+
+        // accuracy
+        if (Math.abs(lerpAccuracy - curAccuracy) <= 1)
+            lerpAccuracy = curAccuracy;
+        else
+            lerpAccuracy = FlxMath.lerp(lerpAccuracy, curAccuracy, elapsed * 8);
+
+        // drawing score + accuracy
+        var scoreText = 'HIGHSCORE: ' + FlxStringUtil.formatMoney(Math.floor(lerpScore), false, true);
+        scoreText += ' [${FlxMath.roundDecimal(lerpAccuracy, 2)}%]';
+        if (scoreTxt.text != scoreText)
+            scoreTxt.text = scoreText;
+
+        // misses
+        if (Math.abs(lerpMisses - curMisses) <= 1)
+            lerpMisses = curMisses;
+        else
+            lerpMisses = FlxMath.lerp(lerpMisses, curMisses, elapsed * 6);
+
+        // drawing misses
+        var missesText = Math.floor(lerpMisses) + ' MISSES';
+        if (missesTxt.text != missesText)
+        {
+            missesTxt.text = missesText;
+            missesTxt.x = FlxG.width - missesTxt.width - 8;
         }
 
         updatePos(elapsed * 8);
@@ -328,12 +409,16 @@ class FreeplayState extends MusicBeatState
 class FreeplayAlphabet extends Alphabet
 {
     public var icon:HealthIcon;
+    public var rankTxt:Alphabet;
 
     public function new()
     {
         super(0, 0, "", true);
         icon = new HealthIcon();
         icon.setIcon();
+        rankTxt = new Alphabet(0, 0, "", true);
+        rankTxt.scale.set(1.15, 1.15);
+        rankTxt.updateHitbox();
     }
 
     public function reloadIcon(name:String)
@@ -359,6 +444,18 @@ class FreeplayAlphabet extends Alphabet
                 y + (height - icon.height) / 2
             );
             icon.draw();
+        }
+        if (rankTxt.visible)
+        {
+            rankTxt.alpha = alpha;
+            rankTxt.forEachAlive((letter) -> {
+                letter.alpha = alpha;
+            });
+            rankTxt.setPosition(
+                x + width + 36,
+                y + (height - rankTxt.height) / 2
+            );
+            rankTxt.draw();
         }
         super.draw();
     }
