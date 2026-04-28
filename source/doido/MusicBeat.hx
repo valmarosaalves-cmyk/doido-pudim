@@ -10,7 +10,10 @@ import flixel.FlxSubState;
 import flixel.addons.ui.FlxUIState;
 import flixel.group.FlxGroup;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.util.FlxTimer;
+
+typedef InputSignal = FlxTypedSignal<InputType->Void>;
 
 class MusicBeat
 {
@@ -149,6 +152,7 @@ class MusicBeat
  */
 class MusicBeatState extends FlxUIState
 {
+	public var onInputChange(default, null):InputSignal = new InputSignal();
 	override function create()
 	{
 		super.create();
@@ -262,7 +266,7 @@ class MusicBeatState extends FlxUIState
 class MusicBeatSubState extends FlxSubState
 {
 	var subParent:FlxState;
-
+	public var onInputChange(default, null):InputSignal = new InputSignal();
 	override function create()
 	{
 		super.create();

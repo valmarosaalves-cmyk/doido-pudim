@@ -37,6 +37,12 @@ typedef Binds =
 	var rebindable:Bool;
 }
 
+enum InputType {
+	KEYBOARD;
+	GAMEPAD;
+	TOUCH;
+}
+
 class InputDelayHandler extends flixel.FlxBasic
 {
 	public function new() {
@@ -51,11 +57,9 @@ class InputDelayHandler extends flixel.FlxBasic
 }
 class Controls
 {
-	public static var inputDelay:Int = 0;
-
 	public static var bindMap:Map<DoidoKey, Binds> = [
 		// GAMEPLAY
-		LEFT => {
+		LEFT => {	
 			keyboard: [FlxKey.A, FlxKey.LEFT],
 			gamepad: [FlxPad.LEFT_TRIGGER, FlxPad.DPAD_LEFT],
 			rebindable: true
@@ -144,6 +148,25 @@ class Controls
 	public static inline function released(bind:DoidoKey):Bool
 		return checkBind(bind, JUST_RELEASED);
 
+	public static var lastInput(default, null):InputType = #if !mobile KEYBOARD #else TOUCH #end;
+	private static function setLastInput(v:InputType)
+	{
+		if (lastInput != v)
+		{
+			lastInput = v;
+			var state = MusicBeat.activeState;
+			if (state != null)
+			{
+				if (Std.isOfType(state, MusicBeatState))
+					cast(state, MusicBeatState).onInputChange.dispatch(lastInput);
+				if (Std.isOfType(state, MusicBeatSubState))
+					cast(state, MusicBeatSubState).onInputChange.dispatch(lastInput);
+			}
+		}
+	}
+
+	public static var inputDelay:Int = 0;
+
 	public static function checkBind(bind:DoidoKey, inputState:FlxInputState):Bool
 	{
 		if (inputDelay > 0)
@@ -163,7 +186,10 @@ class Controls
 		for (key in binds.keyboard)
 		{
 			if (FlxG.keys.checkStatus(key, inputState) && key != FlxKey.NONE)
+			{
+				setLastInput(KEYBOARD);
 				return true;
+			}
 		}
 
 		if (FlxG.gamepads.lastActive != null)
@@ -171,7 +197,10 @@ class Controls
 			for (key in binds.gamepad)
 			{
 				if (FlxG.gamepads.lastActive.checkStatus(key, inputState) && key != FlxPad.NONE)
+				{
+					setLastInput(GAMEPAD);
 					return true;
+				}
 			}
 		}
 
@@ -191,16 +220,17 @@ class Controls
 		if (inputDelay > 0)
 			return false;
 		
-		if (isUiBind(bind))
-			return TouchHandler.getSwipe(bind);
-		else if (bind == BACK)
-			return TouchHandler.back;
-		else if (bind == ACCEPT)
-		{
-			return TouchHandler.getTap(inputState) && !TouchHandler.getSwipe() && !TouchHandler.back;
-		}
+		var daCheck:Bool = false;
 
-		return false;
+		if (isUiBind(bind))
+			daCheck = TouchHandler.getSwipe(bind);
+		else if (bind == BACK)
+			daCheck = TouchHandler.back;
+		else if (bind == ACCEPT)
+			daCheck = (TouchHandler.getTap(inputState) && !TouchHandler.getSwipe() && !TouchHandler.back);
+
+		if (daCheck) setLastInput(TOUCH);
+		return daCheck;
 	}
 	#end
 

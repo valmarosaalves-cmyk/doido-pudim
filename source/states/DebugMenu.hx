@@ -131,7 +131,7 @@ class DebugMenu extends MusicBeatState
 					MusicBeat.switchState(new ModManager());
 				#end
 				default:
-					MusicBeat.switchState(new Freeplay());
+					MusicBeat.switchState(new states.menus.FreeplayState());
 			}
 		}
 	}

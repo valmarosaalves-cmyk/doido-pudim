@@ -39,7 +39,7 @@ class StoryMenuState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		setFpsPos(Main.fpsX, 55);
+		setFpsPos(Main.fpsX, 65);
 		DiscordIO.changePresence("In the Story Menu");
 		weekList = Week.weekList(true, false);
 
@@ -49,11 +49,11 @@ class StoryMenuState extends MusicBeatState
 		for (i in 0...weekList.length)
 			grpWeeks.add(new WeekTitle(weekList[i].weekFile, i, curWeek));
 
-		topBar = new FlxSprite(0, 0).makeGraphic(FlxG.width * 2, 60, 0xFF000000);
+		topBar = new FlxSprite(0, 0).makeColor(FlxG.width + 10, 60, 0xFF000000);
 		topBar.screenCenter(X);
 		add(topBar);
 
-		charBg = new FlxSprite(0, 50).makeGraphic(FlxG.width * 2, 392, 0xFFFFFFFF);
+		charBg = new FlxSprite(0, 50).makeColor(FlxG.width + 10, 392, 0xFFFFFFFF);
 		charBg.color = 0xFFF9CF51;
 		charBg.screenCenter(X);
 		add(charBg);
@@ -77,7 +77,7 @@ class StoryMenuState extends MusicBeatState
 		trackTxt.y = (trackTitle.y + trackTitle.height + 12);
 		add(trackTxt);
 
-		diffSelector = new DiffSelector("story");
+		diffSelector = new DiffSelector(STORY);
 		diffSelector.diffPos.y = charBg.y + charBg.height + 30; // 20
 		diffSelector.diffPos.x = (FlxG.width - 215);
 		diffSelector.updateHitbox();
@@ -97,7 +97,7 @@ class StoryMenuState extends MusicBeatState
 		}
 
 		if (curDiff == -1)
-			curDiff = centerDiff;
+			curDiff = middleDiff;
 
 		preload();
 		changeWeek();
@@ -243,7 +243,7 @@ class StoryMenuState extends MusicBeatState
 		if (diff != prevDiff)
 		{
 			if (!week.storyDiffs.contains(prevDiff))
-				curDiff = centerDiff;
+				curDiff = middleDiff;
 			else
 				curDiff = week.storyDiffs.indexOf(prevDiff);
 		}
@@ -265,7 +265,7 @@ class StoryMenuState extends MusicBeatState
 
 	var week(get, never):WeekData;
 	var diff(get, never):String;
-	var centerDiff(get, never):Int;
+	var middleDiff(get, never):Int;
 
 	function get_week():WeekData
 		return weekList[curWeek] ?? Week.defaultWeek();
@@ -273,7 +273,7 @@ class StoryMenuState extends MusicBeatState
 	function get_diff():String
 		return week.storyDiffs[curDiff] ?? 'normal';
 
-	function get_centerDiff()
+	function get_middleDiff()
 		return Std.int((week.storyDiffs.length - 1) / 2);
 }
 

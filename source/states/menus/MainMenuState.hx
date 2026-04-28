@@ -42,7 +42,7 @@ class MainMenuState extends MusicBeatState
 			},
 			{
 				name: "freeplay",
-				press: () -> switchState(new Freeplay())
+				press: () -> switchState(new FreeplayState())
 			},
 			{
 				name: "donate",

@@ -476,13 +476,12 @@ class PlayState extends MusicBeatState implements Playable
 		if (botplay && startedSong)
 			validScore = false;
 
-		function followLerp():Float
-			return FlxMath.bound((cameraSpeed * 5 * elapsed), 0, 1);
+		var followLerp:Float = FlxMath.bound((cameraSpeed * 5 * elapsed), 0, 1);
 
 		updateDisplace();
 		camGame.moveCam([
-			camFollow.get(followLerp()),
-			camDisplace.get(followLerp()),
+			camFollow.get(followLerp),
+			camDisplace.get(followLerp),
 			{x: -FlxG.width / 2, y: -FlxG.height / 2}
 		]);
 
@@ -739,7 +738,7 @@ class PlayState extends MusicBeatState implements Playable
 		if (isStoryMode)
 			MusicBeat.switchState(new states.menus.StoryMenuState());
 		else
-			MusicBeat.switchState(new states.DebugMenu.Freeplay());
+			MusicBeat.switchState(new states.menus.FreeplayState());
 	}
 
 	override function stepHit()

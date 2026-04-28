@@ -134,12 +134,6 @@ class CreditsState extends MusicBeatState
 		super.update(elapsed);
 		if (!leaving)
 		{
-			var change:Int = (Controls.pressed(UI_RIGHT) ? 1 : 0) - (Controls.pressed(UI_LEFT) ? 1 : 0);
-			if (change != 0)
-				holdTimer += elapsed;
-			else
-				holdTimer = 0.0;
-
 			if (lists.length > 1)
 			{
 				if (Controls.justPressed(UI_UP))
@@ -148,6 +142,12 @@ class CreditsState extends MusicBeatState
 				if (Controls.justPressed(UI_DOWN))
 					changeCategory(-1);
 			}
+
+			var change:Int = (Controls.pressed(UI_RIGHT) ? 1 : 0) - (Controls.pressed(UI_LEFT) ? 1 : 0);
+			if (change != 0)
+				holdTimer += elapsed;
+			else
+				holdTimer = 0.0;
 
 			if (Controls.justPressed(UI_LEFT) || Controls.justPressed(UI_RIGHT) || holdTimer >= holdMax)
 			{

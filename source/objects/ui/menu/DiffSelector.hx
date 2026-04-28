@@ -4,6 +4,10 @@ import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 
+enum SelectorType {
+	STORY;
+	FREEPLAY;
+}
 class DiffSelector extends FlxGroup
 {
 	public var arrowL:FlxSprite;
@@ -19,9 +23,9 @@ class DiffSelector extends FlxGroup
 	public var diffCount:Int = 0;
 
 	// style
-	public var style:String = "freeplay";
-	public var styleData:Map<String, Map<String, Dynamic>> = [
-		"freeplay" => [
+	public var style:SelectorType = FREEPLAY;
+	public var styleData:Map<SelectorType, Map<String, Dynamic>> = [
+		FREEPLAY => [
 			"arrowSpr" => "menu/freeplay/selector",
 			"arrowIdleL" => "arrow pointer loop",
 			"arrowPushL" => "arrow pointer loop",
@@ -32,7 +36,7 @@ class DiffSelector extends FlxGroup
 			"arrowScale" => 1,
 			"diff" => "menu/freeplay/diff/"
 		],
-		"story" => [
+		STORY => [
 			"arrowSpr" => "menu/menuArrows",
 			"arrowIdleL" => "arrow left",
 			"arrowPushL" => "arrow push left",
@@ -48,7 +52,7 @@ class DiffSelector extends FlxGroup
 	var dots:FlxTypedGroup<FlxSprite>;
 	var dotSpacing:Float = 20;
 
-	public function new(style:String)
+	public function new(style:SelectorType)
 	{
 		super();
         this.style = style;
@@ -118,6 +122,9 @@ class DiffSelector extends FlxGroup
 				dots.add(dot);
 			}
 		}
+		
+		for (arrow in [arrowL, arrowR])
+			arrow.alpha = (count > 1 ? 1.0 : 0.0001);
 
 		updateHitbox();
 
