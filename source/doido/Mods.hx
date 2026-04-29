@@ -187,20 +187,28 @@ class Mods
 
 	public static function getIcon(mod:String)
 	{
-		var icon:Bytes = null;
-		for (meta in modMetas)
-		{
-			if (meta.id == mod)
-			{
-				icon = meta.icon;
-				break;
-			}
-		}
+		var meta = getMeta(mod);
+		var icon:Bytes = (meta != null) ? meta.icon : null; // just making sure we dont crash
 
 		if (icon == null)
 			return Assets.image("icon");
 		else
 			return FlxGraphic.fromBitmapData(BitmapData.fromBytes(icon));
+	}
+
+	public static function getTitle(mod:String):String
+	{
+		var meta = getMeta(mod);
+		return meta != null ? meta.title : "unknown";
+	}
+
+	public static function getMeta(mod:String):ModMetadata
+	{
+		for (meta in modMetas)
+			if (meta.id == mod)
+				return meta;
+
+		return null;
 	}
 
 	public static function getJSON(key:String, mod:String):Dynamic

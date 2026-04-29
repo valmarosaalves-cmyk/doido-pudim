@@ -11,6 +11,7 @@ import flixel.text.FlxText;
 
 typedef ModOption =
 {
+	var id:String;
 	var name:String;
 	var icon:String;
 	var ?enabled:Bool;
@@ -56,7 +57,8 @@ class ModSubState extends MusicBeatSubState
 		for (mod in Mods.modList.mods)
 		{
 			mods.push({
-				name: mod.name,
+				id: mod.name,
+				name: Mods.getTitle(mod.name),
 				icon: mod.name,
 				enabled: mod.enabled
 			});
@@ -65,6 +67,7 @@ class ModSubState extends MusicBeatSubState
 		for (opt in systemOptions)
 		{
 			mods.push({
+				id: opt,
 				name: opt,
 				icon: "-",
 				enabled: null
@@ -159,7 +162,7 @@ class ModSubState extends MusicBeatSubState
 	{
 		if (isSystem)
 		{
-			switch (curMod.name)
+			switch (curMod.id)
 			{
 				case "open folder":
 					#if windows
@@ -168,7 +171,7 @@ class ModSubState extends MusicBeatSubState
 				case "reload list":
 					Mods.scan();
 					reloadMods();
-					curSelected = mods.length - 1;
+					curSelected = mods.length - 2;
 					changeSelection();
 					updatePos();
 			}
@@ -176,7 +179,7 @@ class ModSubState extends MusicBeatSubState
 		else
 		{
 			curMod.enabled = !curMod.enabled;
-			Mods.setMod(curMod.name, curMod.enabled, true);
+			Mods.setMod(curMod.id, curMod.enabled, true);
 			namesGrp.forEachAlive((alphabet) ->
 			{
 				if (alphabet.ID == curSelected)
@@ -192,7 +195,7 @@ class ModSubState extends MusicBeatSubState
 		return mods[curSelected];
 
 	function get_isSystem():Bool
-		return systemOptions.contains(curMod.name);
+		return systemOptions.contains(curMod.id);
 }
 
 class ModAlphabet extends Alphabet
