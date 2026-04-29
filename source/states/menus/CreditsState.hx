@@ -216,8 +216,7 @@ class CreditsState extends MusicBeatState
 			var whichChar = (creditList.classic ? "_classic" : char.curChar);
 			switch (whichChar)
 			{
-				case "nikoo" | "_classic": // nothing
-
+				case "nikoo"|"teles"|"_classic": // nothing
 				default:
 					if (selected)
 					{
