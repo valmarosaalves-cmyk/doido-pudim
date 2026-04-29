@@ -14,7 +14,7 @@ class Order
 	{
 		var list:Array<String> = getList(path).order;
 		#if MODS_FOLDER
-		var lenght = list.length;
+		var length = list.length;
 		var mods:Array<OrderList> = [];
 		for (mod in Mods.modList.mods)
 		{
@@ -22,7 +22,7 @@ class Order
 				continue;
 
 			var newList = getModList(path, mod.name);
-			newList.index = newList.index ?? (first ? 0 : lenght);
+			newList.index = newList.index ?? (first ? 0 : length);
 			mods.push(newList);
 		}
 
@@ -31,8 +31,9 @@ class Order
 		for (mod in mods)
 		{
 			var index = mod.index + offset;
-			index = FlxMath.wrap(index, 0, lenght);
+			index = Std.int(FlxMath.bound(index, 0, list.length));
 			list = list.slice(0, index).concat(mod.order).concat(list.slice(index));
+			offset += mod.order.length;
 		}
 		#end
 		return list;
