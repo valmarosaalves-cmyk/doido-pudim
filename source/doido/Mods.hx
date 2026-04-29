@@ -37,8 +37,11 @@ class Mods
 {
 	public static var modList:ModList = {mods: []};
 	public static var modMetas:Array<ModMetadata> = [];
-	static final API_VERSION:Version = "0.1.0";
-	static final ignoredFiles:Array<String> = [
+
+	public static final API_VERSION:Version = "0.1.0";
+	public static final MOD_ROOT:String = "mods";
+	public static final ASSETS_ROOT:String = "assets";
+	public static final ignoredFiles:Array<String> = [
 		"assets/data/weeks/order.json",
 		"assets/data/credits/order.json",
 		"assets/data/credits/doido.json",
@@ -50,10 +53,10 @@ class Mods
 		PolymodConfig.modMetadataFile = 'meta.json';
 		PolymodConfig.modIconFile = 'icon.png';
 		Polymod.init({
-			modRoot: "mods",
+			modRoot: MOD_ROOT,
 			dirs: [],
 			frameworkParams: {
-				coreAssetRedirect: "assets"
+				coreAssetRedirect: ASSETS_ROOT
 			},
 			apiVersionRule: VersionUtil.anyPatch(API_VERSION),
 			errorCallback: onError,

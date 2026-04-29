@@ -7,6 +7,7 @@ import doido.objects.Alphabet;
 import doido.Mods;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
+import flixel.text.FlxText;
 
 typedef ModOption =
 {
@@ -20,6 +21,7 @@ class ModSubState extends MusicBeatSubState
 	public var bg:FlxSprite;
 	public var namesGrp:FlxTypedGroup<ModAlphabet>;
 	public var mods:Array<ModOption>;
+	public var systemOptions:Array<String> = ["reload list", #if windows "open folder" #end];
 
 	var curSelected:Int = 0;
 
@@ -32,6 +34,19 @@ class ModSubState extends MusicBeatSubState
 		add(bg);
 
 		add(namesGrp = new FlxTypedGroup<ModAlphabet>());
+
+		var bottomBar = new FlxSprite().makeColor(FlxG.width + 10, 50, 0xFF000000);
+		bottomBar.screenCenter(X);
+		bottomBar.y = FlxG.height - bottomBar.height;
+		bottomBar.alpha = 0.4;
+		add(bottomBar);
+
+		var reorderTxt = new FlxText(8, 8, 0, "HOLD SHIFT TO REORDER MODS");
+		reorderTxt.setFormat(Main.globalFont, 36, 0xFFFFFFFF, CENTER);
+		reorderTxt.screenCenter(X);
+		reorderTxt.y = FlxG.height - reorderTxt.height - 8;
+		add(reorderTxt);
+
 		reloadMods();
 	}
 
@@ -47,11 +62,14 @@ class ModSubState extends MusicBeatSubState
 			});
 		}
 
-		mods.push({
-			name: "reload list",
-			icon: "-",
-			enabled: null
-		});
+		for (opt in systemOptions)
+		{
+			mods.push({
+				name: opt,
+				icon: "-",
+				enabled: null
+			});
+		}
 
 		namesGrp.killMembers();
 		var i = 0;
@@ -88,6 +106,12 @@ class ModSubState extends MusicBeatSubState
 	{
 		if (change != 0)
 			FlxG.sound.play(Assets.sound("scroll"));
+
+		if (FlxG.keys.pressed.SHIFT && change != 0 && !isSystem)
+		{
+			Mods.move(curSelected, change);
+			reloadMods();
+		}
 
 		curSelected += change;
 		curSelected = FlxMath.wrap(curSelected, 0, mods.length - 1);
@@ -133,13 +157,21 @@ class ModSubState extends MusicBeatSubState
 
 	public function toggleMod()
 	{
-		if (curMod.name.toLowerCase() == "reload list")
+		if (isSystem)
 		{
-			Mods.scan();
-			reloadMods();
-			curSelected = mods.length - 1;
-			changeSelection();
-			updatePos();
+			switch (curMod.name)
+			{
+				case "open folder":
+					#if windows
+					Sys.command("explorer.exe /n, /e, \"" + Sys.getCwd().substring(0, Sys.getCwd().length - 1) + "\\" + Mods.MOD_ROOT + "\"");
+					#end
+				case "reload list":
+					Mods.scan();
+					reloadMods();
+					curSelected = mods.length - 1;
+					changeSelection();
+					updatePos();
+			}
 		}
 		else
 		{
@@ -154,9 +186,13 @@ class ModSubState extends MusicBeatSubState
 	}
 
 	var curMod(get, never):ModOption;
+	var isSystem(get, never):Bool;
 
 	function get_curMod():ModOption
 		return mods[curSelected];
+
+	function get_isSystem():Bool
+		return systemOptions.contains(curMod.name);
 }
 
 class ModAlphabet extends Alphabet
