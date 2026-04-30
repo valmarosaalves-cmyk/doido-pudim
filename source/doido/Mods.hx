@@ -22,13 +22,44 @@ typedef ModList =
 	var mods:Array<Mod>;
 }
 
+typedef ModConfig =
+{
+	var ?reload:Bool;
+	var ?initialState:String;
+	var ?redirects:Array<StateRedirect>;
+	var ?options:Array<ModOption>;
+}
+
+typedef StateRedirect =
+{
+	var origin:String;
+	var target:String;
+}
+
+typedef ModOption =
+{
+	var name:String;
+	var value:Dynamic;
+	var ?desc:String;
+
+	// extra settings
+	var ?playStateWarning:Bool;
+
+	// SELECTORS
+	var ?options:Array<String>;
+
+	// SLIDERS
+	var ?step:Float;
+	var ?hold:Float;
+	var ?limits:Array<Float>;
+}
+
 /*
  * This is a very early version of Doido's new Mod API.
  * Please keep in mind a lot of things are not yet implemented
  * and others may break when we change stuff.
  * TO-DO
  * - Mod Settings
- * - Credits
  * - Better Meta
  * - Better Mod Manager
  * - Support for more soft-coded things
@@ -37,15 +68,35 @@ class Mods
 {
 	public static var modList:ModList = {mods: []};
 	public static var modMetas:Array<ModMetadata> = [];
+	public static var modConfigs:Map<String, ModConfig> = [];
+	public static var enabledMods:Array<String> = [];
 
 	public static final API_VERSION:Version = "0.1.0";
 	public static final MOD_ROOT:String = "mods";
 	public static final ASSETS_ROOT:String = "assets";
+
 	public static final ignoredFiles:Array<String> = [
-		"assets/data/weeks/order.json",
-		"assets/data/credits/order.json",
-		"assets/data/credits/doido.json",
-		"mods/mods.json"
+		'assets/data/weeks/order.json',
+		'assets/data/credits/order.json',
+		'assets/data/credits/doido.json',
+		'$MOD_ROOT/mods.json'
+	];
+	public static final ignoredStates:Array<String> = [
+		// states
+		'doido.objects.system.CrashHandler',
+		'states.LoadingState',
+		'states.PlayState',
+		'states.ScriptedState',
+		'states.editors.CharacterEditor',
+		'states.editors.ChartingState',
+		// substates
+		'doido.objects.WebsiteWarning',
+		'doido.objects.system.Transition',
+		'substates.ScriptedSubState',
+		'substates.editors.ChartTestSubState',
+		'substates.editors.PopupSubState',
+		'substates.menus.ModSubState',
+		'substates.menus.OptionsSubState',
 	];
 
 	public static function init()
@@ -110,11 +161,57 @@ class Mods
 
 	public static function loadMods()
 	{
-		var enabledMods:Array<String> = [];
+		var newMods:Array<String> = [];
 		for (mod in modList.mods)
 			if (mod.enabled)
-				enabledMods.push(mod.name);
-		Polymod.loadOnlyMods(enabledMods);
+				newMods.push(mod.name);
+
+		Polymod.loadOnlyMods(newMods);
+
+		for (mod in newMods)
+		{
+			var config:ModConfig = {};
+			try
+			{
+				config = cast getJSON("config", mod);
+			}
+			catch (e)
+			{
+				Logs.print('MOD CONFIG LOAD ERROR: $e', POLYMOD);
+			}
+
+			config.redirects = config.redirects ?? [];
+			config.initialState = config.initialState ?? "";
+			config.reload = config.reload ?? false;
+			config.options = config.options ?? [];
+			modConfigs.set(mod, config);
+
+			for (option in config.options)
+			{
+				if (Save.data.modData.get(option.name) != null)
+					continue;
+
+				Save.data.modData.set(option.name, option.value);
+			}
+		}
+
+		if (!reload)
+		{
+			var added = newMods.filter(m -> !enabledMods.contains(m));
+			var removed = enabledMods.filter(m -> !newMods.contains(m));
+			var changed = added.concat(removed);
+
+			for (mod in changed)
+			{
+				var config = modConfigs.get(mod);
+				if (config != null && (config.reload ?? false))
+				{
+					reload = true;
+					break;
+				}
+			}
+		}
+		enabledMods = newMods;
 	}
 
 	public static function getMod(mod:String)
@@ -166,11 +263,23 @@ class Mods
 		if (index + offset >= modList.mods.length || index + offset < 0)
 			return;
 
-		trace("um");
-
 		var temp = modList.mods[index];
 		modList.mods[index] = modList.mods[index + offset];
 		modList.mods[index + offset] = temp;
+
+		if (!reload)
+		{
+			for (mod in [modList.mods[index], modList.mods[index + offset]])
+			{
+				var config = modConfigs.get(mod.name);
+				if (config != null && (config.reload ?? false))
+				{
+					reload = true;
+					break;
+				}
+			}
+		}
+
 		saveJson();
 		loadMods();
 	}
@@ -209,6 +318,66 @@ class Mods
 				return meta;
 
 		return null;
+	}
+
+	public static var reload:Bool = false;
+	public static var stateRedirects(get, never):Map<String, String>;
+	public static var initialState(get, never):String;
+	public static var modOptions(get, never):Array<ModOption>;
+
+	public static function get_stateRedirects():Map<String, String>
+	{
+		var redirects:Map<String, String> = [];
+
+		for (mod in modList.mods)
+		{
+			if (!mod.enabled)
+				continue;
+
+			var config = modConfigs.get(mod.name);
+			if (config == null)
+				continue;
+
+			for (redirect in config.redirects)
+				if (!ignoredStates.contains(redirect.origin))
+					redirects.set(redirect.origin, redirect.target);
+		}
+
+		return redirects;
+	}
+
+	public static function get_initialState():String
+	{
+		var init:String = "";
+
+		for (mod in modList.mods)
+		{
+			if (!mod.enabled)
+				continue;
+			var config = modConfigs.get(mod.name);
+			if (config == null)
+				continue;
+			init = config.initialState;
+		}
+
+		return init;
+	}
+
+	public static function get_modOptions():Array<ModOption>
+	{
+		var options:Array<ModOption> = [];
+
+		for (mod in modList.mods)
+		{
+			if (!mod.enabled)
+				continue;
+			var config = modConfigs.get(mod.name);
+			if (config == null)
+				continue;
+			options = options.concat(config.options);
+		}
+
+		return options;
 	}
 
 	public static function getJSON(key:String, mod:String):Dynamic

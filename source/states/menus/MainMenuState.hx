@@ -116,7 +116,7 @@ class MainMenuState extends MusicBeatState
 
 		var splash:String = 'Doido Engine 4.0 ${Main.internalVer}';
 		splash += '\nFriday Night Funkin\' Rewritten';
-		splash += '\nPress [TAB] to manage Mods';
+		#if MODS_FOLDER splash += '\nPress [TAB] to manage Mods'; #end
 
 		var splashTxt = new FlxText(4, 0, 0, splash);
 		splashTxt.setFormat(Main.globalFont, 18, 0xFFFFFFFF, LEFT);
@@ -159,7 +159,7 @@ class MainMenuState extends MusicBeatState
 				options[curSelected].press();
 
 			#if MODS_FOLDER
-			if(FlxG.keys.justPressed.TAB)
+			if (FlxG.keys.justPressed.TAB)
 				openSubState(new substates.menus.ModSubState());
 			//	MusicBeat.switchState(new states.DebugMenu.ModManager());
 			#end

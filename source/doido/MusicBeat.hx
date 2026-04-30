@@ -23,6 +23,7 @@ class MusicBeat
 	public static function switchState(?target:MusicBeatState, tOut:String = 'funkin', ?tIn:String)
 	{
 		#if SCREENSHOT_FEATURE Screenshot.clearScreenshot(); #end
+		#if MODS_FOLDER target = overrideState(target); #end
 
 		if (tIn != null)
 			nextTransition = tIn;
@@ -44,6 +45,26 @@ class MusicBeat
 		if (activeState != null)
 			activeState.openSubState(trans);
 	}
+
+	#if MODS_FOLDER
+	public static function overrideState(target:MusicBeatState):MusicBeatState
+	{
+		var redirect = Mods.stateRedirects.get(Type.getClassName(Type.getClass(target)));
+		if (redirect != null && Assets.fileExists('data/states/$redirect', SCRIPT))
+			return new states.ScriptedState(redirect);
+
+		return target;
+	}
+
+	public static function overrideSubState(target:FlxSubState):FlxSubState
+	{
+		var redirect = Mods.stateRedirects.get(Type.getClassName(Type.getClass(target)));
+		if (redirect != null && Assets.fileExists('data/substates/$redirect', SCRIPT))
+			target = new substates.ScriptedSubState(redirect);
+
+		return target;
+	}
+	#end
 
 	public static function resetState()
 	{
@@ -103,7 +124,8 @@ class MusicBeat
 		if (key == null || key == "none")
 		{
 			curMusic = "none";
-			FlxG.sound.music.stop();
+			if (FlxG.sound.music != null)
+				FlxG.sound.music.stop();
 		}
 		else
 		{
@@ -153,6 +175,7 @@ class MusicBeat
 class MusicBeatState extends FlxUIState
 {
 	public var onInputChange(default, null):InputSignal = new InputSignal();
+
 	override function create()
 	{
 		super.create();
@@ -185,6 +208,7 @@ class MusicBeatState extends FlxUIState
 	{
 		Controls.inputDelay = 2;
 		#if SCREENSHOT_FEATURE Screenshot.clearScreenshot(); #end
+		#if MODS_FOLDER subState = MusicBeat.overrideSubState(subState); #end
 		super.openSubState(subState);
 	}
 
@@ -266,7 +290,9 @@ class MusicBeatState extends FlxUIState
 class MusicBeatSubState extends FlxSubState
 {
 	var subParent:FlxState;
+
 	public var onInputChange(default, null):InputSignal = new InputSignal();
+
 	override function create()
 	{
 		super.create();
@@ -291,6 +317,7 @@ class MusicBeatSubState extends FlxSubState
 	{
 		Controls.inputDelay = 2;
 		#if SCREENSHOT_FEATURE Screenshot.clearScreenshot(); #end
+		#if MODS_FOLDER subState = MusicBeat.overrideSubState(subState); #end
 		super.openSubState(subState);
 	}
 

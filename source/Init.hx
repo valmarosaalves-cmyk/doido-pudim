@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxState;
 import doido.Cache;
 import doido.MusicBeat.MusicBeatState;
 import doido.song.Highscore;
@@ -7,6 +8,9 @@ import doido.system.Discord.DiscordIO;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import states.*;
+#if MODS_FOLDER
+import doido.Mods;
+#end
 
 class Init extends MusicBeatState
 {
@@ -28,7 +32,7 @@ class Init extends MusicBeatState
 		FlxG.mouse.visible = false;
 
 		#if MODS_FOLDER
-		doido.Mods.init();
+		Mods.init();
 		#end
 
 		FlxGraphic.defaultPersist = true;
@@ -47,7 +51,24 @@ class Init extends MusicBeatState
 	 */
 	public static function flagState()
 	{
+		MusicBeat.stopMusic();
+		#if MODS_FOLDER
+		Mods.reload = false;
+		var initialState:String = Mods.initialState;
+		if (initialState != "")
+		{
+			if (Assets.fileExists('data/states/$initialState', SCRIPT))
+				return MusicBeat.switchState(new ScriptedState(initialState));
+
+			var state = Type.resolveClass(initialState);
+			if (state != null)
+			{
+				var instance = Type.createInstance(state, []);
+				if (Std.isOfType(instance, FlxState))
+					return MusicBeat.switchState(cast instance);
+			}
+		}
+		#end
 		MusicBeat.switchState(new TitleState());
-		// MusicBeat.switchState(new DebugMenu.TouchTest());
 	}
 }

@@ -76,6 +76,11 @@ class OptionsSubState extends MusicBeatSubState
 		bg.alpha = 0.9;
 		add(bg);
 
+		#if MODS_FOLDER
+		if (doido.Mods.modOptions.length > 0)
+			optionOrder.push("Mods");
+		#end
+
 		optionList = [
 			"Gameplay" => [
 				{
@@ -356,6 +361,9 @@ class OptionsSubState extends MusicBeatSubState
 					},
 				},
 			],
+			#if MODS_FOLDER
+			"Mods" => getModOptions()
+			#end
 			#if TOUCH_CONTROLS
 			"Mobile" => [
 				{
@@ -415,6 +423,28 @@ class OptionsSubState extends MusicBeatSubState
 
 		changeCategory();
 	}
+
+	#if MODS_FOLDER
+	public function getModOptions():Array<OptionData>
+	{
+		var options:Array<OptionData> = [];
+		for (option in doido.Mods.modOptions)
+		{
+			options.push({
+				name: option.name,
+				get: () -> Save.data.modData.get(option.name),
+				set: (d:Dynamic) -> Save.data.modData.set(option.name, d),
+				desc: (option.desc == null ? null : (a) -> return option.desc),
+				playStateWarning: option.playStateWarning,
+				options: option.options,
+				step: option.step,
+				hold: option.hold,
+				limits: option.limits
+			});
+		}
+		return options;
+	}
+	#end
 
 	public var curSound:FlxSound;
 

@@ -9,6 +9,7 @@ class SaveVariables
 {
 	// add custom saves here!!
 	public var test:String = 'bullshit';
+	public var modData:Map<String, Dynamic> = [];
 
 	// gameplay
 	public var ghostTapping:String = "idle";
