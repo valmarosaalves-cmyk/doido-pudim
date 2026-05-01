@@ -71,15 +71,16 @@ class SpriteUtil
 		return spr;
 	}
 
-	public static function clipToSprite(spr:FlxSprite, objects:Array<FlxSprite>):FlxSprite
+	public static function clipToSprite(spr:FlxSprite, objects:Array<FlxSprite>, ?offsets:Array<Float>):FlxSprite
 	{
+		offsets ??= [0, 0];
 		var clipRect = (spr.clipRect ?? new flixel.math.FlxRect());
 		clipRect.set(0, 0, spr.frameWidth, spr.frameHeight);
 
 		for (object in objects)
 		{
-			var sprX:Float = spr.x;
-			var sprY:Float = spr.y;
+			var sprX:Float = spr.x - offsets[0];
+			var sprY:Float = spr.y - offsets[1];
 
 			if (sprX < object.x)
 				clipRect.x += object.x - sprX;

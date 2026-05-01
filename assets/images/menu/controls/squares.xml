@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="squares.png">
+	<!-- Created with Adobe Animate version 24.0.3.19 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="clear square0000" x="3" y="3" width="252" height="262"/>
+	<SubTexture name="edit square0000" x="258" y="3" width="252" height="262"/>
+	<SubTexture name="reset square0000" x="513" y="3" width="252" height="262"/>
+</TextureAtlas>

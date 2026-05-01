@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="keys.png">
+	<!-- Created with Adobe Animate version 24.0.3.19 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="L bumper0000" x="3" y="3" width="145" height="81"/>
+	<SubTexture name="L joystick click0000" x="151" y="3" width="207" height="188"/>
+	<SubTexture name="L joystick down0000" x="361" y="3" width="155" height="140"/>
+	<SubTexture name="L joystick left0000" x="519" y="3" width="161" height="154"/>
+	<SubTexture name="L joystick right0000" x="683" y="3" width="161" height="154"/>
+	<SubTexture name="L joystick up0000" x="847" y="3" width="155" height="161"/>
+	<SubTexture name="L shoulder0000" x="1005" y="3" width="119" height="156"/>
+	<SubTexture name="R bumper0000" x="3" y="194" width="145" height="81"/>
+	<SubTexture name="R joystick click0000" x="151" y="194" width="207" height="188"/>
+	<SubTexture name="R joystick down0000" x="361" y="194" width="155" height="140"/>
+	<SubTexture name="R joystick left0000" x="519" y="194" width="161" height="154"/>
+	<SubTexture name="R joystick right0000" x="683" y="194" width="161" height="154"/>
+	<SubTexture name="R joystick up0000" x="847" y="194" width="155" height="161"/>
+	<SubTexture name="R shoulder0000" x="1005" y="194" width="119" height="156"/>
+	<SubTexture name="arrow down0000" x="3" y="385" width="149" height="149"/>
+	<SubTexture name="arrow left0000" x="155" y="385" width="149" height="149"/>
+	<SubTexture name="arrow right0000" x="307" y="385" width="149" height="149"/>
+	<SubTexture name="arrow up0000" x="459" y="385" width="149" height="149"/>
+	<SubTexture name="backspace0000" x="611" y="385" width="191" height="149"/>
+	<SubTexture name="dpad down0000" x="805" y="385" width="149" height="150"/>
+	<SubTexture name="dpad left0000" x="957" y="385" width="151" height="151"/>
+	<SubTexture name="dpad right0000" x="3" y="539" width="147" height="150"/>
+	<SubTexture name="dpad up0000" x="153" y="539" width="150" height="151"/>
+	<SubTexture name="enter0000" x="306" y="539" width="183" height="213"/>
+	<SubTexture name="face down0000" x="492" y="539" width="173" height="171"/>
+	<SubTexture name="face left0000" x="668" y="539" width="173" height="171"/>
+	<SubTexture name="face right0000" x="844" y="539" width="173" height="171"/>
+	<SubTexture name="face up0000" x="3" y="755" width="173" height="171"/>
+	<SubTexture name="key empty0000" x="179" y="755" width="149" height="149"/>
+	<SubTexture name="key empty long0000" x="331" y="755" width="191" height="149"/>
+	<SubTexture name="select0000" x="525" y="755" width="139" height="83"/>
+	<SubTexture name="start0000" x="667" y="755" width="144" height="77"/>
+</TextureAtlas>

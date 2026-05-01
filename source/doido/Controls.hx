@@ -57,6 +57,7 @@ class InputDelayHandler extends flixel.FlxBasic
 }
 class Controls
 {
+	public static var defaultBindMap:Map<DoidoKey, Binds> = [];
 	public static var bindMap:Map<DoidoKey, Binds> = [
 		// GAMEPLAY
 		LEFT => {	
@@ -244,6 +245,9 @@ class Controls
 
 	public static function load()
 	{
+		for (key => value in bindMap)
+			defaultBindMap.set(key, value);
+
 		var file = new DoidoSave("controls");
 
 		if (file != null && file.data != null && file.data.bindMap != null)

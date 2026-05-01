@@ -166,7 +166,7 @@ class NoteUtil
 			return 0;
 	}
 
-	inline public static function noteWidth(wide:Bool)
+	inline public static function noteWidth(wide:Bool = false)
 		return (160 * 0.7) + (wide ? 70 : 0); // 112
 
 	public static function setNotePos(note:FlxSprite, strum:FlxSprite, angle:Float, offsetX:Float, offsetY:Float)

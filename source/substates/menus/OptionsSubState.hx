@@ -71,11 +71,7 @@ class OptionsSubState extends MusicBeatSubState
 	{
 		super();
 		this.playState = playState;
-		bg = new FlxSprite().makeColor(0, 0, 0xFF000000);
-		bg.screenCenter();
-		bg.alpha = 0.9;
-		add(bg);
-
+		
 		#if MODS_FOLDER
 		if (doido.Mods.modOptions.length > 0)
 			optionOrder.push("Mods");
@@ -193,6 +189,13 @@ class OptionsSubState extends MusicBeatSubState
 							return "Unpausing the game will make the song\nslowly catch up to regular speed.";
 						else
 							return "Unpausing the game will make the song\nresume instantaneously.";
+					},
+				},
+				{
+					name: "Change Controls",
+					get: () -> null,
+					set: (s:String) -> {
+						openSubState(new ControlsSubState(this));
 					},
 				},
 			],
@@ -405,6 +408,16 @@ class OptionsSubState extends MusicBeatSubState
 			],
 			#end
 		];
+	}
+
+	override function create()
+	{
+		super.create();
+		persistentDraw = false;
+		bg = new FlxSprite().makeColor(0, 0, 0xFF000000);
+		bg.screenCenter();
+		bg.alpha = 0.9;
+		add(bg);
 
 		add(alphabetGrp = new FlxTypedGroup<OptionAlphabet>());
 		add(attachGrp = new FlxTypedGroup<Attachment>());
@@ -485,6 +498,7 @@ class OptionsSubState extends MusicBeatSubState
 
 		var catTitle:OptionAlphabet = alphabetGrp.recycle(OptionAlphabet);
 		catTitle.reloadStuff(40, curCategoryString, true);
+		catTitle.hasAttachment = true;
 		catTitle.y += bg.y;
 		catTitle.ID = 0;
 		if (!alphabetGrp.members.contains(catTitle))
@@ -514,6 +528,7 @@ class OptionsSubState extends MusicBeatSubState
 			optionText.x = bg.x + 20;
 			optionText.ID = _i + 1;
 
+			optionText.hasAttachment = true;
 			if (!alphabetGrp.members.contains(optionText))
 				alphabetGrp.add(optionText);
 
@@ -537,7 +552,11 @@ class OptionsSubState extends MusicBeatSubState
 				attach.setSliderValue(dataGet, data);
 			}
 			else
-				attach.kill(); // no use for you sorry
+			{
+				// optionText.x = bg.x + (bg.width - optionText.width) / 2;
+				optionText.hasAttachment = false;
+				attach.kill(); // no use for you sorry little attachment...
+			}
 
 			if (attachGrp.members.contains(attach))
 				attachGrp.add(attach);
@@ -799,7 +818,11 @@ class OptionsSubState extends MusicBeatSubState
 				lastAlphabet = alphabet.y + alphabet.height;
 			if (alphabet.ID == 0)
 				return;
-			alphabet.x = FlxMath.lerp(alphabet.x, bg.x + (bg.width - bgWidth) / 2, elapsed * 8);
+			alphabet.x = FlxMath.lerp(
+				alphabet.x,
+				bg.x + (alphabet.hasAttachment ? (bg.width - bgWidth) :  (bg.width - alphabet.width)) / 2,
+				elapsed * 8
+			);
 		});
 
 		descTxt.y = FlxMath.lerp(descTxt.y, lastAlphabet + 20, elapsed * 8);
@@ -898,6 +921,14 @@ class OptionsSubState extends MusicBeatSubState
 					}
 			}
 		}
+		else
+		{
+			if (Controls.justPressed(ACCEPT))
+			{
+				if (curOption.set != null)
+					curOption.set("clicked!");
+			}
+		}
 	}
 }
 
@@ -905,6 +936,7 @@ class OptionAlphabet extends Alphabet
 {
 	public var startY:Float = 0.0;
 	public var isCategory:Bool = false;
+	public var hasAttachment:Bool = false;
 
 	public function new()
 	{

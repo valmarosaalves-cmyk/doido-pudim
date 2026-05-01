@@ -1,0 +1,402 @@
+package substates.menus;
+
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import doido.objects.Alphabet;
+import doido.utils.NoteUtil;
+import flixel.FlxSprite;
+import flixel.input.keyboard.FlxKey;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.FlxGamepad.FlxGamepadModel;
+import flixel.input.gamepad.FlxGamepadInputID as FlxPad;
+import flixel.input.gamepad.id.PS4ID;
+import flixel.math.FlxMath;
+import objects.ui.notes.Strumline;
+
+enum ControlMode {
+    OPTIONS;
+    EDIT_CHOOSING;
+    EDIT_WAITING;
+    CLEARING;
+    RESETTING;
+}
+class ControlsSubState extends MusicBeatSubState
+{
+    public var allBinds:Array<DoidoKey> = [LEFT, DOWN, UP, RIGHT];
+    public var allOptions:Array<String> = ["EDIT", "CLEAR", "RESET"];
+
+    final formatNum:Array<String> = ['ZERO','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE'];
+
+    public var optionsSubState:OptionsSubState;
+
+    public var bg:FlxSprite;
+    public var strumline:Strumline;
+
+    public var bindGrpArray:Array<FlxTypedGroup<BindSprite>> = [];
+    public var bindGrp0:FlxTypedGroup<BindSprite>;
+    public var bindGrp1:FlxTypedGroup<BindSprite>;
+    public var bindOptions:FlxTypedGroup<Alphabet>;
+    public var bindSquare:FlxSprite;
+
+    public var curOption:Int = 0;
+    public var curSelectedX:Int = 0;
+    public var curSelectedY:Int = 0;
+
+    public var curBindSpr:BindSprite;
+
+    public var curMode:ControlMode = OPTIONS;
+    public var isGamepad:Bool = false;
+
+    public function new(optionsSubState:OptionsSubState)
+    {
+        super();
+        this.optionsSubState = optionsSubState;
+        var prevBG = optionsSubState.bg;
+        bg = new FlxSprite(prevBG.x, prevBG.y).makeColor(prevBG.width, prevBG.height, 0xFF000000);
+        bg.alpha = prevBG.alpha;
+    }
+
+    override function create()
+    {
+        super.create();
+        FlxTween.tween(bg.scale, {x: FlxG.width + 10, y: FlxG.height + 10}, 0.4, {ease: FlxEase.cubeOut});
+        add(bg);
+
+        var middlescroll:Bool = Save.data.middlescroll;
+        if (optionsSubState.playState == null)
+            middlescroll = true;
+
+        NoteUtil.setUpDirections(4);
+        strumline = new Strumline(middlescroll ? 0 : FlxG.width / 4, Save.data.downscroll, true, false, false, "base");
+        add(strumline);
+
+        bindGrpArray.push(bindGrp0 = new FlxTypedGroup<BindSprite>());
+        bindGrpArray.push(bindGrp1 = new FlxTypedGroup<BindSprite>());
+        for(i in 0...bindGrpArray.length)
+        {
+            var bindGrp = bindGrpArray[i];
+            bindGrp.ID = i;
+            add(bindGrp);
+        }
+        
+        add(bindOptions = new FlxTypedGroup<Alphabet>());
+        for(i in 0...allOptions.length)
+        {
+            var option = new Alphabet(FlxG.width / 4 - 80, 0, allOptions[i], true);
+            option.scale.set(0.8, 0.8);
+            option.updateHitbox();
+            option.align = CENTER;
+            option.y = (FlxG.height / 2) + (60 * i) - (60 * (allOptions.length / 2));
+            bindOptions.add(option);
+            option.ID = i;
+        }
+
+        bindSquare = new FlxSprite(strumline.x, -200).loadSparrow("menu/controls/squares");
+        for(anim in ["edit", "clear", "reset"])
+            bindSquare.animation.addByPrefix(anim, '$anim square', 24, true);
+        bindSquare.animation.play("edit");
+        bindSquare.scale.set(0.7, 0.7);
+        bindSquare.updateHitbox();
+        bindSquare.offset.x += (bindSquare.width / 2) - 10;
+        bindSquare.offset.y += (bindSquare.height/ 2) + 16;
+        add(bindSquare);
+        
+        for(j in 0...2)
+        {
+            var strums = strumline.strums;
+            for(i in 0...strums.length)
+            {
+                var key = new BindSprite();
+                key.setPosition(
+                    strums[i].x,
+                    strums[i].y + (NoteUtil.noteWidth() * (j + 1)),
+                );
+                if (Save.data.downscroll)
+                    key.y -= NoteUtil.noteWidth() * 3;
+
+                key.ID = i;
+
+                if (j == 0)
+                    bindGrp0.add(key);
+                else
+                    bindGrp1.add(key);
+            }
+        }
+        respawnBinds();
+    }
+
+    public function respawnBinds()
+    {
+        for(j in 0...2) {
+            for(i in 0...strumline.strums.length) {
+
+                var key = bindGrpArray[j].members[i];
+                if (isGamepad)
+                    reloadPad(key, getSaveBind(i, j));
+                else
+                    reloadKey(key, getSaveBind(i, j));
+
+            }
+        }
+
+        /*
+        Controls.bindMap.get(options[curSelectedX]).gamepad[curSelectedY] = daKey;
+		Controls.save();
+
+        Controls.bindMap.get(options[curSelectedX]).keyboard[curSelectedY] = daKey;
+		Controls.save();
+        */
+
+        changeOption();
+        changeBind();
+    }
+
+    public function changeOption(change:Int = 0)
+    {
+        if (change != 0) FlxG.sound.play(Assets.sound("scroll"));
+
+        curOption += change;
+        curOption = FlxMath.wrap(curOption, 0, allOptions.length - 1);
+
+        bindOptions.forEach((option) -> {
+            option.alpha = (option.ID == curOption ? 1.0 : 0.4);
+        });
+    }
+
+    public function changeBind(changeX:Int = 0, changeY:Int = 0)
+    {
+        if (changeX != 0 || changeY != 0) FlxG.sound.play(Assets.sound("scroll"));
+
+        curSelectedX += changeX;
+        curSelectedY += changeY;
+        curSelectedX = FlxMath.wrap(curSelectedX, 0, strumline.strums.length - 1);
+        curSelectedY = FlxMath.wrap(curSelectedY, 0, 1);
+        
+        curBindSpr = bindGrpArray[curSelectedY].members[curSelectedX];
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        if (curMode == OPTIONS)
+        {
+            if (Controls.justPressed(UI_UP)) changeOption(-1);
+            if (Controls.justPressed(UI_DOWN)) changeOption(1);
+
+            if (Controls.justPressed(ACCEPT))
+            {
+                switch(allOptions[curOption])
+                {
+                    case "RESET":
+                        curMode = RESETTING;
+                        bindSquare.animation.play("reset");
+                    case "CLEAR":
+                        curMode = CLEARING;
+                        bindSquare.animation.play("clear");
+                    default:
+                        curMode = EDIT_CHOOSING;
+                        bindSquare.animation.play("edit");
+                }
+            }
+
+            if (Controls.justPressed(BACK))
+            {
+                optionsSubState.bg.scale.set(bg.scale.x, bg.scale.y);
+                close();
+            }
+        }
+        else if (curMode == EDIT_WAITING)
+        {
+            /*if (curBindSpr != null)
+                bindSquare.setPosition(curBindSpr.x, curBindSpr.y);*/
+
+            if (FlxG.keys.justPressed.ESCAPE)
+            {
+                reloadKey(curBindSpr, getSaveBind());
+                curMode = EDIT_CHOOSING;
+            }
+            else if (FlxG.keys.justPressed.ANY)
+            {
+                var key = FlxG.keys.firstJustPressed();
+                setSaveBind(key);
+                reloadKey(curBindSpr, key);
+                curMode = EDIT_CHOOSING;
+            }
+        }
+        else
+        {
+            var changeX:Int = ((Controls.justPressed(UI_RIGHT) ? 1 : 0) - (Controls.justPressed(UI_LEFT) ? 1 : 0));
+            var changeY:Int = ((Controls.justPressed(UI_DOWN) ? 1 : 0) - (Controls.justPressed(UI_UP) ? 1 : 0));
+            if (changeX != 0 || changeY != 0)
+                changeBind(changeX, changeY);
+
+            if (Controls.justPressed(ACCEPT))
+            {
+                switch(curMode)
+                {
+                    case CLEARING:
+                        setSaveBind(FlxKey.NONE);
+                        curBindSpr.reload();
+                    case RESETTING:
+                        var key = getSaveBind(true);
+                        setSaveBind(key);
+                        reloadKey(curBindSpr, key);
+
+                    default:
+                        curBindSpr.reload();
+                        curMode = EDIT_WAITING;
+                }
+            }
+
+            if (Controls.justPressed(BACK))
+                curMode = OPTIONS;
+        }
+
+        if (curBindSpr != null)
+        {
+            bindSquare.setPosition(
+                FlxMath.lerp(bindSquare.x, curMode == OPTIONS ? strumline.x : curBindSpr.x, elapsed * 8),
+                FlxMath.lerp(bindSquare.y, curMode == OPTIONS ? -200 : curBindSpr.y, elapsed * 12)
+            );
+        }
+    }
+
+    public function setSaveBind(newValue:Int):Void
+    {
+        var x = curSelectedX;
+        var y = curSelectedY;
+
+        var bind = Controls.bindMap.get(allBinds[x]);
+        isGamepad ? bind.gamepad[y] = newValue : bind.keyboard[y] = newValue;
+        Controls.save();
+    }
+
+    public function getSaveBind(?x:Int, ?y:Int, ?isDefault:Bool = false):Int
+    {
+        if (x == null) x = curSelectedX;
+        if (y == null) y = curSelectedY;
+        
+        var bind = (isDefault ? Controls.defaultBindMap : Controls.bindMap).get(allBinds[x]);
+        return isGamepad ? bind.gamepad[y] : bind.keyboard[y];
+    }
+
+    public function reloadKey(spr:BindSprite, key:Int)
+    {
+        var key = FlxKey.toStringMap[key];
+        for(i in 0...formatNum.length)
+        {
+            if (key.contains(formatNum[i])) {
+                key = i + (key.startsWith("NUMPAD") ? "#" : "");
+            }
+        }
+
+        if (key == "NONE") key = "";
+
+        spr.reload(key);
+    }
+
+    public function reloadPad(spr:BindSprite, pad:Int)
+    {
+        var pad = FlxPad.toStringMap[pad];
+
+        if (pad == "NONE") pad = "";
+
+        spr.reload(pad, true);
+    }
+}
+class BindSprite extends FlxSprite
+{
+    public var label:Alphabet;
+
+    public function new()
+    {
+        super();
+        this.loadSparrow("menu/controls/keys");
+        for(anim in [
+            "L bumper",
+            "L joystick click",
+            "L joystick down",
+            "L joystick left",
+            "L joystick right",
+            "L joystick up", 
+            "L shoulder",
+            "R bumper",
+            "R joystick click",
+            "R joystick down",
+            "R joystick left",
+            "R joystick right",
+            "R joystick up",
+            "R shoulder",
+            "arrow down",
+            "arrow left",
+            "arrow right",
+            "arrow up",
+            "backspace",
+            "dpad down",
+            "dpad left",
+            "dpad right",
+            "dpad up",
+            "enter",
+            "face down",
+            "face left",
+            "face right",
+            "face up",
+            "select",
+            "start",
+            "key empty long",
+            "key empty",
+        ])
+        {
+            animation.addByPrefix(anim, anim + "0", 24, true);
+            animation.play(anim);
+        }
+
+        label = new Alphabet(0, 0, "", false, CENTER);
+    }
+
+    override function draw()
+    {
+        super.draw();
+        if (label.text.length > 0)
+        {
+            label.setPosition(x, y - (height / 2) + 8);
+            label.draw();
+        }
+    }
+
+    public function reload(?key:String, gamepad:Bool = false)
+    {
+        //trace(key);
+        label.text = "";
+        if (!gamepad)
+        {
+            // KEY ANIMATION
+            animation.play(switch(key)
+            {
+                case "LEFT"|"DOWN"|"UP"|"RIGHT": "arrow " + key.toLowerCase();
+                case "SHIFT"|"CONTROL"|"ALT"|"0#": "key empty long";
+                case "ENTER": "enter";
+                default: "key empty";
+            });
+            // KEY TEXT
+            if (key != null && !gamepad)
+            {
+                label.text = switch(key)
+                {
+                    case "LEFT"|"DOWN"|"UP"|"RIGHT": "";
+                    case "CONTROL": "CTRL";
+                    default: key;
+                }
+            }
+        }
+        scale.set(0.7, 0.7);
+        updateHitbox();
+
+        offset.x += width / 2;
+        offset.y += height/ 2;
+
+        label.scale.set(0.7 * scale.x, 0.7 * scale.y);
+        label.updateHitbox();
+    }
+}
