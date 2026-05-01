@@ -75,8 +75,8 @@ class CreditsState extends MusicBeatState
 		addCategory('Other Credits');
 		addCredit('cocopuffs',			'coco',	 	 0xFF56EF19, "Mobile Button Artist", 'https://x.com/cocopuffswow');
 		if(nikoo) addCredit('doubleonikoo', 'nikoo', 0xFF60458A, "Hey! What are you doing here?!",		'https://bsky.app/profile/doubleonikoo.bsky.social');
-		addCredit('Github Contributors','github', 	 0xFFFFFFFF, 'Thank you\n${specialCoders}!!', 		'https://github.com/DoidoTeam/FNF-Doido-Engine/graphs/contributors');
-		addCredit('Special Thanks', 	'heart', 	 0xFFC01B42, 'Thank you\n${specialPeople}!!\n<33', "https://youtu.be/N0IkgKHdgIc");
+		addCredit('arthue','arthur', 	 0xFFFFFFFF, 'criador do mod nao da engine claro', 		'https://youtu.be/fuck');
+		addCredit('doido_logo', 	'doido_logo', 	 0xFFC01B42, 'engine usada pra esse mod incrivel no futuro', "https://youtu.be/HZR8oP2Z9Sw?si=lHERo0RB_EmADLlD");
 		
 		/*
 		*	Don't modify the rest of the code unless you know what you're doing!!
